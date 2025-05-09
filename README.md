@@ -15,4 +15,4 @@ Python3:
 
 # Instruções de execução
 
-
+Basta executar o docker: `docker compose up` (ou `docker-compose up` dependendo do sistema operacional)

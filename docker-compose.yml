@@ -2,19 +2,44 @@ services:
   client:
     build: ./client
     container_name: client-app
+    # adicionando tty, senão o print não funciona
+    tty: true
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./client:/app  
+      # - ./interface_socket:/app/interface_socket
+      # - type: bind
+      # # copia a biblioteca de comunicação pro container
+      #   source: ./interface_socket/
+      #   target: /app/interface_socket
     environment:
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
-    network_mode: host  
+    # network_mode: host  
+    ports:
+      - "8000:8000"
+    depends_on: 
+    - server
+    networks:
+      - my_network
 
   server:
     build: ./server-app
     container_name: server-app
+    # adicionando tty, senão o print não funciona
+    tty: true
     volumes:
       - ./server-app:/app
+      # copia a biblioteca de comunicação pro container
+      # - ./interface_socket:/app/interface_socket
+      # - type: bind
+      #   source: ./interface_socket/
+      #   target: /app/interface_socket
     ports:
-      - "6000:6000"
-    network_mode: host 
+      - "50051:50051"
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge

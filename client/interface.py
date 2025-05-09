@@ -1,6 +1,15 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
-from client import enviar_nome  
+from PyQt6.QtWidgets import (
+    QApplication,
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+)
+from client import enviar_nome
+from interface_socket.interface_socket import sendMessage
+
 
 class Interface(QWidget):
     def __init__(self):
@@ -29,8 +38,9 @@ class Interface(QWidget):
     def enviar_nome(self):
         nome = self.input_nome.text()
         if nome:
-            resposta = enviar_nome(nome)
+            status, resposta = enviar_nome(nome)
             self.resposta_label.setText(resposta)
+
 
 app = QApplication(sys.argv)
 janela = Interface()

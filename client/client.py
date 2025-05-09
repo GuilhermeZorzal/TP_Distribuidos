@@ -1,16 +1,14 @@
 import socket
+import interface_socket.interface_socket as soc
 
-HOST = "127.0.0.1"  
-PORT = 6000
+HOST = "server"
+PORT = 50051
+
 
 def enviar_nome(nome):
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print(f"Conectando ao servidor {HOST}:{PORT}...")
-
-    client.connect((HOST, PORT))
-    
-    client.sendall(nome.encode())
-    resposta = client.recv(1024).decode()
-    
-    client.close()
-    return resposta
+    try:
+        resposta = soc.sendMessage(HOST, PORT, nome)
+        return 1, resposta
+    except Exception as e:
+        print(f"Um erro ocorreu {e}")
+        return 0, e

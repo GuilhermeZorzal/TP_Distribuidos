@@ -15,7 +15,7 @@ from PyQt6.QtGui import QPalette, QColor
 
 
 class Ajuda(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super().__init__(parent)
         layout = QVBoxLayout()
         text = QLabel("Ajuda")

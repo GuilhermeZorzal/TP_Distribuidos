@@ -18,7 +18,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import QSaveFile, Qt
 from PyQt6.QtGui import QPalette, QColor
-from client import cadastrarUsuario, logarUsuario
+from requestAPI.req_auth import cadastrarUsuario, logarUsuario
 
 FILE = "../assets/shrek.jpg"
 
@@ -82,8 +82,6 @@ class Cadastro(QWidget):
         outer_layout.addLayout(layout)
         outer_layout.addStretch()
         self.setLayout(outer_layout)
-
-        self.setLayout(layout)
 
     def go_login(self, parent):
         parent.go_login()
@@ -162,6 +160,7 @@ class Login(QWidget):
             QMessageBox.warning(
                 self, "Cadastro incompleto", "Por favor, preencha todos os campos"
             )
+            return
 
         parent.login(ccm, senha)
 
@@ -187,14 +186,12 @@ class Logout(QWidget):
         outer_layout.addStretch()
         self.setLayout(outer_layout)
 
-        self.setLayout(layout)
-
     def logout(self, parent):
         parent.logout()
 
 
 class Auth(QStackedWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super().__init__(parent)
         self._token = ""
 
@@ -211,7 +208,7 @@ class Auth(QStackedWidget):
         for page in self.pages.values():
             self.addWidget(page)
 
-        self.setCurrentWidget(self.page_logout)
+        self.setCurrentWidget(self.page_login)
 
     def cadastro(self, nome, apelido, senha, ccm, contato):
         codigo, message = cadastrarUsuario(nome, apelido, senha, ccm, contato)

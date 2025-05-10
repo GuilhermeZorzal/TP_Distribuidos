@@ -15,8 +15,6 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette, QColor
 
 # Paginas
-# from pages.barraLateral import BarraLateral
-
 from pages.auth import Auth
 from pages.paginaInicial import PaginaInicial
 from pages.catalogo import Catalogo
@@ -79,36 +77,9 @@ class BarraLateral(QFrame):
             btn.clicked.connect(lambda _, n=name: self.main.navigate_to(n))
             layout.addWidget(btn)
 
-        # self.button_home = QPushButton("Home")
-        # self.button_auth = QPushButton("Auth")
-        # self.button_catalogo = QPushButton("Catalogo")
-        # self.button_lojas = QPushButton("Lojas")
-        # self.button_pedidos = QPushButton("Pedidos")
-        # self.button_settings = QPushButton("Settings")
-        # self.button_ajuda = QPushButton("Ajuda")
-        #
-        # layout.addWidget(self.button_home)
-        # layout.addWidget(self.button_auth)
-        # layout.addWidget(self.button_catalogo)
-        # layout.addWidget(self.button_lojas)
-        # layout.addWidget(self.button_pedidos)
-        # layout.addWidget(self.button_settings)
-        # layout.addWidget(self.button_ajuda)
         layout.addStretch()
 
         self.setLayout(layout)
-
-
-class Paginas(QStackedWidget):
-    # area que contem todos as paginas
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-        self.paginaErro = Erro()
-
-        self.addWidget(self.paginaErro)
-        for page in paginas:
-            self.addWidget(page())
 
 
 class MainWindow(QMainWindow):
@@ -118,7 +89,7 @@ class MainWindow(QMainWindow):
         # Componente que segura todo o resto
         central_widget = QWidget()
         self.setWindowTitle("O Oco do Ogro")
-        self.resize(800, 600)
+        self.resize(1000, 800)
         self.setCentralWidget(central_widget)
 
         layout = QHBoxLayout()
@@ -130,14 +101,14 @@ class MainWindow(QMainWindow):
         self.stack = QStackedWidget()
         layout.addWidget(self.stack)
 
-        self.page_home = PaginaInicial()
-        self.page_auth = Auth()
-        self.page_catalogo = Catalogo()
-        self.page_lojas = Lojas()
-        self.page_pedidos = Pedidos()
-        self.page_settings = Settings()
-        self.page_ajuda = Ajuda()
-        self.page_erro = Erro()
+        self.page_home = PaginaInicial(self)
+        self.page_auth = Auth(self)
+        self.page_catalogo = Catalogo(self)
+        self.page_lojas = Lojas(self)
+        self.page_pedidos = Pedidos(self)
+        self.page_settings = Settings(self)
+        self.page_ajuda = Ajuda(self)
+        self.page_erro = Erro(self)
 
         # Add pages to stack and track their names
         self.pages = {
@@ -154,14 +125,21 @@ class MainWindow(QMainWindow):
         for page in self.pages.values():
             self.stack.addWidget(page)
 
-        self.stack.setCurrentWidget(self.page_home)
+        # TODO: trocar pra Home
+        # self.stack.setCurrentWidget(self.page_home)
+        self.stack.setCurrentWidget(self.page_lojas)
 
-        # Set which pages require authentication
+        # Listas de paginas que requerem autenticacao
         self.protected_routes = {"catalogo", "lojas", "pedidos", "settings"}
+
+    def get_token(self):
+        return self.page_auth.getToken()
 
     def navigate_to(self, page_name):
         token = self.page_auth.getToken()
-        if page_name in self.protected_routes and not token:
+        # TODO: Descomentar  pra voltar a realizar a autenticacao
+        # if page_name in self.protected_routes and not token:
+        if False:
             self.stack.setCurrentWidget(self.pages["erro"])
         else:
             self.stack.setCurrentWidget(self.pages[page_name])
@@ -170,7 +148,7 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    # Optional: Set global palette or theme here if needed
+    # Paleta de cores do aplicativo
     palette = QPalette()
     palette.setColor(QPalette.ColorRole.Window, QColor("#ecf0f1"))
     app.setPalette(palette)

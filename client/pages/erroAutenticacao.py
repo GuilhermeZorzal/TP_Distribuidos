@@ -9,7 +9,7 @@ from PyQt6.QtGui import QPalette, QColor
 
 
 class Erro(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super().__init__(parent)
         content_layout = QVBoxLayout()
         content_layout.setSpacing(0)

@@ -19,7 +19,7 @@ FILE = "../assets/shrek.jpg"
 
 
 class PaginaInicial(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super().__init__(parent)
 
         content_layout = QVBoxLayout()

@@ -1,28 +1,32 @@
 import socket
 import interface_socket.interface_socket as soc
+import json
 
 HOST = "server"
 PORT = 50051
 
 idLoja = None
-idCliente = None
+tokenCliente = None
+cont_pages = 0
+
 
 def sendMessage(host, port, message):
     # Cria um socket para conexão TCP/IP
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print(f"Conectando ao servidor {host}:{port}...")
-    
+
     # Conecta ao servidor no endereço e porta especificados
     client.connect((host, port))
-    
+
     # Envia os dados para o servidor
-        # O método encode() converte a string em bytes para envio
+    # O método encode() converte a string em bytes para envio
     client.sendall(message.encode())
     resposta = client.recv(1024).decode()
-    
+
     # Fecha a conexão com o servidor
     client.close()
     return resposta
+
 
 def cadastrar(nome, apelido, senha, ccm, contato):
     """
@@ -36,22 +40,29 @@ def cadastrar(nome, apelido, senha, ccm, contato):
     :retorno: Resposta do servidor
     """
     try:
-
-        # Monta a mensagem de cadastro como uma string formatada
-        dados = f"{nome}|{apelido}|{senha}|{ccm}|{contato}"
+        # Monta o objeto de cadastro como um dicionário
+        dados = {
+            "nome": nome,
+            "apelido": apelido,
+            "senha": senha,
+            "ccm": ccm,
+            "contato": contato
+        }
+        
+        cont_pages = 0
+        
+        # Serializa o objeto para uma string JSON
+        dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-
         # Aguarda e recebe a resposta do servidor
-            # O tamanho máximo da resposta é de 1024 bytes
-            # O método recv() bloqueia até que a resposta seja recebida
-            # O método decode() converte os bytes recebidos em uma string
         resposta = sendMessage(HOST, PORT, dados)
         print(f"Resposta do servidor: {resposta}")
-
+        
+        tokenCliente = resposta[2].get("tokenCliente")
 
         # Retorna a resposta do servidor
-        return 1, resposta
+        return [resposta[0], resposta[1], None]
     except Exception as e:
         # Em caso de erro, exibe a mensagem e retorna o erro
         print(f"Um erro ocorreu: {e}")
@@ -68,18 +79,35 @@ def autenticar(ccm, senha):
     """
     try:
 
-        dados = f"{ccm}|{senha}"
+        dados = {
+            "ccm": ccm,
+            "senha": senha
+        }
+        dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
+        
+        cont_pages = 0
 
-        # Resposta do servidor poderia ser o identificador do usuário
-        idCliente = sendMessage(HOST, PORT, dados)
-        print(f"Resposta do servidor: {idCliente}")
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+        
+        tokenCliente = resposta[2].get("tokenCliente")
 
-        return 1, idCliente
+        return [resposta[0], resposta[1], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
 
+def esta_logado():
+    """
+    Verifica se o usuário está logado.
+
+    :return: True se o usuário estiver logado, False caso contrário
+    """
+    if tokenCliente is not None:
+        return [200, "Usuário está autentificado!"]
+    else:
+        return [0, "Usuário não está autentificado!"]
 
 def criar_loja(nome_loja, contato, descricao):
     """
@@ -91,20 +119,26 @@ def criar_loja(nome_loja, contato, descricao):
     :return: Resposta do servidor
     """
     try:
-        dados = f"{nome_loja}|{contato}|{descricao}"
+        dados = {
+            "tokenCliente": tokenCliente,
+            "nome_loja": nome_loja,
+            "contato": contato,
+            "descricao": descricao
+        }
+        dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-
         # Resposta do servidor poderia ser o identificador da loja
-        idLoja = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, dados)
         print(f"Resposta do servidor: {idLoja}")
 
-        return 1, idLoja
+        return [resposta[0], resposta[1], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
 
-def criar_anuncio(nome, descricao, preco, categoria):
+
+def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
     """"Cria um anúncio para um produto.
     :param nome: Nome do produto
     :param descricao: Descrição do produto
@@ -113,56 +147,336 @@ def criar_anuncio(nome, descricao, preco, categoria):
     :return: Resposta do servidor
     """
     try:
-        dados = f"{nome}|{descricao}|{preco}|{categoria}"
+        dados = {
+            "tokenCliente": tokenCliente,
+            "nome_servico": nome,
+            "descricao_servico": descricao,
+            "categoria": categoria,
+            "tipo_pagamento": tipo,
+            "quantidade": quantidade
+        }
+        dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
         # Resposta do servidor poderia ser o identificador do anúncio
         resposta = sendMessage(HOST, PORT, dados)
         print(f"Resposta do servidor: {resposta}")
 
-        return 1, resposta
+        return [resposta[0], resposta[1], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
 
-# O usuário pode escolher entre os métodos de pagamento disponíveis e a quantidade de parcelas apenas
-def get_dados_pagamento(metodo, parcelas):
-    """
-    Envia os dados de pagamento para o servidor.
 
-    :param metodo: Método de pagamento
-    :param parcelas: Número de parcelas
+def get_categoria():
+    """
+    Obtém a lista de categorias disponíveis.
+
     :return: Resposta do servidor
     """
     try:
-        dados = f"{metodo}|{parcelas}"
+        dados = {}
+
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+
+        return resposta
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e
+    
+def get_catalago(categorias, idLoja):
+    """
+    Obtém o catálogo de produtos disponíveis.
+
+    :param categorias: Lista de categorias
+    :param idLoja: ID da loja
+    :return: Resposta do servidor
+    """
+    try:
+        dados = {
+            "pages": cont_pages,
+            "categorias": categorias,
+            "idLoja": idLoja
+        }
+        dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
         resposta = sendMessage(HOST, PORT, dados)
         print(f"Resposta do servidor: {resposta}")
-        
-        return 1, resposta
+
+        return resposta
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e
+
+def get_servico(idServico):
+    """
+    Obtém os detalhes de um serviço específico.
+
+    :param idServico: ID do serviço
+    :return: Resposta do servidor
+    """
+    try:
+        dados = {
+            "idServico": idServico
+        }
+        dados = json.dumps(dados)
+        print(f"Enviando dados: {dados}")
+
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+
+        return resposta
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e
+
+def get_loja(idLoja):
+    """
+    Obtém os detalhes de uma loja específica.
+
+    :param idLoja: ID da loja
+    :return: Resposta do servidor
+    """
+    try:
+        dados = {
+            "idLoja": idLoja
+        }
+        dados = json.dumps(dados)
+        print(f"Enviando dados: {dados}")
+
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+
+        return resposta
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
     
+def get_pedido(idPedido):
+    """
+    Obtém os detalhes de um pedido específico.
 
-def get_idCliente():
+    :param idPedido: ID do pedido
+    :return: Resposta do servidor
     """
-    Retorna o identificador do cliente e da loja.
-    :return: idLoja, idCliente
-    """
-    dados = f"{idCliente}"
-    resposta = sendMessage(HOST, PORT, dados)
-    
-    return resposta
+    try:
+        dados = {
+            "idPedido": idPedido
+        }
+        dados = json.dumps(dados)
+        print(f"Enviando dados: {dados}")
 
-def get_idLoja():
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+
+        return resposta
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e
+
+def get_pedidos():
     """
-    Retorna o identificador do cliente e da loja.
-    :return: idLoja, idCliente
+    Obtém a lista de pedidos.
+
+    :return: Resposta do servidor
     """
-    dados = f"{idLoja}"
-    resposta = sendMessage(HOST, PORT, dados)
-    
-    return resposta
+    try:
+        dados = {
+            "tokenCliente": tokenCliente
+        }
+        dados = json.dumps(dados)
+        print(f"Enviando dados: {dados}")
+        
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+        
+        return resposta
+    except Exception as e:  
+        print(f"Um erro ocorreu: {e}")
+        return 0, e
+
+def get_pedidos_minha_loja():
+    """
+    Obtém a lista de pedidos da loja do usuário.
+
+    :return: Resposta do servidor
+    """
+    try:
+        dados = {
+            "tokenCliente": tokenCliente,
+        }
+        dados = json.dumps(dados)
+        print(f"Enviando dados: {dados}")
+        
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+        
+        return resposta
+    except Exception as e:  
+        print(f"Um erro ocorreu: {e}")
+        return 0, e
+
+def cancelar_pedido(idPedido):
+    """
+    Cancela um pedido específico.
+
+    :param idPedido: ID do pedido
+    :return: Resposta do servidor
+    """
+    try:
+        dados = {
+            "idPedido": idPedido
+        }
+        dados = json.dumps(dados)
+        print(f"Enviando dados: {dados}")
+
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+
+        return [resposta[0], resposta[1], None]
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e
+
+def editar_servico(idServico, nome, descricao, categoria, tipo, quantidade):
+    """
+    Edita um serviço existente.
+
+    :param idServico: ID do serviço
+    :param nome: Nome do produto
+    :param descricao: Descrição do produto
+    :param categoria: Categoria do produto
+    :param tipo: Tipo de pagamento
+    :param quantidade: Quantidade disponível
+    :return: Resposta do servidor
+    """
+    try:
+        dados = {
+            "idServico": idServico,
+            "nome_servico": nome,
+            "descricao_servico": descricao,
+            "categoria": categoria,
+            "tipo_pagamento": tipo,
+            "quantidade": quantidade
+        }
+        dados = json.dumps(dados)
+        print(f"Enviando dados: {dados}")
+
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+
+        return resposta
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e
+
+def ocultar_servico(idServico):
+    """
+    Oculta um serviço específico.
+
+    :param idServico: ID do serviço
+    :return: Resposta do servidor
+    """
+    try:
+        dados = {
+            "idServico": idServico
+        }
+        dados = json.dumps(dados)
+        print(f"Enviando dados: {dados}")
+
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+
+        return [resposta[0], resposta[1], None]
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e
+
+def desocultar_servico(idServico):
+    """
+    Desoculta um serviço específico.
+
+    :param idServico: ID do serviço
+    :return: Resposta do servidor
+    """
+    try:
+        dados = {
+            "idServico": idServico
+        }
+        dados = json.dumps(dados)
+        print(f"Enviando dados: {dados}")
+
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+
+        return [resposta[0], resposta[1], None]
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e
+
+def apagar_servico(idServico):
+    """
+    Apaga um serviço específico.
+
+    :param idServico: ID do serviço
+    :return: Resposta do servidor
+    """
+    try:
+        dados = {
+            "idServico": idServico
+        }
+        dados = json.dumps(dados)
+        print(f"Enviando dados: {dados}")
+
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+
+        return [resposta[0], resposta[1], None]
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e
+
+def get_minha_loja():
+    """
+    Obtém os detalhes da loja do usuário.
+
+    :return: Resposta do servidor
+    """
+    try:
+        dados = {
+            "tokenCliente": tokenCliente
+        }
+        dados = json.dumps(dados)
+        print(f"Enviando dados: {dados}")
+
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+
+        return [resposta[0], resposta[1], None]
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e
+
+def realizar_pedido(idPedido):
+    """
+    Finalizar um pedido específico.
+
+    :param idPedido: ID do pedido
+    :return: Resposta do servidor
+    """
+    try:
+        dados = {
+            "idPedido": idPedido
+        }
+        dados = json.dumps(dados)
+        print(f"Enviando dados: {dados}")
+
+        resposta = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {resposta}")
+
+        return [resposta[0], resposta[1], None]
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e

@@ -5,7 +5,6 @@ import json
 HOST = "server"
 PORT = 50051
 
-idLoja = None
 tokenCliente = None
 cont_pages = 0
 
@@ -56,7 +55,7 @@ def cadastrar(nome, apelido, senha, ccm, contato):
         print(f"Enviando dados: {dados}")
 
         # Aguarda e recebe a resposta do servidor
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["cadastrar", dados])
         print(f"Resposta do servidor: {resposta}")
         
         tokenCliente = resposta[2].get("tokenCliente")
@@ -88,7 +87,7 @@ def autenticar(ccm, senha):
         
         cont_pages = 0
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["autenticar", dados])
         print(f"Resposta do servidor: {resposta}")
         
         tokenCliente = resposta[2].get("tokenCliente")
@@ -129,9 +128,9 @@ def criar_loja(nome_loja, contato, descricao):
         print(f"Enviando dados: {dados}")
 
         # Resposta do servidor poderia ser o identificador da loja
-        resposta = sendMessage(HOST, PORT, dados)
-        print(f"Resposta do servidor: {idLoja}")
-
+        resposta = sendMessage(HOST, PORT, ["criar_loja", dados])
+        print(f"Resposta do servidor: {resposta}")
+        
         return [resposta[0], resposta[1], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
@@ -159,7 +158,7 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
         print(f"Enviando dados: {dados}")
 
         # Resposta do servidor poderia ser o identificador do anúncio
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["criar_anuncio", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return [resposta[0], resposta[1], None]
@@ -177,7 +176,7 @@ def get_categoria():
     try:
         dados = {}
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["get_categoria", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return resposta
@@ -202,7 +201,7 @@ def get_catalago(categorias, idLoja):
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["get_catalago", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return resposta
@@ -224,7 +223,7 @@ def get_servico(idServico):
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["get_servico", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return resposta
@@ -246,7 +245,7 @@ def get_loja(idLoja):
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["get_loja", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return resposta
@@ -268,7 +267,7 @@ def get_pedido(idPedido):
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["get_pedido", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return resposta
@@ -289,7 +288,7 @@ def get_pedidos():
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
         
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["get_pedidos", dados])
         print(f"Resposta do servidor: {resposta}")
         
         return resposta
@@ -310,7 +309,7 @@ def get_pedidos_minha_loja():
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
         
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["get_pedidos_minha_loja", dados])
         print(f"Resposta do servidor: {resposta}")
         
         return resposta
@@ -332,7 +331,7 @@ def cancelar_pedido(idPedido):
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["cancelar_pedido", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return [resposta[0], resposta[1], None]
@@ -364,7 +363,7 @@ def editar_servico(idServico, nome, descricao, categoria, tipo, quantidade):
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["editar_servico", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return resposta
@@ -386,7 +385,7 @@ def ocultar_servico(idServico):
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["ocultar_servico", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return [resposta[0], resposta[1], None]
@@ -408,7 +407,7 @@ def desocultar_servico(idServico):
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["desocultar_servico", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return [resposta[0], resposta[1], None]
@@ -430,7 +429,7 @@ def apagar_servico(idServico):
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["apagar_servico", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return [resposta[0], resposta[1], None]
@@ -451,7 +450,7 @@ def get_minha_loja():
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["get_minha_loja", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return [resposta[0], resposta[1], None]
@@ -473,7 +472,7 @@ def realizar_pedido(idPedido):
         dados = json.dumps(dados)
         print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, dados)
+        resposta = sendMessage(HOST, PORT, ["realizar_pedido", dados])
         print(f"Resposta do servidor: {resposta}")
 
         return [resposta[0], resposta[1], None]

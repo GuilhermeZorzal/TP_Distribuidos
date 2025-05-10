@@ -7,14 +7,22 @@ PORT = 50051
 idLoja = None
 idCliente = None
 
-def enviar_nome(nome):
-    try:
-        resposta = soc.sendMessage(HOST, PORT, nome)
-        return 1, resposta
-    except Exception as e:
-        print(f"Um erro ocorreu {e}")
-        return 0, e
-
+def sendMessage(host, port, message):
+    # Cria um socket para conexão TCP/IP
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print(f"Conectando ao servidor {host}:{port}...")
+    
+    # Conecta ao servidor no endereço e porta especificados
+    client.connect((host, port))
+    
+    # Envia os dados para o servidor
+        # O método encode() converte a string em bytes para envio
+    client.sendall(message.encode())
+    resposta = client.recv(1024).decode()
+    
+    # Fecha a conexão com o servidor
+    client.close()
+    return resposta
 
 def cadastrar(nome, apelido, senha, ccm, contato):
     """
@@ -28,30 +36,19 @@ def cadastrar(nome, apelido, senha, ccm, contato):
     :retorno: Resposta do servidor
     """
     try:
-        # Cria um socket para conexão TCP/IP
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print(f"Conectando ao servidor {HOST}:{PORT}...")
-
-        # Conecta ao servidor no endereço e porta especificados
-        client.connect((HOST, PORT))
 
         # Monta a mensagem de cadastro como uma string formatada
         dados = f"{nome}|{apelido}|{senha}|{ccm}|{contato}"
         print(f"Enviando dados: {dados}")
 
-        # Envia os dados para o servidor
-            # O método encode() converte a string em bytes para envio
-        client.sendall(dados.encode())
 
         # Aguarda e recebe a resposta do servidor
             # O tamanho máximo da resposta é de 1024 bytes
             # O método recv() bloqueia até que a resposta seja recebida
             # O método decode() converte os bytes recebidos em uma string
-        resposta = client.recv(1024).decode()
+        resposta = sendMessage(HOST, PORT, dados)
         print(f"Resposta do servidor: {resposta}")
 
-        # Fecha a conexão com o servidor
-        client.close()
 
         # Retorna a resposta do servidor
         return 1, resposta
@@ -70,20 +67,13 @@ def autenticar(ccm, senha):
     :retorno: Resposta do servidor
     """
     try:
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print(f"Conectando ao servidor {HOST}:{PORT}...")
-        client.connect((HOST, PORT))
 
         dados = f"{ccm}|{senha}"
         print(f"Enviando dados: {dados}")
 
-        client.sendall(dados.encode())
-
         # Resposta do servidor poderia ser o identificador do usuário
-        idCliente = client.recv(1024).decode()
+        idCliente = sendMessage(HOST, PORT, dados)
         print(f"Resposta do servidor: {idCliente}")
-
-        client.close()
 
         return 1, idCliente
     except Exception as e:
@@ -101,23 +91,15 @@ def criar_loja(nome_loja, contato, descricao):
     :return: Resposta do servidor
     """
     try:
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print(f"Conectando ao servidor {HOST}:{PORT}...")
+        dados = f"{nome_loja}|{contato}|{descricao}"
+        print(f"Enviando dados: {dados}")
 
-        client.connect((HOST, PORT))
-
-        idLoja = f"{nome_loja}|{contato}|{descricao}"
-        print(f"Enviando dados: {idLoja}")
-
-        client.sendall(idLoja.encode())
 
         # Resposta do servidor poderia ser o identificador da loja
-        resposta = client.recv(1024).decode()
-        print(f"Resposta do servidor: {resposta}")
+        idLoja = sendMessage(HOST, PORT, dados)
+        print(f"Resposta do servidor: {idLoja}")
 
-        client.close()
-
-        return 1, resposta
+        return 1, idLoja
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
@@ -131,21 +113,12 @@ def criar_anuncio(nome, descricao, preco, categoria):
     :return: Resposta do servidor
     """
     try:
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print(f"Conectando ao servidor {HOST}:{PORT}...")
-
-        client.connect((HOST, PORT))
-
-        anuncio = f"{nome}|{descricao}|{preco}|{categoria}"
-        print(f"Enviando dados: {anuncio}")
-
-        client.sendall(anuncio.encode())
+        dados = f"{nome}|{descricao}|{preco}|{categoria}"
+        print(f"Enviando dados: {dados}")
 
         # Resposta do servidor poderia ser o identificador do anúncio
-        resposta = client.recv(1024).decode()
+        resposta = sendMessage(HOST, PORT, dados)
         print(f"Resposta do servidor: {resposta}")
-
-        client.close()
 
         return 1, resposta
     except Exception as e:
@@ -162,21 +135,12 @@ def get_dados_pagamento(metodo, parcelas):
     :return: Resposta do servidor
     """
     try:
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print(f"Conectando ao servidor {HOST}:{PORT}...")
+        dados = f"{metodo}|{parcelas}"
+        print(f"Enviando dados: {dados}")
 
-        client.connect((HOST, PORT))
-
-        pagamento = f"{metodo}|{parcelas}"
-        print(f"Enviando dados: {pagamento}")
-
-        client.sendall(pagamento.encode())
-
-        resposta = client.recv(1024).decode()
+        resposta = sendMessage(HOST, PORT, dados)
         print(f"Resposta do servidor: {resposta}")
-
-        client.close()
-
+        
         return 1, resposta
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
@@ -188,11 +152,17 @@ def get_idCliente():
     Retorna o identificador do cliente e da loja.
     :return: idLoja, idCliente
     """
-    return idCliente
+    dados = f"{idCliente}"
+    resposta = sendMessage(HOST, PORT, dados)
+    
+    return resposta
 
 def get_idLoja():
     """
     Retorna o identificador do cliente e da loja.
     :return: idLoja, idCliente
     """
-    return idLoja
+    dados = f"{idLoja}"
+    resposta = sendMessage(HOST, PORT, dados)
+    
+    return resposta

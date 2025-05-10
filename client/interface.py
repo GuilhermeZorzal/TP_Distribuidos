@@ -17,29 +17,24 @@ from PyQt6.QtGui import QPalette, QColor
 # Paginas
 # from pages.barraLateral import BarraLateral
 
-# from pages.auth import Auth
+from pages.auth import Auth
 from pages.paginaInicial import PaginaInicial
 from pages.catalogo import Catalogo
 from pages.lojas import Lojas
 from pages.pedidos import Pedidos
 from pages.ajuda import Ajuda
+from pages.settings import Settings
+from pages.erroAutenticacao import Erro
 
 
-class Settings(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel("Settings"))
-        self.setLayout(layout)
-
-
-paginas = [PaginaInicial, Settings, Catalogo, Lojas, Pedidos, Ajuda]
+paginas = [PaginaInicial, Auth, Catalogo, Lojas, Pedidos, Settings, Ajuda]
 
 
 class BarraLateral(QFrame):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super().__init__(parent)
         # self.setFixedWidth(200)
+        self.main = parent
         self.setStyleSheet("""
             QFrame {
                 background-color: #2c3e50;
@@ -70,20 +65,35 @@ class BarraLateral(QFrame):
         # for i in range(len(paginas)):
         #     self.buttons.append(QPushButton("Nome provisorio"))
         #     layout.addWidget(self.buttons[i])
+        self.buttons = {
+            "home": QPushButton("Home"),
+            "auth": QPushButton("Auth"),
+            "catalogo": QPushButton("Catalogo"),
+            "lojas": QPushButton("Lojas"),
+            "pedidos": QPushButton("Pedidos"),
+            "settings": QPushButton("Settings"),
+            "ajuda": QPushButton("Ajuda"),
+        }
 
-        self.button_home = QPushButton("Home")
-        self.button_settings = QPushButton("Settings")
-        self.button_catalogo = QPushButton("Catalogo")
-        self.button_lojas = QPushButton("Lojas")
-        self.button_pedidos = QPushButton("Pedidos")
-        self.button_ajuda = QPushButton("Ajuda")
+        for name, btn in self.buttons.items():
+            btn.clicked.connect(lambda _, n=name: self.main.navigate_to(n))
+            layout.addWidget(btn)
 
-        layout.addWidget(self.button_home)
-        layout.addWidget(self.button_settings)
-        layout.addWidget(self.button_catalogo)
-        layout.addWidget(self.button_lojas)
-        layout.addWidget(self.button_pedidos)
-        layout.addWidget(self.button_ajuda)
+        # self.button_home = QPushButton("Home")
+        # self.button_auth = QPushButton("Auth")
+        # self.button_catalogo = QPushButton("Catalogo")
+        # self.button_lojas = QPushButton("Lojas")
+        # self.button_pedidos = QPushButton("Pedidos")
+        # self.button_settings = QPushButton("Settings")
+        # self.button_ajuda = QPushButton("Ajuda")
+        #
+        # layout.addWidget(self.button_home)
+        # layout.addWidget(self.button_auth)
+        # layout.addWidget(self.button_catalogo)
+        # layout.addWidget(self.button_lojas)
+        # layout.addWidget(self.button_pedidos)
+        # layout.addWidget(self.button_settings)
+        # layout.addWidget(self.button_ajuda)
         layout.addStretch()
 
         self.setLayout(layout)
@@ -94,6 +104,9 @@ class Paginas(QStackedWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self.paginaErro = Erro()
+
+        self.addWidget(self.paginaErro)
         for page in paginas:
             self.addWidget(page())
 
@@ -108,38 +121,50 @@ class MainWindow(QMainWindow):
         self.resize(800, 600)
         self.setCentralWidget(central_widget)
 
-        # Layout é o baguio que segura tudo no lugar
-        main_layout = QHBoxLayout()
-        central_widget.setLayout(main_layout)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setSpacing(0)
+        layout = QHBoxLayout()
+        central_widget.setLayout(layout)
 
-        # Side menu and content area
-        self.barra_lateral = BarraLateral()
-        self.content_area = Paginas()
+        self.sidebar = BarraLateral(self)
+        layout.addWidget(self.sidebar)
 
-        main_layout.addWidget(self.barra_lateral)
-        main_layout.addWidget(self.content_area)
+        self.stack = QStackedWidget()
+        layout.addWidget(self.stack)
 
-        # Connect buttons
-        self.barra_lateral.button_home.clicked.connect(
-            lambda: self.content_area.setCurrentIndex(0)
-        )
-        self.barra_lateral.button_settings.clicked.connect(
-            lambda: self.content_area.setCurrentIndex(1)
-        )
-        self.barra_lateral.button_catalogo.clicked.connect(
-            lambda: self.content_area.setCurrentIndex(2)
-        )
-        self.barra_lateral.button_lojas.clicked.connect(
-            lambda: self.content_area.setCurrentIndex(3)
-        )
-        self.barra_lateral.button_pedidos.clicked.connect(
-            lambda: self.content_area.setCurrentIndex(4)
-        )
-        self.barra_lateral.button_ajuda.clicked.connect(
-            lambda: self.content_area.setCurrentIndex(5)
-        )
+        self.page_home = PaginaInicial()
+        self.page_auth = Auth()
+        self.page_catalogo = Catalogo()
+        self.page_lojas = Lojas()
+        self.page_pedidos = Pedidos()
+        self.page_settings = Settings()
+        self.page_ajuda = Ajuda()
+        self.page_erro = Erro()
+
+        # Add pages to stack and track their names
+        self.pages = {
+            "home": self.page_home,
+            "auth": self.page_auth,
+            "catalogo": self.page_catalogo,
+            "lojas": self.page_lojas,
+            "pedidos": self.page_pedidos,
+            "settings": self.page_settings,
+            "ajuda": self.page_ajuda,
+            "erro": self.page_erro,
+        }
+
+        for page in self.pages.values():
+            self.stack.addWidget(page)
+
+        self.stack.setCurrentWidget(self.page_home)
+
+        # Set which pages require authentication
+        self.protected_routes = {"catalogo", "lojas", "pedidos", "settings"}
+
+    def navigate_to(self, page_name):
+        token = self.page_auth.getToken()
+        if page_name in self.protected_routes and not token:
+            self.stack.setCurrentWidget(self.pages["erro"])
+        else:
+            self.stack.setCurrentWidget(self.pages[page_name])
 
 
 if __name__ == "__main__":

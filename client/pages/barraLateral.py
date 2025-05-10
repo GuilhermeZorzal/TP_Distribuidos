@@ -25,8 +25,8 @@ class BarraLateral(QFrame):
             }
             QPushButton {
                 font-size: 25px;
-                background-color: #34495e;
-                color: white;
+                color: red;
+                margin: 19px;
             }
             QPushButton:hover {
                 background-color: #3d566e;

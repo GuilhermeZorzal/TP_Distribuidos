@@ -437,7 +437,6 @@ class Lojas(QWidget):
         layout = QVBoxLayout()
         layout.addWidget(self.text)
         layout.addWidget(self.paginas)
-        layout.addWidget(self.paginas)
 
         outer_layout = QHBoxLayout()
         outer_layout.addStretch()

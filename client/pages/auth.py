@@ -18,7 +18,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import QSaveFile, Qt
 from PyQt6.QtGui import QPalette, QColor
-from requestAPI.moc_gpt import cadastrar, autenticar, logout
+from requestAPI.moc_gpt import cadastrar, autenticar, esta_logado, logout
 
 FILE = "../assets/shrek.jpg"
 
@@ -207,7 +207,11 @@ class Auth(QStackedWidget):
         for page in self.pages.values():
             self.addWidget(page)
 
-        self.setCurrentWidget(self.page_login)
+        log = esta_logado()
+        if log:
+            self.setCurrentWidget(self.page_login)
+        else:
+            self.setCurrentWidget(self.page_logout)
 
     def cadastro(self, nome, apelido, senha, ccm, contato):
         codigo, message = cadastrar(nome, apelido, senha, ccm, contato)

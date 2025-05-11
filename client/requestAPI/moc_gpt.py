@@ -118,7 +118,7 @@ def get_pedidos():
             "estado_pedido": "registrado",
             "total": 100,
         }
-        for _ in range(3)
+        for _ in range(6)
     ]
     return 1, "Pedidos carregados", pedidos
 
@@ -133,7 +133,7 @@ def get_pedidos_minha_loja():
             "estado_pedido": "concluido",
             "total": 150,
         }
-        for _ in range(3)
+        for _ in range(5)
     ]
     return 1, "Pedidos da loja carregados", pedidos
 

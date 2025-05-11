@@ -129,7 +129,7 @@ class MainWindow(QMainWindow):
 
         # TODO: trocar pra Home
         # self.stack.setCurrentWidget(self.page_home)
-        self.stack.setCurrentWidget(self.page_lojas)
+        self.stack.setCurrentWidget(self.page_pedidos)
 
         # Listas de paginas que requerem autenticacao
         self.protected_routes = {"catalogo", "loja", "pedidos", "settings"}

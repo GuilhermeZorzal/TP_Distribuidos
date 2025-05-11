@@ -67,6 +67,7 @@ def get_catalogo(categorias=[], idLoja=None):
         }
         for i in range(5)
     ]
+    # servicos = ["Batata" for i in range(5)]
     return 1, "Serviços encontrados", servicos
 
 

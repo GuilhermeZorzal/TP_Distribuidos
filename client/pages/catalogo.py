@@ -1,8 +1,11 @@
 import sys
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import (
+    QListWidgetItem,
+    QComboBox,
     QApplication,
     QLineEdit,
+    QMessageBox,
     QScrollArea,
     QGridLayout,
     QMainWindow,
@@ -11,6 +14,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
+    QListWidget,
     QStackedWidget,
     QFrame,
 )
@@ -18,18 +22,109 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette, QColor
 
 
+from requestAPI.moc_gpt import get_catalogo, get_categoria
+
+
+class ServiceItemWidget(QWidget):
+    def __init__(self, service):
+        super().__init__()
+        layout = QVBoxLayout()
+
+        desc = QLabel(service["descricao_servico"])
+        category = QLabel(f"Categoria: {service['categoria']}")
+        payment = QLabel(
+            f"Pagamento: {service['tipo_pagamento']} - R$ {service['quantidade_pagamento']}"
+        )
+        visibility = QLabel("Visível" if service["esta_visivel"] else "Oculto")
+
+        layout.addWidget(desc)
+        layout.addWidget(category)
+        layout.addWidget(payment)
+        layout.addWidget(visibility)
+
+        self.setLayout(layout)
+
+
 class Catalogo(QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        layout = QVBoxLayout(self)
 
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
+        self.current_page = 0
+        self.page_size = 10
+        self.is_loading = False
 
-        container = CardGrid()
-        scroll.setWidget(container)
+        # UI setup
+        self.main_layout = QVBoxLayout()
+        self.user_list = QListWidget()
 
-        layout.addWidget(scroll)
+        self.search_box = QComboBox()
+        status, message, categorias = get_categoria()
+        self.search_box.addItems(categorias)
+        self.search_box.currentIndexChanged.connect(self.filter_services)
+
+        self.main_layout.addWidget(self.search_box)
+        self.main_layout.addWidget(self.user_list)
+        self.setLayout(self.main_layout)
+
+        # Connect scroll after user_list is created
+        self.user_list.verticalScrollBar().valueChanged.connect(
+            self.check_scroll_position
+        )
+
+        self.load_services()
+
+    def filter_services(self, text):
+        self.current_page = 0
+        self.load_services(filter_text=text, append=False)
+
+    def load_services(self, filter_text="", append=False):
+        if self.is_loading:
+            return
+
+        self.is_loading = True
+        try:
+            resp = get_catalogo(filter_text)
+            if not resp[0]:
+                raise Exception(resp[1])
+            services = resp[2]
+
+            if not append:
+                self.user_list.clear()
+
+            for service in services:
+                item = QListWidgetItem()
+                widget = ServiceItemWidget(service)
+                item.setSizeHint(widget.sizeHint())
+                self.user_list.addItem(item)
+                self.user_list.setItemWidget(item, widget)
+
+            if services:
+                self.current_page += 1
+
+        except Exception as e:
+            print(f"Erro ao carregar serviços: {e}")
+        finally:
+            self.is_loading = False
+
+    def check_scroll_position(self):
+        scroll_bar = self.user_list.verticalScrollBar()
+        if scroll_bar.value() >= scroll_bar.maximum() - 50:
+            self.load_services(filter_text=self.search_box.currentText(), append=True)
+
+
+# class Catalogo(QWidget):
+#     def __init__(self, parent):
+#         super().__init__(parent)
+#         layout = QVBoxLayout(self)
+#
+#         scroll = QScrollArea()
+#         scroll.setWidgetResizable(True)
+#
+#         container = CardGrid()
+#         scroll.setWidget(container)
+#
+#         layout.addWidget(scroll)
+#
 
 
 class Card(QWidget):

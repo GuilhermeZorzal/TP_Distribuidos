@@ -160,8 +160,8 @@ class GerenciarServicos(QScrollArea):
         scroll_area.setWidget(content_widget)
 
         main_layout = QVBoxLayout(self)
-        main_layout.addWidget(scroll_area)
         main_layout.addWidget(self.button_voltar)
+        main_layout.addWidget(scroll_area)
         self.setLayout(main_layout)
 
     def voltar(self):
@@ -206,6 +206,7 @@ class CriarServico(QWidget):
 
         layout = QVBoxLayout()
         layout.addStretch()
+        layout.addWidget(self.button_voltar)
         layout.addWidget(self.title)
         layout.addWidget(self.input_nome)
         layout.addWidget(self.input_desc)
@@ -216,7 +217,6 @@ class CriarServico(QWidget):
         layout.addWidget(self.quantidade)
         layout.addWidget(self.input_quantidade)
         layout.addWidget(self.button_cria_loja)
-        layout.addWidget(self.button_voltar)
         layout.addStretch()
 
         outer_layout = QHBoxLayout()

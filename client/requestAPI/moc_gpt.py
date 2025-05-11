@@ -118,7 +118,7 @@ def get_pedidos():
             "estado_pedido": "registrado",
             "total": 100,
         }
-        for _ in range(6)
+        for _ in range(random.randint(1, 10))
     ]
     return 1, "Pedidos carregados", pedidos
 

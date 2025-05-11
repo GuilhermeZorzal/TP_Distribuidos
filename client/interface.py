@@ -1,5 +1,6 @@
 import sys
 from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import QThread, pyqtSignal
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -23,6 +24,7 @@ from pages.pedidos import Pedidos
 from pages.ajuda import Ajuda
 from pages.settings import Settings
 from pages.erroAutenticacao import Erro
+from requestAPI.moc_gpt import esta_logado
 
 
 paginas = [PaginaInicial, Auth, Catalogo, Lojas, Pedidos, Settings, Ajuda]
@@ -67,7 +69,7 @@ class BarraLateral(QFrame):
             "home": QPushButton("Home"),
             "auth": QPushButton("Auth"),
             "catalogo": QPushButton("Catalogo"),
-            "lojas": QPushButton("Lojas"),
+            "loja": QPushButton("Loja"),
             "pedidos": QPushButton("Pedidos"),
             "settings": QPushButton("Settings"),
             "ajuda": QPushButton("Ajuda"),
@@ -115,7 +117,7 @@ class MainWindow(QMainWindow):
             "home": self.page_home,
             "auth": self.page_auth,
             "catalogo": self.page_catalogo,
-            "lojas": self.page_lojas,
+            "loja": self.page_lojas,
             "pedidos": self.page_pedidos,
             "settings": self.page_settings,
             "ajuda": self.page_ajuda,
@@ -130,16 +132,10 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentWidget(self.page_lojas)
 
         # Listas de paginas que requerem autenticacao
-        self.protected_routes = {"catalogo", "lojas", "pedidos", "settings"}
-
-    def get_token(self):
-        return self.page_auth.getToken()
+        self.protected_routes = {"catalogo", "loja", "pedidos", "settings"}
 
     def navigate_to(self, page_name):
-        token = self.page_auth.getToken()
-        # TODO: Descomentar  pra voltar a realizar a autenticacao
-        # if page_name in self.protected_routes and not token:
-        if False:
+        if page_name in self.protected_routes and not esta_logado():
             self.stack.setCurrentWidget(self.pages["erro"])
         else:
             self.stack.setCurrentWidget(self.pages[page_name])

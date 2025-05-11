@@ -5,6 +5,14 @@ import random
 HOST = "server"
 PORT = 50051
 
+CATEGORIAS = [
+    "Assassino de aluguel",
+    "Mineiração",
+    "Carpintaria",
+    "Transporte",
+    "Outro",
+]
+
 
 def enviar_nome(nome):
     try:
@@ -15,20 +23,16 @@ def enviar_nome(nome):
         return 0, e
 
 
-def loja(token):
+def get_loja(idLoja):
     # tem que definir o que exatamente o contato vai fazer
-    enviar_nome("batata")
     num = random.random()
     if num < 0.3:
         return False, "Voce nao possui uma loja"
-    elif num < 0.6:
-        if not token:
-            return False, "Voce precisa estar autenticado"
     else:
         return True, "cadastro funcionou"
 
 
-def criaLoja(token, nome, info, descricao):
+def criar_loja(token, nome, info, descricao):
     # tem que definir o que exatamente o contato vai fazer
     # enviar_nome("batata")
     num = random.random()
@@ -38,3 +42,19 @@ def criaLoja(token, nome, info, descricao):
         return False, "Requisição falhou"
     else:
         return True, "Loja criada com sucesso"
+
+
+def criar_anuncio(token, nome, descricao, categoria, preco):
+    # tem que definir o que exatamente o contato vai fazer
+    # enviar_nome("batata")
+    num = random.random()
+    if not token:
+        return False, "Voce precisa estar autenticado"
+    if num < 0.5:
+        return False, "Requisição falhou"
+    else:
+        return True, "Loja criada com sucesso"
+
+
+def get_categoria():
+    return CATEGORIAS

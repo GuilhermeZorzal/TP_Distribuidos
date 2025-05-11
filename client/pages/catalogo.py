@@ -30,22 +30,6 @@ class Catalogo(QWidget):
         scroll.setWidget(container)
 
         layout.addWidget(scroll)
-        # layout = QGridLayout()
-        # text = QLabel("Pagina de Catalogo")
-        # text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        #
-        # layout.addWidget(QLabel("Username:"), 0, 0)
-        # layout.addWidget(QLineEdit(), 0, 1)
-        #
-        # layout.addWidget(QLabel("Password:"), 1, 1)
-        # layout.addWidget(QLineEdit(), 1, 2)
-        #
-        # layout.addWidget(QPushButton("Login"), 2, 0, 1, 2)  # Row 2, span 2 columns
-        #
-        # self.setLayout(layout)
-        # layout.addWidget(text)
-        # layout = ScrollableGrid()
-        # self.setLayout(layout)
 
 
 class Card(QWidget):
@@ -55,16 +39,6 @@ class Card(QWidget):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Optional image
-        # if image_path:
-        #     image = QLabel()
-        #     pixmap = QPixmap(image_path).scaledToWidth(
-        #         100, Qt.TransformationMode.SmoothTransformation
-        #     )
-        #     image.setPixmap(pixmap)
-        #     image.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        #     layout.addWidget(image)
-        #
         title_label = QLabel(title)
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title_label)
@@ -76,8 +50,8 @@ class Card(QWidget):
         self.setStyleSheet("""
             QWidget {
                 background-color: #ecf0f1;
-                border: 1px solid #bdc3c7;
                 border-radius: 8px;
+                border: 1px solid #bdc3c7;
                 padding: 10px;
             }
             QPushButton {

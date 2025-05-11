@@ -18,7 +18,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import QSaveFile, Qt
 from PyQt6.QtGui import QPalette, QColor
-from requestAPI.req_auth import cadastrarUsuario, logarUsuario
+from requestAPI.moc_gpt import cadastrar, autenticar, logout
 
 FILE = "../assets/shrek.jpg"
 
@@ -187,13 +187,12 @@ class Logout(QWidget):
         self.setLayout(outer_layout)
 
     def logout(self, parent):
-        parent.logout()
+        parent.call_logout()
 
 
 class Auth(QStackedWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        self._token = ""
 
         self.page_login = Login(self)
         self.page_cadastro = Cadastro(self)
@@ -211,23 +210,22 @@ class Auth(QStackedWidget):
         self.setCurrentWidget(self.page_login)
 
     def cadastro(self, nome, apelido, senha, ccm, contato):
-        codigo, message = cadastrarUsuario(nome, apelido, senha, ccm, contato)
+        codigo, message = cadastrar(nome, apelido, senha, ccm, contato)
         if not codigo:
             QMessageBox.warning(self, "Erro no cadastro", message)
         else:
             self.setCurrentWidget(self.page_login)
 
     def login(self, ccm, senha):
-        token, message = logarUsuario(ccm, senha)
+        status, message = autenticar(ccm, senha)
         self.setCurrentWidget(self.page_login)
-        if not token:
+        if not status:
             QMessageBox.warning(self, "Erro no login", message)
         else:
-            self._token = token
             self.setCurrentWidget(self.page_logout)
 
-    def logout(self):
-        self._token = None
+    def call_logout(self):
+        logout()
         self.setCurrentWidget(self.page_login)
 
     def go_login(self):
@@ -235,6 +233,3 @@ class Auth(QStackedWidget):
 
     def go_cadastro(self):
         self.setCurrentWidget(self.page_cadastro)
-
-    def getToken(self):
-        return self._token

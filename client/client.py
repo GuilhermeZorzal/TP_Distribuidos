@@ -10,6 +10,14 @@ cont_pages = 0
 
 
 def sendMessage(host, port, message):
+    """
+    Envia uma mensagem para o servidor e retorna a resposta.
+
+    :param host: Endereço do servidor
+    :param port: Porta do servidor
+    :param message: Mensagem a ser enviada
+    :return: Resposta do servidor
+    """
     # Cria um socket para conexão TCP/IP
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print(f"Conectando ao servidor {host}:{port}...")
@@ -19,8 +27,11 @@ def sendMessage(host, port, message):
 
     # Envia os dados para o servidor
     # O método encode() converte a string em bytes para envio
+    json.dumps(message)
     client.sendall(message.encode())
     resposta = client.recv(1024).decode()
+
+    resposta = json.loads(resposta)
 
     # Fecha a conexão com o servidor
     client.close()
@@ -39,29 +50,32 @@ def cadastrar(nome, apelido, senha, ccm, contato):
     :retorno: Resposta do servidor
     """
     try:
-        # Monta o objeto de cadastro como um dicionário
-        dados = {
-            "nome": nome,
-            "apelido": apelido,
-            "senha": senha,
-            "ccm": ccm,
-            "contato": contato
-        }
-        
+        global cont_pages
+        global tokenCliente
         cont_pages = 0
-        
-        # Serializa o objeto para uma string JSON
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
+
+        # Monta o objeto de cadastro como um dicionário
+        mensagem = {
+            "funcao": "cadastrar",
+            "dados": {
+                "nome": nome,
+                "apelido": apelido,
+                "senha": senha,
+                "ccm": ccm,
+                "contato": contato
+            }
+        }
 
         # Aguarda e recebe a resposta do servidor
-        resposta = sendMessage(HOST, PORT, ["cadastrar", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
-        
-        tokenCliente = resposta[2].get("tokenCliente")
+
+        if resposta["status"] == 200:
+            tokenCliente = resposta["dados"].get("tokenCliente")
 
         # Retorna a resposta do servidor
-        return [resposta[0], resposta[1], None]
+        return [resposta["status"], resposta["messagem"], None]
     except Exception as e:
         # Em caso de erro, exibe a mensagem e retorna o erro
         print(f"Um erro ocorreu: {e}")
@@ -76,26 +90,31 @@ def autenticar(ccm, senha):
     :param senha: Senha para autenticação
     :retorno: Resposta do servidor
     """
+    global tokenCliente
     try:
-
-        dados = {
-            "ccm": ccm,
-            "senha": senha
+        mensagem = {
+            "funcao": "autenticar",
+            "dados": {
+                "ccm": ccm,
+                "senha": senha
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
-        
-        cont_pages = 0
 
-        resposta = sendMessage(HOST, PORT, ["autenticar", dados])
+        print(f"Enviando dados: {mensagem}")
+
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+        resposta = json.loads(resposta)
+
         print(f"Resposta do servidor: {resposta}")
-        
-        tokenCliente = resposta[2].get("tokenCliente")
 
-        return [resposta[0], resposta[1], None]
+        if resposta["status"] == 200:
+            tokenCliente = resposta["dados"].get("tokenCliente")
+
+        return [resposta["status"], resposta["messagem"], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
+
 
 def esta_logado():
     """
@@ -108,6 +127,7 @@ def esta_logado():
     else:
         return [0, "Usuário não está autentificado!"]
 
+
 def criar_loja(nome_loja, contato, descricao):
     """
     Envia os dados para criar uma loja no servidor.
@@ -118,20 +138,22 @@ def criar_loja(nome_loja, contato, descricao):
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "tokenCliente": tokenCliente,
-            "nome_loja": nome_loja,
-            "contato": contato,
-            "descricao": descricao
+        mensagem = {
+            "funcao": "criar_loja",
+            "dados": {
+                "tokenCliente": tokenCliente,
+                "nome_loja": nome_loja,
+                "contato": contato,
+                "descricao": descricao
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
 
         # Resposta do servidor poderia ser o identificador da loja
-        resposta = sendMessage(HOST, PORT, ["criar_loja", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
-        
-        return [resposta[0], resposta[1], None]
+
+        return [resposta["status"], resposta["messagem"], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
@@ -146,44 +168,42 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "tokenCliente": tokenCliente,
-            "nome_servico": nome,
-            "descricao_servico": descricao,
-            "categoria": categoria,
-            "tipo_pagamento": tipo,
-            "quantidade": quantidade
+        mensagem = {
+            "funcao": "criar_anuncio",
+            "dados": {
+                "tokenCliente": tokenCliente,
+                "nome_servico": nome,
+                "descricao_servico": descricao,
+                "categoria": categoria,
+                "tipo_pagamento": tipo,
+                "quantidade": quantidade
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
 
         # Resposta do servidor poderia ser o identificador do anúncio
-        resposta = sendMessage(HOST, PORT, ["criar_anuncio", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
 
-        return [resposta[0], resposta[1], None]
+        return [resposta["status"], resposta["messagem"], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
 
 
 def get_categoria():
-    """
-    Obtém a lista de categorias disponíveis.
-
-    :return: Resposta do servidor
-    """
     try:
-        dados = {}
+        mensagem = {
+            "funcao": "get_categoria",
+            "dados": {}
+        }
 
-        resposta = sendMessage(HOST, PORT, ["get_categoria", dados])
-        print(f"Resposta do servidor: {resposta}")
-
-        return resposta
+        resposta = soc.sendMessage(HOST, PORT, json.dumps(mensagem))
+        return json.loads(resposta)
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
-        return 0, e
-    
+        return 0, str(e)
+
+
 def get_catalago(categorias, idLoja):
     """
     Obtém o catálogo de produtos disponíveis.
@@ -193,21 +213,28 @@ def get_catalago(categorias, idLoja):
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "pages": cont_pages,
-            "categorias": categorias,
-            "idLoja": idLoja
-        }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
+        global cont_pages
 
-        resposta = sendMessage(HOST, PORT, ["get_catalago", dados])
+        mensagem = {
+            "funcao": "get_catalogo",
+            "dados": {
+                "pages": cont_pages,
+                "categorias": categorias,
+                "idLoja": idLoja
+            }
+        }
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
 
-        return resposta
+        cont_pages += 1
+
+        return [resposta["status"], resposta["messagem"], resposta["dados"]]
+
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
+
 
 def get_servico(idServico):
     """
@@ -217,19 +244,22 @@ def get_servico(idServico):
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "idServico": idServico
+        mensagem = {
+            "funcao": "get_servico",
+            "dados": {
+                "idServico": idServico
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, ["get_servico", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
 
-        return resposta
+        return [resposta["status"], resposta["messagem"], resposta["dados"]]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
+
 
 def get_loja(idLoja):
     """
@@ -239,20 +269,24 @@ def get_loja(idLoja):
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "idLoja": idLoja
+        mensagem = {
+            "funcao": "get_loja",
+            "dados": {
+                "idLoja": idLoja
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, ["get_loja", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
 
-        return resposta
+        return [resposta["status"], resposta["messagem"], resposta["dados"]]
+
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
-    
+
+
 def get_pedido(idPedido):
     """
     Obtém os detalhes de um pedido específico.
@@ -261,19 +295,23 @@ def get_pedido(idPedido):
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "idPedido": idPedido
+        mensagem = {
+            "funcao": "get_pedido",
+            "dados": {
+                "idPedido": idPedido
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, ["get_pedido", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
 
-        return resposta
+        return [resposta["status"], resposta["messagem"], resposta["dados"]]
+
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
+
 
 def get_pedidos():
     """
@@ -282,19 +320,23 @@ def get_pedidos():
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "tokenCliente": tokenCliente
+        mensagem = {
+            "funcao": "get_pedidos",
+            "dados": {
+                "tokenCliente": tokenCliente
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
-        
-        resposta = sendMessage(HOST, PORT, ["get_pedidos", dados])
+
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
-        
-        return resposta
-    except Exception as e:  
+
+        return [resposta["status"], resposta["messagem"], resposta["dados"]]
+
+    except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
+
 
 def get_pedidos_minha_loja():
     """
@@ -303,19 +345,23 @@ def get_pedidos_minha_loja():
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "tokenCliente": tokenCliente,
+        mensagem = {
+            "funcao": "get_pedidos_minha_loja",
+            "dados": {
+                "tokenCliente": tokenCliente
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
-        
-        resposta = sendMessage(HOST, PORT, ["get_pedidos_minha_loja", dados])
+
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
-        
-        return resposta
-    except Exception as e:  
+
+        return [resposta["status"], resposta["messagem"], resposta["dados"]]
+
+    except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
+
 
 def cancelar_pedido(idPedido):
     """
@@ -325,19 +371,22 @@ def cancelar_pedido(idPedido):
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "idPedido": idPedido
+        mensagem = {
+            "funcao": "cancelar_pedido",
+            "dados": {
+                "idPedido": idPedido
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, ["cancelar_pedido", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
 
-        return [resposta[0], resposta[1], None]
+        return [resposta["status"], resposta["messagem"], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
+
 
 def editar_servico(idServico, nome, descricao, categoria, tipo, quantidade):
     """
@@ -352,24 +401,28 @@ def editar_servico(idServico, nome, descricao, categoria, tipo, quantidade):
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "idServico": idServico,
-            "nome_servico": nome,
-            "descricao_servico": descricao,
-            "categoria": categoria,
-            "tipo_pagamento": tipo,
-            "quantidade": quantidade
+        mensagem = {
+            "funcao": "editar_servico",
+            "dados": {
+                "idServico": idServico,
+                "nome_servico": nome,
+                "descricao_servico": descricao,
+                "categoria": categoria,
+                "tipo_pagamento": tipo,
+                "quantidade": quantidade
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, ["editar_servico", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
 
-        return resposta
+        return [resposta["status"], resposta["messagem"], resposta["dados"]]
+
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
+
 
 def ocultar_servico(idServico):
     """
@@ -379,19 +432,22 @@ def ocultar_servico(idServico):
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "idServico": idServico
+        mensagem = {
+            "funcao": "ocultar_servico",
+            "dados": {
+                "idServico": idServico
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, ["ocultar_servico", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
 
-        return [resposta[0], resposta[1], None]
+        return [resposta["status"], resposta["messagem"], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
+
 
 def desocultar_servico(idServico):
     """
@@ -401,19 +457,22 @@ def desocultar_servico(idServico):
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "idServico": idServico
+        mensagem = {
+            "funcao": "desocultar_servico",
+            "dados": {
+                "idServico": idServico
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, ["desocultar_servico", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
 
-        return [resposta[0], resposta[1], None]
+        return [resposta["status"], resposta["messagem"], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
+
 
 def apagar_servico(idServico):
     """
@@ -423,19 +482,22 @@ def apagar_servico(idServico):
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "idServico": idServico
+        mensagem = {
+            "funcao": "apagar_servico",
+            "dados": {
+                "idServico": idServico
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, ["apagar_servico", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
 
-        return [resposta[0], resposta[1], None]
+        return [resposta["status"], resposta["messagem"], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
+
 
 def get_minha_loja():
     """
@@ -444,19 +506,22 @@ def get_minha_loja():
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "tokenCliente": tokenCliente
+        mensagem = {
+            "funcao": "get_minha_loja",
+            "dados": {
+                "tokenCliente": tokenCliente
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, ["get_minha_loja", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
 
-        return [resposta[0], resposta[1], None]
+        return [resposta["status"], resposta["messagem"], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e
+
 
 def realizar_pedido(idPedido):
     """
@@ -466,16 +531,18 @@ def realizar_pedido(idPedido):
     :return: Resposta do servidor
     """
     try:
-        dados = {
-            "idPedido": idPedido
+        mensagem = {
+            "funcao": "realizar_pedido",
+            "dados": {
+                "idPedido": idPedido
+            }
         }
-        dados = json.dumps(dados)
-        print(f"Enviando dados: {dados}")
 
-        resposta = sendMessage(HOST, PORT, ["realizar_pedido", dados])
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
         print(f"Resposta do servidor: {resposta}")
 
-        return [resposta[0], resposta[1], None]
+        return [resposta["status"], resposta["messagem"], None]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e

@@ -9,6 +9,7 @@ from PyQt6.QtWidgets import (
     QScrollArea,
     QGridLayout,
     QMainWindow,
+    QSpinBox,
     QWidget,
     QPushButton,
     QVBoxLayout,
@@ -22,32 +23,33 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette, QColor
 
 
-from requestAPI.moc_gpt import get_catalogo, get_categoria
+from requestAPI.moc_gpt import get_catalogo, get_categoria, get_servico
 
 
-class ServiceItemWidget(QWidget):
+class CardServico(QWidget):
     def __init__(self, service):
         super().__init__()
         layout = QVBoxLayout()
 
-        desc = QLabel(service["descricao_servico"])
-        category = QLabel(f"Categoria: {service['categoria']}")
-        payment = QLabel(
-            f"Pagamento: {service['tipo_pagamento']} - R$ {service['quantidade_pagamento']}"
+        self.title = QLabel(service["descricao_servico"])
+        self.desc = QLabel(service["descricao_servico"])
+        self.categoria = QLabel(f"Categoria: {service['categoria']}")
+        self.pagamento = QLabel(
+            f"Pagamento: {service['quantidade_pagamento']} {service['tipo_pagamento']}"
         )
-        visibility = QLabel("Visível" if service["esta_visivel"] else "Oculto")
 
-        layout.addWidget(desc)
-        layout.addWidget(category)
-        layout.addWidget(payment)
-        layout.addWidget(visibility)
+        layout.addWidget(self.title)
+        layout.addWidget(self.desc)
+        layout.addWidget(self.categoria)
+        layout.addWidget(self.pagamento)
 
         self.setLayout(layout)
 
 
-class Catalogo(QWidget):
+class CatalogoLista(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.parent = parent
 
         self.current_page = 0
         self.page_size = 10
@@ -55,27 +57,30 @@ class Catalogo(QWidget):
 
         # UI setup
         self.main_layout = QVBoxLayout()
-        self.user_list = QListWidget()
+        self.lista = QListWidget()
 
-        self.search_box = QComboBox()
         status, message, categorias = get_categoria()
-        self.search_box.addItems(categorias)
-        self.search_box.currentIndexChanged.connect(self.filter_services)
+        self.filtro_categoria = QComboBox()
+        self.filtro_categoria.addItems(categorias)
+        self.filtro_categoria.currentIndexChanged.connect(self.filter_services)
 
-        self.main_layout.addWidget(self.search_box)
-        self.main_layout.addWidget(self.user_list)
+        self.main_layout.addWidget(self.filtro_categoria)
+        self.main_layout.addWidget(self.lista)
         self.setLayout(self.main_layout)
 
+        self.lista.itemClicked.connect(self.goto_servico)
         # Connect scroll after user_list is created
-        self.user_list.verticalScrollBar().valueChanged.connect(
-            self.check_scroll_position
-        )
+        self.lista.verticalScrollBar().valueChanged.connect(self.check_scroll_position)
 
         self.load_services()
 
     def filter_services(self, text):
         self.current_page = 0
         self.load_services(filter_text=text, append=False)
+
+    def goto_servico(self, item):
+        id = item.data(Qt.ItemDataRole.UserRole)
+        self.parent.goto_servico(id)
 
     def load_services(self, filter_text="", append=False):
         if self.is_loading:
@@ -89,14 +94,15 @@ class Catalogo(QWidget):
             services = resp[2]
 
             if not append:
-                self.user_list.clear()
+                self.lista.clear()
 
             for service in services:
                 item = QListWidgetItem()
-                widget = ServiceItemWidget(service)
+                widget = CardServico(service)
                 item.setSizeHint(widget.sizeHint())
-                self.user_list.addItem(item)
-                self.user_list.setItemWidget(item, widget)
+                item.setData(Qt.ItemDataRole.UserRole, service["idServico"])
+                self.lista.addItem(item)
+                self.lista.setItemWidget(item, widget)
 
             if services:
                 self.current_page += 1
@@ -107,82 +113,88 @@ class Catalogo(QWidget):
             self.is_loading = False
 
     def check_scroll_position(self):
-        scroll_bar = self.user_list.verticalScrollBar()
+        scroll_bar = self.lista.verticalScrollBar()
         if scroll_bar.value() >= scroll_bar.maximum() - 50:
-            self.load_services(filter_text=self.search_box.currentText(), append=True)
+            self.load_services(
+                filter_text=self.filtro_categoria.currentText(), append=True
+            )
 
 
-# class Catalogo(QWidget):
-#     def __init__(self, parent):
-#         super().__init__(parent)
-#         layout = QVBoxLayout(self)
-#
-#         scroll = QScrollArea()
-#         scroll.setWidgetResizable(True)
-#
-#         container = CardGrid()
-#         scroll.setWidget(container)
-#
-#         layout.addWidget(scroll)
-#
-
-
-class Card(QWidget):
-    def __init__(self, title, image_path=None):
+class ServicoEspecifico(QWidget):
+    def __init__(self, parent):
         super().__init__()
+        self.parent = parent
 
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.id = ""
+        self.title = QLabel()
+        self.desc = QLabel()
+        self.categoria = QLabel()
+        self.pagamento = QLabel()
 
-        title_label = QLabel(title)
-        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(title_label)
+        self.quantidade = QSpinBox()
+        self.quantidade.setMinimum(0)
+        self.quantidade.setMaximum(1000)
+        self.quantidade.setValue(1)
 
-        button = QPushButton("View")
-        layout.addWidget(button)
+        self.button_comprar = QPushButton("Comprar")
+        self.button_comprar.clicked.connect(self.comprar)
+        self.button_voltar = QPushButton("Voltar")
+        self.button_voltar.clicked.connect(self.voltar)
+
+        self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.categoria.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.pagamento.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.button_voltar)
+        layout.addWidget(self.title)
+        layout.addWidget(self.desc)
+        layout.addWidget(self.categoria)
+        layout.addWidget(self.pagamento)
+        layout.addWidget(self.quantidade)
+        layout.addWidget(self.button_comprar)
 
         self.setLayout(layout)
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #ecf0f1;
-                border-radius: 8px;
-                border: 1px solid #bdc3c7;
-                padding: 10px;
-            }
-            QPushButton {
-                background-color: #3498db;
-                color: white;
-            }
-            QPushButton:hover {
-                background-color: #2980b9;
-            }
-        """)
+
+    def load(self, id):
+        resp = get_servico(id)
+        if not resp[0]:
+            raise Exception(resp[1])
+        servico = resp[2]
+
+        self.quantidade.setValue(1)
+        self.id = servico["idServico"]
+        self.title.setText(f"Nome do servico: {servico['nome_servico']}")
+        self.desc.setText(f"Descrição: {servico['descricao_servico']}")
+        self.categoria.setText(servico["categoria"])
+        self.pagamento.setText(
+            f"Pagamento: {servico['quantidade_pagamento']} {servico['tipo_pagamento']}"
+        )
+
+    def comprar(self):
+        quantidade = self.quantidade.value()
+        return quantidade
+
+    def voltar(self):
+        self.parent.goto_catalogo()
 
 
-class CardGrid(QWidget):
-    def __init__(self, cards_per_row=3):
-        super().__init__()
-        grid = QGridLayout()
-        grid.setSpacing(10)
-        self.setLayout(grid)
+class Catalogo(QStackedWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
 
-        num_cards = 12  # example
-        for index in range(num_cards):
-            row = index // cards_per_row
-            col = index % cards_per_row
-            card = Card(f"Card {index + 1}", "./assets/card.png")  # optional image
-            grid.addWidget(card, row, col)
+        self.servico = ServicoEspecifico(self)
+        self.catalogo = CatalogoLista(self)
+        self.addWidget(self.servico)
+        self.addWidget(self.catalogo)
 
+        self.setCurrentWidget(self.catalogo)
 
-class ScrollableGrid(QWidget):
-    def __init__(self):
-        super().__init__()
-        layout = QVBoxLayout(self)
+    def goto_catalogo(self):
+        self.setCurrentWidget(self.catalogo)
 
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-
-        container = CardGrid()
-        scroll.setWidget(container)
-
-        layout.addWidget(scroll)
+    def goto_servico(self, id):
+        self.servico.load(id)
+        self.setCurrentWidget(self.servico)

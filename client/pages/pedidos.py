@@ -22,6 +22,10 @@ from requestAPI.moc_gpt import (
 )
 
 
+# TODO:
+# Adicionar a opção de confirmar o pedido
+
+
 def remove_layout(widget: QWidget):
     old_layout = widget.layout()
     if old_layout is not None:

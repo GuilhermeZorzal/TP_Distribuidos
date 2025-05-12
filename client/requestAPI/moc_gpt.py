@@ -58,10 +58,11 @@ def get_catalogo(categorias=[], idLoja=None):
     servicos = [
         {
             "idServico": str(uuid.uuid4()),
-            "descricao_servico": f"Serviço {i}",
+            "nome_servico": f"Servico {random.randint(0, 100)}",
+            "descricao_servico": "descriçao",
             "categoria": random.choice(["limpeza", "reparo", "consultoria"]),
-            "tipo_pagamento": "pix",
-            "quantidade_pagamento": random.randint(10, 100),
+            "tipo_pagamento": "maldicoes",
+            "quantidade_pagamento": random.randint(1, 10),
             "esta_visivel": True,
             "idLoja": str(uuid.uuid4()),
         }
@@ -75,10 +76,11 @@ def get_catalogo(categorias=[], idLoja=None):
 def get_servico(idServico):
     servico = {
         "idServico": idServico,
+        "nome_servico": f"Servico {random.randint(0, 100)}",
         "descricao_servico": "Exemplo de serviço",
         "categoria": "limpeza",
-        "tipo_pagamento": "pix",
-        "quantidade_pagamento": 50,
+        "tipo_pagamento": "maldicoes",
+        "quantidade_pagamento": random.randint(1, 10),
         "esta_visivel": True,
         "idLoja": str(uuid.uuid4()),
     }

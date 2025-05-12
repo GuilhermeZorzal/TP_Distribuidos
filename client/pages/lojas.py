@@ -86,12 +86,13 @@ class Servico(QWidget):
 
         self.visibilidade = QCheckBox("Esta visivel")
         self.visibilidade.setChecked(esta_visivel)
+        self.visibilidade.clicked.connect(self.atualiza_visibilidade)
 
         self.button_deletar = QPushButton("Outras ações")
         self.button_deletar.clicked.connect(self.deletar)
 
-        self.button_atualiza = QPushButton("Atualizar visibilidade")
-        self.button_atualiza.clicked.connect(self.atualiza_visibilidade)
+        # self.button_atualiza = QPushButton("Atualizar visibilidade")
+        # self.button_atualiza.clicked.connect(self.atualiza_visibilidade)
 
         # layout = QVBoxLayout()
         # layout.addStretch()
@@ -112,7 +113,7 @@ class Servico(QWidget):
         layout.addWidget(self.tipo)
         layout.addWidget(self.quant)
         layout.addWidget(self.visibilidade)
-        layout.addWidget(self.button_atualiza)
+        # layout.addWidget(self.button_atualiza)
         layout.addWidget(self.button_deletar)
         layout.addStretch()
         container.setLayout(layout)
@@ -158,6 +159,7 @@ class Servico(QWidget):
         self.setLayout(outer_layout)
 
     def atualiza_visibilidade(self):
+        print("foi")
         estado = self.visibilidade.isChecked()
         if estado:
             ocultar_servico(self.id)

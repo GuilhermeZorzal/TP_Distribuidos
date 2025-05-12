@@ -23,7 +23,8 @@ from requestAPI.moc_gpt import (
 
 
 # TODO:
-# Adicionar a opção de confirmar o pedido
+# - Adicionar a opção de confirmar o pedido
+# - Trocar a implementação da lista pra usar QList
 
 
 def remove_layout(widget: QWidget):
@@ -39,26 +40,54 @@ def remove_layout(widget: QWidget):
     QWidget().setLayout(old_layout)  # Trick to delete it
 
 
-class PedidoUnico(QWidget):
+class PedidoUnicoUsuario(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
+        self.title = QLabel("Pedido")
+        self.title.setStyleSheet("""
+            QLabel {
+                color: #2c3e50;
+                font-weight: bold;
+                font-size: 25px;
+            }
+        """)
+        self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.id = QLabel("id")
         self.data = QLabel("data:")
         self.servico = QLabel("servico:")
         self.estado = QLabel("estado:")
         self.total = QLabel("total:")
-        self.delete = QPushButton("Cancelar pedido")
-        self.delete.clicked.connect(self.deletar)
+        self.button_voltar = QPushButton("Voltar")
+        self.button_voltar.clicked.connect(self.voltar)
         layout = QVBoxLayout()
+        self.setStyleSheet("""
+            QLabel {
+                color: #2c3e50;
+                font-size: 25px;
+            }
+            QPushButton {
+                color: white;
+                font-size: 20px;
+                background-color: #2c3e50;
+            }
+        """)
 
+        layout.addStretch()
+        layout.addWidget(self.title)
         layout.addWidget(self.id)
         layout.addWidget(self.data)
         layout.addWidget(self.servico)
         layout.addWidget(self.estado)
         layout.addWidget(self.total)
-        layout.addWidget(self.delete)
-        self.setLayout(layout)
+        layout.addWidget(self.button_voltar)
+        layout.addStretch()
+
+        outer_layout = QHBoxLayout()
+        outer_layout.addStretch()
+        outer_layout.addLayout(layout)
+        outer_layout.addStretch()
+        self.setLayout(outer_layout)
 
     def load(self, id):
         print("AAAAAaaa")
@@ -68,15 +97,118 @@ class PedidoUnico(QWidget):
 
         dados = resp[2]
         print(dados)
-        self.id.setText(f"id {id}")
-        self.data.setText(f"data: {dados['data_pedido']}")
-        self.servico.setText(f"servico: {dados['servico']}")
-        self.estado.setText(f"estado: {dados['estado_pedido']}")
-        self.total.setText(f"total: {dados['total']}")
+        # self.title.setText("Pedido")
+        # self.title.setStyleSheet("""
+        #     QLabel {
+        #         color: #2c3e50;
+        #         font-weight: bold;
+        #         font-size: 20px;
+        #     }
+        # """)
+        self.id.setText(f"ID: {id}")
+        self.id.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.data.setText(f"Data: {dados['data_pedido']}")
+        self.data.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.servico.setText(f"Servico: {dados['servico']}")
+        self.servico.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.estado.setText(f"Estado: {dados['estado_pedido']}")
+        self.estado.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.total.setText(f"Total: {dados['total']}")
+        self.total.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.delete = QPushButton("Cancelar pedido")
+
+    def voltar(self):
+        self.parent.goto_pedidos_loja()
+
+
+class PedidoUnico(QWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
+        self.title = QLabel("Pedido")
+        self.title.setStyleSheet("""
+            QLabel {
+                color: #2c3e50;
+                font-weight: bold;
+                font-size: 25px;
+            }
+        """)
+        self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.id = QLabel("id")
+        self.data = QLabel("data:")
+        self.cliente = QLabel("servico:")
+        self.servico = QLabel("servico:")
+        self.estado = QLabel("estado:")
+        self.total = QLabel("total:")
+        self.delete = QPushButton("Cancelar pedido")
+        self.delete.clicked.connect(self.deletar)
+        self.button_voltar = QPushButton("Voltar")
+        self.button_voltar.clicked.connect(self.voltar)
+        layout = QVBoxLayout()
+        self.setStyleSheet("""
+            QLabel {
+                color: #2c3e50;
+                font-size: 25px;
+            }
+            QPushButton {
+                color: white;
+                font-size: 20px;
+                background-color: #2c3e50;
+            }
+        """)
+
+        layout.addStretch()
+        layout.addWidget(self.button_voltar)
+        layout.addWidget(self.title)
+        # layout.addWidget(self.id)
+        layout.addWidget(self.data)
+        layout.addWidget(self.cliente)
+        layout.addWidget(self.servico)
+        layout.addWidget(self.estado)
+        layout.addWidget(self.total)
+        layout.addWidget(self.delete)
+        layout.addStretch()
+
+        outer_layout = QHBoxLayout()
+        outer_layout.addStretch()
+        outer_layout.addLayout(layout)
+        outer_layout.addStretch()
+        self.setLayout(outer_layout)
+
+    def voltar(self):
+        self.parent.goto_meus_pedidos()
+
+    def load(self, id):
+        resp = get_pedido(id)
+        if not resp[0]:
+            raise Exception(resp[1])
+
+        dados = resp[2]
+        print(dados)
+        # self.title.setText("Pedido")
+        # self.title.setStyleSheet("""
+        #     QLabel {
+        #         color: #2c3e50;
+        #         font-weight: bold;
+        #         font-size: 20px;
+        #     }
+        # """)
+        self.id.setText(f"ID: {id}")
+        self.id.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.data.setText(f"Data: {dados['data_pedido']}")
+        self.data.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.cliente.setText(f"Servico: {dados['nome_cliente']}")
+        self.cliente.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.servico.setText(f"Servico: {dados['servico']}")
+        self.servico.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.estado.setText(f"Estado: {dados['estado_pedido']}")
+        self.estado.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.total.setText(f"Total: {dados['total']}")
+        self.total.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.delete = QPushButton("Cancelar pedido")
 
     def deletar(self):
-        status, message = cancelar_pedido(self.id)
+        status, message = cancelar_pedido(self.id.text())
         if not status:
             QMessageBox.warning(
                 self,
@@ -92,23 +224,48 @@ class Pedido(QWidget):
         super().__init__(parent)
         self.parent = parent
         self.id = id
-        self.id_label = QLabel(f"id {self.id}")
+        self.title = QLabel("Pedido")
+        self.title.setStyleSheet("""
+            QLabel {
+                color: #2c3e50;
+                font-size: 25px;
+                font-weight: bold;
+            }
+        """)
+        # self.id_label = QLabel(f"id {self.id}")
         self.data = QLabel(f"data: {data}")
         self.servico = QLabel(f"servico: {servico}")
         self.estado = QLabel(f"estado: {estado}")
         self.total = QLabel(f"total: {total}")
         self.button_ver = QPushButton("Visualizar")
         self.button_ver.clicked.connect(self.visualizar)
+        self.setStyleSheet("""
+            QLabel {
+                color: #2c3e50;
+                font-size: 20px;
+            }
+            QPushButton {
+                color: white;
+                font-size: 20px;
+                background-color: #2c3e50;
+            }
+        """)
         layout = QVBoxLayout()
 
-        layout.addWidget(self.id_label)
+        layout.addStretch()
+        # layout.addWidget(self.id_label)
         layout.addWidget(self.data)
         layout.addWidget(self.servico)
         layout.addWidget(self.estado)
         layout.addWidget(self.total)
         layout.addWidget(self.button_ver)
+        layout.addStretch()
 
-        self.setLayout(layout)
+        outer_layout = QHBoxLayout()
+        outer_layout.addStretch()
+        outer_layout.addLayout(layout)
+        outer_layout.addStretch()
+        self.setLayout(outer_layout)
 
     def visualizar(self):
         self.parent.goto_pedido_unico(self.id)
@@ -134,14 +291,33 @@ class PedidosLoja(QWidget):
             raise Exception(resp[1])
 
         dados = resp[2]
-        # Inner layout with Pedido cards
-        inner_layout = QVBoxLayout()
+        self.setStyleSheet("""
+            QLabel {
+                color: #2c3e50;
+                font-size: 20px;
+            }
+            QPushButton {
+                color: white;
+                font-size: 20px;
+                background-color: #2c3e50;
+            }
+        """)
+
         text = QLabel("Página de Pedidos")
+        text.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        text.setStyleSheet("""
+            QLabel {
+                color: #2c3e50;
+                font-size: 20px;
+                font-weight: bold;
+            }
+        """)
 
         self.button_voltar = QPushButton("Voltar")
         self.button_voltar.clicked.connect(self.voltar)
-        text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        inner_layout.addWidget(text)
+
+        inner_layout = QVBoxLayout()
+        # inner_layout.addWidget(text)
 
         for dado in dados:
             pedido = Pedido(
@@ -164,8 +340,12 @@ class PedidosLoja(QWidget):
 
         main_layout = QVBoxLayout(self)
         main_layout.addWidget(self.button_voltar)
+        main_layout.addWidget(text)
         main_layout.addWidget(scroll)
         self.setLayout(main_layout)
+
+    def goto_pedido_unico(self, id):
+        self.parent.goto_pedido_unico_usuario(id)
 
     def voltar(self):
         self.parent.goto_area_pedidos()
@@ -187,43 +367,17 @@ class MeusPedidos(QWidget):
         super().__init__(parent)
         self.parent = parent
         self.pedidos = QLabel("Nada")
-        # resp = get_pedidos()
-        # if not resp[0]:
-        #     raise Exception(resp[1])
-        #
-        # dados = resp[2]
-        # # Inner layout with Pedido cards
-        # inner_layout = QVBoxLayout()
-        # text = QLabel("Página de Pedidos")
-        # text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        # inner_layout.addWidget(text)
-        #
-        # for dado in dados:
-        #     pedido = Pedido(
-        #         self,
-        #         dado["idPedido"],
-        #         dado["data_pedido"],
-        #         dado["servico"],
-        #         dado["estado_pedido"],
-        #         dado["total"],
-        #     )
-        #     inner_layout.addWidget(pedido)
-        #
-        # inner_widget = QWidget()
-        # inner_widget.setLayout(inner_layout)
-        #
-        # # ScrollArea
-        # scroll = QScrollArea()
-        # scroll.setWidgetResizable(True)
-        # scroll.setWidget(inner_widget)
-        #
-        # self.button_voltar = QPushButton("Voltar")
-        # self.button_voltar.clicked.connect(self.voltar)
-        #
-        # main_layout = QVBoxLayout(self)
-        # main_layout.addWidget(self.button_voltar)
-        # main_layout.addWidget(scroll)
-        # self.setLayout(main_layout)
+        self.setStyleSheet("""
+            QLabel {
+                color: #2c3e50;
+                font-size: 20px;
+            }
+            QPushButton {
+                color: white;
+                font-size: 20px;
+                background-color: #2c3e50;
+            }
+        """)
 
     def load(self):
         # Clear existing layout and widgets
@@ -241,9 +395,6 @@ class MeusPedidos(QWidget):
 
         # Build inner layout
         inner_layout = QVBoxLayout()
-        text = QLabel("Página de Pedidos")
-        text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        inner_layout.addWidget(text)
 
         for dado in dados:
             pedido = Pedido(
@@ -269,9 +420,25 @@ class MeusPedidos(QWidget):
         # New layout
         main_layout = QVBoxLayout()
         main_layout.addWidget(self.button_voltar)
+        text = QLabel("Página de Pedidos")
+        text.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        text.setStyleSheet("""
+            QLabel {
+                color: #2c3e50;
+                font-size: 20px;
+                font-weight: bold;
+                padding: 10px;
+            }
+        """)
+        main_layout.addWidget(text)
         main_layout.addWidget(scroll)
 
-        self.setLayout(main_layout)
+        # New layout
+        outer_layout = QHBoxLayout()
+        outer_layout.addStretch()
+        outer_layout.addLayout(main_layout)
+        outer_layout.addStretch()
+        self.setLayout(outer_layout)
 
     def goto_meus_pedidos(self):
         self.parent.goto_meus_pedidos()
@@ -287,14 +454,35 @@ class AreaPedidos(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
+        self.title = QLabel("Area de Pedidos")
+        self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.button_pedidos_loja = QPushButton("Visualizar pedidos na minha loja")
         self.button_pedidos_loja.clicked.connect(self.goto_pedidos_loja)
         self.button_meus_pedidos = QPushButton("Visualizar meus próprios pedidos")
         self.button_meus_pedidos.clicked.connect(self.goto_meus_pedidos)
+        self.setStyleSheet("""
+            QLabel {
+                color: #2c3e50;
+                font-size: 25px;
+                font-weight: bold;
+            }
+            QPushButton {
+                color: white;
+                font-size: 20px;
+                background-color: #2c3e50;
+            }
+        """)
         layout = QVBoxLayout()
+        layout.addStretch()
+        layout.addWidget(self.title)
         layout.addWidget(self.button_pedidos_loja)
         layout.addWidget(self.button_meus_pedidos)
-        self.setLayout(layout)
+        layout.addStretch()
+        outer_layout = QHBoxLayout()
+        outer_layout.addStretch()
+        outer_layout.addLayout(layout)
+        outer_layout.addStretch()
+        self.setLayout(outer_layout)
 
     def goto_pedidos_loja(self):
         self.parent.goto_pedidos_loja()
@@ -310,11 +498,13 @@ class Pedidos(QStackedWidget):
         self.pedidos_loja = PedidosLoja(self)
         self.area_pedidos = AreaPedidos(self)
         self.pedidos_unico = PedidoUnico(self)
+        self.pedidos_unico_usuario = PedidoUnicoUsuario(self)
 
         self.addWidget(self.pedidos)
         self.addWidget(self.pedidos_loja)
         self.addWidget(self.area_pedidos)
         self.addWidget(self.pedidos_unico)
+        self.addWidget(self.pedidos_unico_usuario)
 
         self.setCurrentWidget(self.area_pedidos)
 
@@ -328,6 +518,10 @@ class Pedidos(QStackedWidget):
     def goto_pedido_unico(self, id):
         self.pedidos_unico.load(id)
         self.setCurrentWidget(self.pedidos_unico)
+
+    def goto_pedido_unico_usuario(self, id):
+        self.pedidos_unico_usuario.load(id)
+        self.setCurrentWidget(self.pedidos_unico_usuario)
 
     def goto_pedidos_loja(self):
         self.setCurrentWidget(self.pedidos_loja)

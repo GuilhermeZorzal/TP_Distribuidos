@@ -37,10 +37,10 @@ class PaginaInicial(QWidget):
         """)
 
         # Titulo
-        title = QLabel("Pagina Inicial")
+        title = QLabel("O Oco do Ogro")
         title.setStyleSheet("""
             QLabel {
-                font-size: 25px;
+                font-size: 50px;
                 font-weight: bold;
             }
         """)
@@ -50,8 +50,7 @@ class PaginaInicial(QWidget):
         slogan = QLabel("Tão Tão Perto de Você")
         slogan.setStyleSheet("""
             QLabel {
-                font-size: 20px;
-                font-weight: bold;
+                font-size: 35px;
             }
         """)
         slogan.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -61,6 +60,11 @@ class PaginaInicial(QWidget):
             "O oco do ogro é seu centro de aluguel de serviços preferido.\n"
             "Venha conosco encontrar os melhores serviços para você"
         )
+        text.setStyleSheet("""
+            QLabel {
+                font-size: 20px;
+            }
+        """)
         text.setAlignment(Qt.AlignmentFlag.AlignCenter)
         image_label = QLabel(self)
 

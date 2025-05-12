@@ -43,10 +43,11 @@ class BarraLateral(QFrame):
                 border: none;  /* Optional: removes default borders */
             }
             QPushButton {
-                font-size: 25px;
+                font-size: 35px;
                 color: white;
                 background-color: #2c3e50;
                 margin: 10px;
+                padding: 10px;
             }
             QPushButton:hover {
                 background-color: #3d566e;
@@ -71,7 +72,7 @@ class BarraLateral(QFrame):
             "catalogo": QPushButton("Catalogo"),
             "loja": QPushButton("Loja"),
             "pedidos": QPushButton("Pedidos"),
-            "settings": QPushButton("Settings"),
+            # "settings": QPushButton("Settings"),
             "ajuda": QPushButton("Ajuda"),
         }
 
@@ -95,6 +96,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)  # Also remove space between widgets
         central_widget.setLayout(layout)
 
         self.sidebar = BarraLateral(self)
@@ -108,7 +111,7 @@ class MainWindow(QMainWindow):
         self.page_catalogo = Catalogo(self)
         self.page_lojas = Lojas(self)
         self.page_pedidos = Pedidos(self)
-        self.page_settings = Settings(self)
+        # self.page_settings = Settings(self)
         self.page_ajuda = Ajuda(self)
         self.page_erro = Erro(self)
 
@@ -119,7 +122,7 @@ class MainWindow(QMainWindow):
             "catalogo": self.page_catalogo,
             "loja": self.page_lojas,
             "pedidos": self.page_pedidos,
-            "settings": self.page_settings,
+            # "settings": self.page_settings,
             "ajuda": self.page_ajuda,
             "erro": self.page_erro,
         }
@@ -132,10 +135,11 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentWidget(self.page_pedidos)
 
         # Listas de paginas que requerem autenticacao
-        self.protected_routes = {"catalogo", "loja", "pedidos", "settings"}
+        # self.protected_routes = {"catalogo", "loja", "pedidos", "settings"}
+        self.protected_routes = {"catalogo", "loja", "pedidos"}
 
     def navigate_to(self, page_name):
-        if page_name in self.protected_routes and not esta_logado():
+        if page_name in self.protected_routes and not esta_logado()[0]:
             self.stack.setCurrentWidget(self.pages["erro"])
         else:
             self.stack.setCurrentWidget(self.pages[page_name])

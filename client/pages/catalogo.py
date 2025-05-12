@@ -31,12 +31,29 @@ class CardServico(QWidget):
         super().__init__()
         layout = QVBoxLayout()
 
-        self.title = QLabel(service["descricao_servico"])
+        self.title = QLabel(service["nome_servico"])
         self.desc = QLabel(service["descricao_servico"])
         self.categoria = QLabel(f"Categoria: {service['categoria']}")
         self.pagamento = QLabel(
             f"Pagamento: {service['quantidade_pagamento']} {service['tipo_pagamento']}"
         )
+        # QWidget {
+        #     background-color: #000044
+        # }
+        self.setStyleSheet("""
+            QLabel {
+                font-size: 20px;
+                color: #2c3e50;
+            }
+            QCheckBox {
+                font-size: 15px;
+            }
+            QPushButton {
+                color: white;
+                font-size: 15px;
+                background-color: #2c3e50;
+            }
+        """)
 
         layout.addWidget(self.title)
         layout.addWidget(self.desc)
@@ -55,6 +72,31 @@ class CatalogoLista(QWidget):
         self.page_size = 10
         self.is_loading = False
 
+        self.setStyleSheet("""
+            QListWidgetItem:selected {
+                background-color: #000066;
+            }
+            QComboBox {
+                font-size: 20px;
+            }
+            QComboBox:selected {
+                background-color: #2c3e50;
+                font-size: 20px;
+                color: white;
+            }
+            QLabel {
+                font-size: 20px;
+                color: #2c3e50;
+            }
+            QCheckBox {
+                font-size: 15px;
+            }
+            QPushButton {
+                color: white;
+                font-size: 15px;
+                background-color: #2c3e50;
+            }
+        """)
         # UI setup
         self.main_layout = QVBoxLayout()
         self.lista = QListWidget()
@@ -127,6 +169,25 @@ class ServicoEspecifico(QWidget):
 
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setStyleSheet("""
+            QVBoxLayout {
+                font-size: 20px;
+                margin: 12px;
+            }
+            QCheckBox {
+                font-size: 15px;
+            }
+            QPushButton {
+                color: white;
+                font-size: 15px;
+                background-color: #2c3e50;
+            }
+            QPushButton {
+                color: white;
+                font-size: 15px;
+                background-color: #2c3e50;
+            }
+        """)
         self.id = ""
         self.title = QLabel()
         self.desc = QLabel()
@@ -149,12 +210,14 @@ class ServicoEspecifico(QWidget):
         self.pagamento.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         layout.addWidget(self.button_voltar)
+        layout.addStretch()
         layout.addWidget(self.title)
         layout.addWidget(self.desc)
         layout.addWidget(self.categoria)
         layout.addWidget(self.pagamento)
         layout.addWidget(self.quantidade)
         layout.addWidget(self.button_comprar)
+        layout.addStretch()
 
         self.setLayout(layout)
 
@@ -184,6 +247,23 @@ class ServicoEspecifico(QWidget):
 class Catalogo(QStackedWidget):
     def __init__(self, parent):
         super().__init__(parent)
+        self.setStyleSheet("""
+            QLabel {
+                font-size: 20px;
+                color: #2c3e50;
+            }
+            QLineEdit {
+                font-size: 20px;
+            }
+            QCheckBox {
+                font-size: 15px;
+            }
+            QPushButton {
+                color: white;
+                font-size: 15px;
+                background-color: #2c3e50;
+            }
+        """)
 
         self.servico = ServicoEspecifico(self)
         self.catalogo = CatalogoLista(self)

@@ -28,9 +28,33 @@ class Cadastro(QWidget):
         super().__init__(parent)
         self.title = QLabel("Área de Cadastro")
         self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.title.setStyleSheet("""
+            QLabel {
+                font-size: 20px;
+                color: #2c3e50;
+            }
+        """)
 
         self.input_nome = QLineEdit()
         self.input_nome.setPlaceholderText("Digite seu nome")
+
+        self.setStyleSheet("""
+            QLabel {
+                font-size: 20px;
+                color: #2c3e50;
+            }
+            QLineEdit {
+                font-size: 20px;
+            }
+            QCheckBox {
+                font-size: 15px;
+            }
+            QPushButton {
+                color: white;
+                font-size: 15px;
+                background-color: #2c3e50;
+            }
+        """)
 
         self.input_apelido = QLineEdit()
         self.input_apelido.setPlaceholderText("Digite seu apelido")
@@ -49,7 +73,7 @@ class Cadastro(QWidget):
         self.input_senha.setPlaceholderText("Digite sua senha")
 
         self.termos = QCheckBox(
-            "Eu aceito o uso das minhs informações mágicas para uso no site"
+            "Eu aceito o uso das minhas informações mágicas para uso no site"
         )
 
         self.button_cadastrar = QPushButton("Cadastrar")
@@ -116,11 +140,34 @@ class Login(QWidget):
         super().__init__(parent)
         self.title = QLabel("Área de Login")
         self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
+        self.title.setStyleSheet("""
+            QLabel {
+                font-size: 20px;
+                color: #2c3e50;
+            }
+        """)
         self.input_ccm = QLineEdit()
         self.input_ccm.setPlaceholderText(
             "Digite seu CCM (Cadastro de Criatura Mágica)"
         )
+
+        self.setStyleSheet("""
+            QLabel {
+                font-size: 20px;
+                color: #2c3e50;
+            }
+            QLineEdit {
+                font-size: 20px;
+            }
+            QCheckBox {
+                font-size: 15px;
+            }
+            QPushButton {
+                color: white;
+                font-size: 15px;
+                background-color: #2c3e50;
+            }
+        """)
 
         self.input_senha = QLineEdit()
         self.input_senha.setEchoMode(QLineEdit.EchoMode.Password)
@@ -136,6 +183,7 @@ class Login(QWidget):
 
         layout = QVBoxLayout()
         layout.addStretch()
+        layout.addWidget(self.title)
         layout.addWidget(self.input_ccm)
         layout.addWidget(self.input_senha)
         layout.addWidget(self.button_login)
@@ -170,13 +218,40 @@ class Logout(QWidget):
         super().__init__(parent)
         self.title = QLabel("Fazer Logout")
         self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.title.setStyleSheet("""
+            QLabel {
+                font-size: 30px;
+                color: #2c3e50;
+            }
+        """)
+        self.desc = QLabel("Que pena que voce já vai")
+        self.desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.button_login = QPushButton("Logout")
         self.button_login.clicked.connect(lambda _, n=parent: self.logout(n))
 
+        image_label = QLabel(self)
+
+        # Por algum motivo esse troço carrega a imagem com path relativo ao arquivo interface, e não ao atual (apanhei pra descobrir viu)
+        pixmap = QPixmap("./assets/triste.jpg")
+        image_label.setPixmap(pixmap)
+        self.setStyleSheet("""
+            QLabel {
+                font-size: 20px;
+                color: #2c3e50;
+            }
+            QPushButton {
+                color: white;
+                font-size: 15px;
+                background-color: #2c3e50;
+            }
+        """)
+
         layout = QVBoxLayout()
         layout.addStretch()
+        layout.addWidget(image_label)
         layout.addWidget(self.title)
+        layout.addWidget(self.desc)
         layout.addWidget(self.button_login)
         layout.addStretch()
 
@@ -198,6 +273,13 @@ class Auth(QStackedWidget):
         self.page_cadastro = Cadastro(self)
         self.page_logout = Logout(self)
 
+        self.setStyleSheet("""
+            QLabel {
+                font-size: 20px;
+                color: #2c3e50;
+            }
+        """)
+
         self.pages = {
             "cadastro": self.page_cadastro,
             "login": self.page_login,
@@ -207,7 +289,7 @@ class Auth(QStackedWidget):
         for page in self.pages.values():
             self.addWidget(page)
 
-        log = esta_logado()
+        log = esta_logado()[0]
         if log:
             self.setCurrentWidget(self.page_login)
         else:

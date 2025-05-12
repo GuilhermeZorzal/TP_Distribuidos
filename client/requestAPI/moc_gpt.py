@@ -66,7 +66,7 @@ def get_catalogo(categorias=[], idLoja=None):
             "esta_visivel": True,
             "idLoja": str(uuid.uuid4()),
         }
-        for i in range(5)
+        for i in range(20)
     ]
     # servicos = ["Batata" for i in range(5)]
     return 1, "Serviços encontrados", servicos
@@ -105,6 +105,7 @@ def get_pedido(idPedido):
         "idPedido": idPedido,
         "data_pedido": str(datetime.now()),
         "servico": "Serviço Exemplo",
+        "nome_cliente": "robson",
         "estado_pedido": random.choice(["registrado", "andamento", "concluido"]),
         "total": random.randint(50, 200),
     }
@@ -132,6 +133,7 @@ def get_pedidos_minha_loja():
         {
             "idPedido": str(uuid.uuid4()),
             "data_pedido": str(datetime.now()),
+            "nome_cliente": "robson",
             "servico": "Serviço Exemplo",
             "estado_pedido": "concluido",
             "total": 150,

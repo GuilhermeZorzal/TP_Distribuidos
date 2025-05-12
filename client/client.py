@@ -8,7 +8,6 @@ PORT = 50051
 tokenCliente = None
 cont_pages = 0
 
-
 def sendMessage(host, port, mensagem):
     """
     Envia uma mensagem para o servidor e retorna a resposta.
@@ -18,26 +17,6 @@ def sendMessage(host, port, mensagem):
     :param mensagem: Mensagem a ser enviada
     :return: Resposta do servidor
     """
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print(f"Conectando ao servidor {host}:{port}...")
-
-    client.connect((host, port))
-
-
-    json.dumps(mensagem)
-    client.sendall(mensagem.encode())
-    resposta = client.recv(1024).decode()
-
-    resposta = json.loads(resposta)
-
-    # Fecha a conexão com o servidor
-    client.close()
-    return resposta
-
-def sendMessage(host, port, mensagem):
-    import socket
-    import json
-    
     # Cria um socket para conexão TCP/IP
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # Conecta ao servidor no endereço e porta especificados

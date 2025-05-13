@@ -21,6 +21,8 @@ from requestAPI.moc_gpt import (
     get_pedidos_minha_loja,
 )
 
+import threading
+
 
 # TODO:
 # - Adicionar a opção de confirmar o pedido
@@ -282,10 +284,23 @@ class Pedido(QWidget):
             self.parent.goto_meus_pedidos()
 
 
+def load_pedido_loja():
+    resp = get_pedidos_minha_loja()
+    if not resp[0]:
+        raise Exception(resp[1])
+
+    return resp[2]
+
+
 class PedidosLoja(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
+        # thread = threading.Thread(target=self.parent.loadPages)
+        # print("Executando thread de pedido")
+        # load_pedido_loja()
+        # thread.start()
+        # thread.join()
         resp = get_pedidos_minha_loja()
         if not resp[0]:
             raise Exception(resp[1])
@@ -343,6 +358,9 @@ class PedidosLoja(QWidget):
         main_layout.addWidget(text)
         main_layout.addWidget(scroll)
         self.setLayout(main_layout)
+
+    def load(self):
+        pass
 
     def goto_pedido_unico(self, id):
         self.parent.goto_pedido_unico_usuario(id)
@@ -494,13 +512,13 @@ class AreaPedidos(QWidget):
 class Pedidos(QStackedWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        self.pedidos = MeusPedidos(self)
+        self.meus_pedidos = MeusPedidos(self)
         self.pedidos_loja = PedidosLoja(self)
         self.area_pedidos = AreaPedidos(self)
         self.pedidos_unico = PedidoUnico(self)
         self.pedidos_unico_usuario = PedidoUnicoUsuario(self)
 
-        self.addWidget(self.pedidos)
+        self.addWidget(self.meus_pedidos)
         self.addWidget(self.pedidos_loja)
         self.addWidget(self.area_pedidos)
         self.addWidget(self.pedidos_unico)
@@ -509,8 +527,8 @@ class Pedidos(QStackedWidget):
         self.setCurrentWidget(self.area_pedidos)
 
     def goto_meus_pedidos(self):
-        self.pedidos.load()
-        self.setCurrentWidget(self.pedidos)
+        self.meus_pedidos.load()
+        self.setCurrentWidget(self.meus_pedidos)
 
     def goto_area_pedidos(self):
         self.setCurrentWidget(self.area_pedidos)
@@ -525,3 +543,8 @@ class Pedidos(QStackedWidget):
 
     def goto_pedidos_loja(self):
         self.setCurrentWidget(self.pedidos_loja)
+
+    def load(self):
+        print("Carregando pedidos")
+        self.pedidos_loja.load()
+        self.meus_pedidos.load()

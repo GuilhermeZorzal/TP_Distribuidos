@@ -26,6 +26,7 @@ from pages.settings import Settings
 from pages.erroAutenticacao import Erro
 from requestAPI.moc_gpt import esta_logado
 
+import threading
 
 paginas = [PaginaInicial, Auth, Catalogo, Lojas, Pedidos, Settings, Ajuda]
 
@@ -131,8 +132,8 @@ class MainWindow(QMainWindow):
             self.stack.addWidget(page)
 
         # TODO: trocar pra Home
-        # self.stack.setCurrentWidget(self.page_home)
-        self.stack.setCurrentWidget(self.page_pedidos)
+        self.stack.setCurrentWidget(self.page_home)
+        # self.stack.setCurrentWidget(self.page_pedidos)
 
         # Listas de paginas que requerem autenticacao
         # self.protected_routes = {"catalogo", "loja", "pedidos", "settings"}
@@ -143,6 +144,11 @@ class MainWindow(QMainWindow):
             self.stack.setCurrentWidget(self.pages["erro"])
         else:
             self.stack.setCurrentWidget(self.pages[page_name])
+
+    def loadPages(self):
+        self.page_catalogo.load()
+        self.page_lojas.load()
+        self.page_pedidos.load()
 
 
 if __name__ == "__main__":

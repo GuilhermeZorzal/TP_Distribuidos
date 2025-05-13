@@ -278,3 +278,7 @@ class Catalogo(QStackedWidget):
     def goto_servico(self, id):
         self.servico.load(id)
         self.setCurrentWidget(self.servico)
+
+    def load(self):
+        print("Carregando catalogo")
+        self.catalogo.load_services()

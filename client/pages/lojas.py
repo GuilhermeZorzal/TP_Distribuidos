@@ -37,6 +37,7 @@ from requestAPI.moc_gpt import (
     ocultar_servico,
     desocultar_servico,
     editar_servico,
+    usuario_possui_loja,
 )
 
 
@@ -752,6 +753,19 @@ class LojaStack(QStackedWidget):
 
         self.setCurrentWidget(self.area_loja)
 
+    def load(self):
+        print("Carregando loja")
+        if esta_logado()[0]:
+            if usuario_possui_loja()[0]:
+                self.setCurrentWidget(self.area_loja)
+                return
+            self.setCurrentWidget(self.cria_loja)
+            return
+        QMessageBox.warning(
+            self, "Erro de autenticação", "O usuario não está autenticado"
+        )
+        return
+
     def goto_area_loja(self):
         self.setCurrentWidget(self.area_loja)
 
@@ -794,3 +808,6 @@ class Lojas(QWidget):
         outer_layout.addLayout(layout)
         outer_layout.addStretch()
         self.setLayout(outer_layout)
+
+    def load(self):
+        self.paginas.load()

@@ -19,6 +19,8 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QSaveFile, Qt
 from PyQt6.QtGui import QPalette, QColor
 from requestAPI.moc_gpt import cadastrar, autenticar, esta_logado, logout
+import threading
+
 
 FILE = "../assets/shrek.jpg"
 
@@ -268,6 +270,7 @@ class Logout(QWidget):
 class Auth(QStackedWidget):
     def __init__(self, parent):
         super().__init__(parent)
+        self.parent = parent
 
         self.page_login = Login(self)
         self.page_cadastro = Cadastro(self)
@@ -290,7 +293,7 @@ class Auth(QStackedWidget):
             self.addWidget(page)
 
         log = esta_logado()[0]
-        if log:
+        if not log:
             self.setCurrentWidget(self.page_login)
         else:
             self.setCurrentWidget(self.page_logout)
@@ -309,6 +312,11 @@ class Auth(QStackedWidget):
             QMessageBox.warning(self, "Erro no login", message)
         else:
             self.setCurrentWidget(self.page_logout)
+            self.parent.loadPages()
+            # thread = threading.Thread(target=self.parent.loadPages)
+            # print("Executando thread:")
+            # thread.start()
+            # thread.join()
 
     def call_logout(self):
         logout()

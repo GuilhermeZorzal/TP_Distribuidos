@@ -2,6 +2,8 @@ import random
 import uuid
 from datetime import datetime
 
+token = None
+
 
 # CSU001: Cadastro de Usuário
 def cadastrar(nome, apelido, senha, ccm, contato):
@@ -13,20 +15,32 @@ def cadastrar(nome, apelido, senha, ccm, contato):
 
 # CSU002/1: Login
 def logout():
+    global token
+    token = None
     pass
 
 
 # CSU002/1: Login
 def autenticar(ccm, senha):
-    if random.random() < 0.5:
+    global token
+    if random.random() < 0:
         return 0, "Login falhou!!"
     else:
+        token = "aaaaaaaa"
         return 1, "Login funcionou"
+
+
+def usuario_possui_loja():
+    if random.random() < 0.5:
+        return 0, "Voce não possui uma loja"
+    else:
+        return 1, "Usuario possui loja"
 
 
 # CSU002/2: Autentifica
 def esta_logado():
-    return (1, "Token válido") if random.random() > 0.5 else (0, "Token inválido")
+    global token
+    return (1, "Token válido") if token else (0, "Token inválido")
 
 
 # CSU003: Criar Loja

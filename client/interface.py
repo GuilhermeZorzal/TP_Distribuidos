@@ -1,3 +1,4 @@
+import json
 import sys
 from PyQt6.QtWidgets import (
     QApplication,
@@ -7,7 +8,8 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QPushButton,
 )
-from client import enviar_nome
+
+from client import funcao_generica
 from interface_socket.interface_socket import sendMessage
 
 
@@ -27,7 +29,7 @@ class Interface(QWidget):
         self.layout.addWidget(self.input_nome)
 
         self.botao = QPushButton("Enviar")
-        self.botao.clicked.connect(self.enviar_nome)
+        self.botao.clicked.connect(self.funcao_generica)
         self.layout.addWidget(self.botao)
 
         self.resposta_label = QLabel("")
@@ -35,11 +37,23 @@ class Interface(QWidget):
 
         self.setLayout(self.layout)
 
-    def enviar_nome(self):
+    def funcao_generica(self):
         nome = self.input_nome.text()
+        
         if nome:
-            status, resposta = enviar_nome(nome)
-            self.resposta_label.setText(resposta)
+            resposta = funcao_generica(nome)
+
+            try:
+                resposta_dict = json.loads(resposta)
+            except Exception as e:
+                self.resposta_label.setText(f"Erro ao converter resposta: {e}")
+                return
+            
+            dados = ''
+            for key, value in resposta_dict.items():
+                dados += f"{key}: {value}\n"
+                
+            self.resposta_label.setText(dados)
 
 
 app = QApplication(sys.argv)

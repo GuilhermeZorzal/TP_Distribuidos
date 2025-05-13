@@ -1,20 +1,38 @@
 import socket
+import json
 
-# É uma boa ideia usar funcoes mais genericas e encapsuladas pra ficar mais facil de isolar depois quando tiver o middleware: a gente só adapta esse arquivo aqui
+HOST = "localhost"
+PORT = 5123
 
 
-def sendMessage(host, port, message):
-    print("SEND MESSAGE API")
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def sendMessage(host, port, mensagem):
+    """
+    Envia uma mensagem para o servidor e retorna a resposta.
+
+    :param host: Endereço do servidor
+    :param port: Porta do servidor
+    :param mensagem: Mensagem a ser enviada
+    :return: Resposta do servidor
+    """
     print(f"Conectando ao servidor {host}:{port}...")
-
+    
+    # Cria um socket para conexão TCP/IP
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Conecta ao servidor no endereço e porta especificados
+    print(f"{mensagem}")
     client.connect((host, port))
+    
 
-    client.sendall(message.encode())
-    resposta = client.recv(1024).decode()
+    mensagem = json.dumps(mensagem)
 
+    # Envia os dados para o servidor
+        # O método encode() converte a string em bytes para envio
+    client.sendall(mensagem.encode())
+
+    response = client.recv(4096).decode()
     client.close()
-    return resposta
+
+    return json.loads(response)
 
 
 def receiveMessage():

@@ -46,6 +46,9 @@ class TestSocketClientFunctions(unittest.TestCase):
 
         # Chamar a função
         status, mensagem, _ = autenticar(ccm, senha)
+        
+        
+        print("\n\n\n\n\n")
 
         # Verificar se a resposta foi correta
         self.assertEqual(status, 200)

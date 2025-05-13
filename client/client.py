@@ -1,38 +1,17 @@
 import socket
 import interface_socket.interface_socket as soc
 import json
+import threading
 
-HOST = "server"
-PORT = 50051
+HOST = "localhost"
+PORT = 5123
 
 tokenCliente = None
 cont_pages = 0
-
-def sendMessage(host, port, mensagem):
-    """
-    Envia uma mensagem para o servidor e retorna a resposta.
-
-    :param host: Endereço do servidor
-    :param port: Porta do servidor
-    :param mensagem: Mensagem a ser enviada
-    :return: Resposta do servidor
-    """
-    # Cria um socket para conexão TCP/IP
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # Conecta ao servidor no endereço e porta especificados
-    client.connect((host, port))
-
-    if isinstance(mensagem, dict):
-        mensagem = json.dumps(mensagem)
-    
-    # Envia os dados para o servidor
-        # O método encode() converte a string em bytes para envio
-    client.sendall(mensagem.encode())
-
-    response = client.recv(4096).decode()
-    client.close()
-
-    return json.loads(response)
+data_possui_loja = None
+data_meus_pedidos = None
+data_pedidos_minha_loja = None
+data_catalogo = None
 
 def cadastrar(nome, apelido, senha, ccm, contato):
     """
@@ -67,7 +46,7 @@ def cadastrar(nome, apelido, senha, ccm, contato):
 
         if resposta["status"] == 200:
             tokenCliente = resposta["dados"].get("tokenCliente")
-            
+
         # Retorna a resposta do servidor
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -86,6 +65,11 @@ def autenticar(ccm, senha):
     :retorno: Resposta do servidor
     """
     global tokenCliente
+    global data_possui_loja
+    global data_meus_pedidos
+    global data_pedidos_minha_loja
+    global data_catalogo
+        
     try:
         mensagem = {
             "funcao": "autenticar",
@@ -99,6 +83,31 @@ def autenticar(ccm, senha):
 
         if resposta["status"] == 200:
             tokenCliente = resposta["dados"].get("tokenCliente")
+            
+            results = {}
+
+            def run_and_store(name, func, *args, **kwargs):
+                results[name] = func(*args, **kwargs)
+
+            thread1 = threading.Thread(target=run_and_store, args=("minha_loja", get_minha_loja))
+            thread2 = threading.Thread(target=run_and_store, args=("pedidos", get_pedidos))
+            thread3 = threading.Thread(target=run_and_store, args=("pedidos_minha_loja", get_pedidos_minha_loja))
+            thread4 = threading.Thread(target=run_and_store, args=("catalogo", get_catalago))
+
+            thread1.start()
+            thread2.start()
+            thread3.start()
+            thread4.start()
+
+            thread1.join()
+            thread2.join()
+            thread3.join()
+            thread4.join()
+
+            data_possui_loja = results.get("minha_loja")
+            data_meus_pedidos = results.get("pedidos")
+            data_pedidos_minha_loja = results.get("pedidos_minha_loja")
+            data_catalogo = results.get("catalogo")
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -193,7 +202,7 @@ def get_categoria():
         return 0, str(e)
 
 
-def get_catalago(categorias, idLoja):
+def get_catalago(categorias = [], idLoja = None):
     """
     Obtém o catálogo de produtos disponíveis.
 
@@ -508,3 +517,44 @@ def realizar_pedido(idPedido):
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e, {}
+
+def usuario_possui_loja():
+    """
+    Verifica se o usuário possui uma loja.
+
+    :return: Resposta do servidor
+    """
+    try:
+        mensagem = {
+            "funcao": "usuario_possui_loja",
+            "dados": {
+                "tokenCliente": tokenCliente
+            }
+        }
+
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
+        return [resposta["status"], resposta["mensagem"], {}]
+
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e, {}
+
+if __name__ == "__main__":
+    # Exemplo de uso
+    print(cadastrar("Nome", "Apelido", "Senha", "CCM", "Contato"))
+    print(autenticar("CCM", "Senha"))
+    # print(criar_loja("Loja", "Contato", "Descricao"))
+    # print(criar_anuncio("Produto", "Descricao", "Categoria", "Tipo", 10))
+    # print(get_categoria())
+    # print(get_catalago())
+    # print(get_servico(1))
+    # print(get_loja(1))
+    # print(get_pedido(1))
+    # print(get_pedidos())
+    # print(get_pedidos_minha_loja())
+    # print(cancelar_pedido(1))
+    # print(editar_servico(1, "Produto Editado", "Descricao Editada", "Categoria Editada", "Tipo Editado", 5))
+    # print(ocultar_servico(1))
+    # print(desocultar_servico(1))
+    # print(apagar_servico(1))

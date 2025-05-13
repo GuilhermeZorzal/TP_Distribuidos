@@ -23,7 +23,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette, QColor
 
 
-from requestAPI.moc_gpt import get_catalogo, get_categoria, get_servico
+# from requestAPI.moc_gpt import get_catalogo, get_categoria, get_servico
+from client.client import get_catalogo, get_categoria, get_servico
 
 
 class CardServico(QWidget):
@@ -101,9 +102,9 @@ class CatalogoLista(QWidget):
         self.main_layout = QVBoxLayout()
         self.lista = QListWidget()
 
-        status, message, categorias = get_categoria()
+        resp = get_categoria()
         self.filtro_categoria = QComboBox()
-        self.filtro_categoria.addItems(categorias)
+        # self.filtro_categoria.addItems(resp[1])
         self.filtro_categoria.currentIndexChanged.connect(self.filter_services)
 
         self.main_layout.addWidget(self.filtro_categoria)
@@ -114,7 +115,7 @@ class CatalogoLista(QWidget):
         # Connect scroll after user_list is created
         self.lista.verticalScrollBar().valueChanged.connect(self.check_scroll_position)
 
-        self.load_services()
+        # self.load_services()
 
     def filter_services(self, text):
         self.current_page = 0
@@ -125,12 +126,14 @@ class CatalogoLista(QWidget):
         self.parent.goto_servico(id)
 
     def load_services(self, filter_text="", append=False):
+        print("load_services")
         if self.is_loading:
             return
 
         self.is_loading = True
         try:
             resp = get_catalogo(filter_text)
+            print("Catalogo", resp)
             if not resp[0]:
                 raise Exception(resp[1])
             services = resp[2]

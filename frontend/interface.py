@@ -24,7 +24,9 @@ from pages.pedidos import Pedidos
 from pages.ajuda import Ajuda
 from pages.settings import Settings
 from pages.erroAutenticacao import Erro
-from requestAPI.moc_gpt import esta_logado
+
+# from requestAPI.moc_gpt import esta_logado
+from client.client import esta_logado
 
 import threading
 
@@ -132,23 +134,27 @@ class MainWindow(QMainWindow):
             self.stack.addWidget(page)
 
         # TODO: trocar pra Home
-        self.stack.setCurrentWidget(self.page_home)
-        # self.stack.setCurrentWidget(self.page_pedidos)
+        # self.stack.setCurrentWidget(self.page_home)
+        self.stack.setCurrentWidget(self.page_auth)
 
         # Listas de paginas que requerem autenticacao
         # self.protected_routes = {"catalogo", "loja", "pedidos", "settings"}
         self.protected_routes = {"catalogo", "loja", "pedidos"}
 
     def navigate_to(self, page_name):
+        print("LOGADO", esta_logado()[0])
         if page_name in self.protected_routes and not esta_logado()[0]:
             self.stack.setCurrentWidget(self.pages["erro"])
         else:
             self.stack.setCurrentWidget(self.pages[page_name])
+            self.page_catalogo.load()
+            # self.page_lojas.load()
+            # self.page_pedidos.load()
 
     def loadPages(self):
         self.page_catalogo.load()
-        self.page_lojas.load()
-        self.page_pedidos.load()
+        # self.page_lojas.load()
+        # self.page_pedidos.load()
 
 
 if __name__ == "__main__":

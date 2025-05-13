@@ -6,34 +6,63 @@ import random
 
 # Simulando "banco de dados" com dicionários
 clientes = {
-    1: {"nome": "João Silva", "email": "joao@example.com", "telefone": "1234567890", "endereco": "Rua A, 123"},
-    2: {"nome": "Maria Oliveira", "email": "maria@example.com", "telefone": "9876543210", "endereco": "Rua B, 456"},
-    3: {"nome": "Carlos Souza", "email": "carlos@example.com", "telefone": "4567891230", "endereco": "Rua C, 789"}
+    1: {
+        "nome": "João Silva",
+        "email": "joao@example.com",
+        "telefone": "1234567890",
+        "endereco": "Rua A, 123",
+    },
+    2: {
+        "nome": "Maria Oliveira",
+        "email": "maria@example.com",
+        "telefone": "9876543210",
+        "endereco": "Rua B, 456",
+    },
+    3: {
+        "nome": "Carlos Souza",
+        "email": "carlos@example.com",
+        "telefone": "4567891230",
+        "endereco": "Rua C, 789",
+    },
 }
 
-tokens = {
-    1: "abcd1234token",
-    2: "efgh5678token",
-    3: "ijkl9012token"
-}
+tokens = {1: "abcd1234token", 2: "efgh5678token", 3: "ijkl9012token"}
 
 lojas = {
     1: {"nome": "Loja A", "endereco": "Avenida X, 111", "telefone": "111223344"},
     2: {"nome": "Loja B", "endereco": "Avenida Y, 222", "telefone": "223344556"},
-    3: {"nome": "Loja C", "endereco": "Avenida Z, 333", "telefone": "334455667"}
+    3: {"nome": "Loja C", "endereco": "Avenida Z, 333", "telefone": "334455667"},
 }
 
 servicos = {
     1: {"nome": "Desenvolvimento de Software", "categoria": "TI", "preco": 150},
     2: {"nome": "Design de Logotipo", "categoria": "Design", "preco": 100},
     3: {"nome": "Consultoria Empresarial", "categoria": "Consultoria", "preco": 200},
-    4: {"nome": "Manutenção de Computadores", "categoria": "Manutenção", "preco": 80}
+    4: {"nome": "Manutenção de Computadores", "categoria": "Manutenção", "preco": 80},
 }
 
 pedidos = {
-    1: {"cliente_id": 1, "loja_id": 1, "servicos": [1, 2], "status": "em andamento", "data": "2025-05-12"},
-    2: {"cliente_id": 2, "loja_id": 2, "servicos": [3], "status": "concluído", "data": "2025-05-10"},
-    3: {"cliente_id": 3, "loja_id": 3, "servicos": [4], "status": "em andamento", "data": "2025-05-13"}
+    1: {
+        "cliente_id": 1,
+        "loja_id": 1,
+        "servicos": [1, 2],
+        "status": "em andamento",
+        "data": "2025-05-12",
+    },
+    2: {
+        "cliente_id": 2,
+        "loja_id": 2,
+        "servicos": [3],
+        "status": "concluído",
+        "data": "2025-05-10",
+    },
+    3: {
+        "cliente_id": 3,
+        "loja_id": 3,
+        "servicos": [4],
+        "status": "em andamento",
+        "data": "2025-05-13",
+    },
 }
 
 # Categorias de serviços
@@ -51,16 +80,8 @@ idPedido_counter = 1
 def gerar_token(idCliente, apelido):
     exp = int(time.time()) + 3600
     token = f"token_{idCliente}_{int(time.time())}"
-    tokens[token] = {
-        "idCliente": idCliente,
-        "apelido": apelido,
-        "exp": exp
-    }
-    return {
-        "idCliente": idCliente,
-        "apelido": apelido,
-        "exp": exp
-    }
+    tokens[token] = {"idCliente": idCliente, "apelido": apelido, "exp": exp}
+    return {"idCliente": idCliente, "apelido": apelido, "exp": exp}
 
 
 def get_token_from_request(dados):
@@ -82,7 +103,7 @@ def handle_cadastrar(dados):
         "nome": dados["nome"],
         "apelido": dados["apelido"],
         "senha": dados["senha"],
-        "contato": dados["contato"]
+        "contato": dados["contato"],
     }
     token = gerar_token(idCliente, dados["apelido"])
     return [1, "Cadastro realizado com sucesso", {"tokenCliente": token}]
@@ -92,15 +113,14 @@ def handle_autenticar(dados):
     ccm = dados["ccm"]
     senha = dados["senha"]
     user = clientes.get(ccm)
-    
+
     num = random.random()
-    print("Num ",num)
-    if num > 0.5:   
-        if user and user["senha"] == senha:
-            token = gerar_token(user["idCliente"], user["apelido"])
-            return [1, "Login realizado com sucesso", {"tokenCliente": token}]
-    
-    
+    print("Num ", num)
+    if num > 0.5:
+        # if user and user["senha"] == senha:
+        #     token = gerar_token(user["idCliente"], user["apelido"])
+        return [1, "Login realizado com sucesso", {"tokenCliente": "Token brabo"}]
+
     return [0, "Credenciais inválidas", {"num": num}]
 
 
@@ -118,7 +138,7 @@ def handle_criar_loja(dados):
         "nome": nome,
         "contato": dados["contato"],
         "descricao": dados["descricao"],
-        "idCliente": idCliente
+        "idCliente": idCliente,
     }
     lojas[idLoja_counter] = loja
     idLoja_counter += 1
@@ -148,7 +168,7 @@ def handle_criar_anuncio(dados):
         "tipo_pagamento": dados["tipo_pagamento"],
         "quantidade_pagamento": dados["quantidade"],
         "esta_visivel": True,
-        "idLoja": loja["idLoja"]
+        "idLoja": loja["idLoja"],
     }
     servicos[idServico_counter] = servico
     idServico_counter += 1
@@ -163,12 +183,13 @@ def handle_get_catalogo(dados):
     index = dados.get("pages", 0) * 20
     filtrados = list(servicos.values())
 
+    print("AAAAAAAAAAAAAAAAAAAAAAAAAAa")
     if "categorias" in dados and dados["categorias"]:
         filtrados = [s for s in filtrados if s["categoria"] in dados["categorias"]]
     if "idLoja" in dados:
         filtrados = [s for s in filtrados if s["idLoja"] == dados["idLoja"]]
 
-    return [1, "Catálogo recuperado", {"servicos": filtrados[index:index+20]}]
+    return [1, "Catálogo recuperado", {"servicos": filtrados[index : index + 20]}]
 
 
 def handle_get_servico(dados):
@@ -192,17 +213,40 @@ def handle_get_loja(dados):
         return [1, "Loja encontrada", {"loja": loja}]
     return [0, "Loja não encontrada", {}]
 
+    # mensagem = {"funcao": "get_pedidos", "dados": {"tokenCliente": tokenCliente}}
+
 
 def handle_get_pedido(dados):
-    pedido = pedidos.get(dados["idPedido"])
+    print(dados)
+
+    pedido = {
+        "idPedido": "a",
+        "data_pedido": str("kdf"),
+        "servico": "Serviço Exemplo",
+        "nome_cliente": "robson",
+        "estado_pedido": random.choice(["registrado", "andamento", "concluido"]),
+        "total": random.randint(50, 200),
+    }
+
     if pedido:
         return [1, "Pedido encontrado", {"pedido": pedido}]
     return [0, "Pedido não encontrado", {}]
 
 
 def handle_get_pedidos(dados):
-    idCliente = dados["tokenCliente"]["idCliente"]
-    resultado = [p for p in pedidos.values() if p["servico"]["idLoja"] == idCliente]
+    print("Handle get pedidos", dados)
+    # idCliente = dados["tokenCliente"]["idCliente"]
+    # resultado = [p for p in pedidos.values() if p["servico"]["idLoja"] == idCliente]
+    resultado = [
+        {
+            "idPedido": str(uuid.uuid4()),
+            "data_pedido": str(datetime.now()),
+            "servico": "Serviço Exemplo",
+            "estado_pedido": "registrado",
+            "total": 100,
+        }
+        for _ in range(random.randint(1, 10))
+    ]
     return [1, "Pedidos encontrados", {"pedidos": resultado}]
 
 
@@ -224,13 +268,15 @@ def handle_cancelar_pedido(dados):
 def handle_editar_servico(dados):
     idServico = dados["idServico"]
     if idServico in servicos:
-        servicos[idServico].update({
-            "nome_servico": dados["nome_servico"],
-            "descricao_servico": dados["descricao_servico"],
-            "categoria": dados["categoria"],
-            "tipo_pagamento": dados["tipo_pagamento"],
-            "quantidade_pagamento": dados["quantidade"]
-        })
+        servicos[idServico].update(
+            {
+                "nome_servico": dados["nome_servico"],
+                "descricao_servico": dados["descricao_servico"],
+                "categoria": dados["categoria"],
+                "tipo_pagamento": dados["tipo_pagamento"],
+                "quantidade_pagamento": dados["quantidade"],
+            }
+        )
         return [1, "Serviço atualizado", {"servico": servicos[idServico]}]
     return [0, "Serviço não encontrado", {}]
 
@@ -267,7 +313,7 @@ def handle_realizar_pedido(dados):
         "servico": servico,
         "nome_cliente": "robson",
         "estado_pedido": "registrado",
-        "total": servico["quantidade_pagamento"] * 1
+        "total": servico["quantidade_pagamento"] * 1,
     }
     pedidos[idPedido] = pedido
     return [1, "Pedido realizado com sucesso", {}]
@@ -311,23 +357,27 @@ def handle_client(conn, addr):
         else:
             resp = funcoes[funcao](dados)
 
-        conn.sendall(json.dumps({
-            "status": 200 if resp[0] == 1 else 400,
-            "mensagem": resp[1],
-            "dados": resp[2]
-        }).encode())
+        conn.sendall(
+            json.dumps(
+                {
+                    "status": 200 if resp[0] == 1 else 0,
+                    "mensagem": resp[1],
+                    "dados": resp[2],
+                }
+            ).encode()
+        )
 
     except Exception as e:
-        conn.sendall(json.dumps({
-            "status": 500,
-            "mensagem": f"Erro no servidor: {e}",
-            "dados": {}
-        }).encode())
+        conn.sendall(
+            json.dumps(
+                {"status": 0, "mensagem": f"Erro no servidor: {e}", "dados": {}}
+            ).encode()
+        )
     finally:
         conn.close()
 
 
-def start_server(host='localhost', port=5123):
+def start_server(host="localhost", port=50051):
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((host, port))
     server.listen(10)

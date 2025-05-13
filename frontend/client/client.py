@@ -1,10 +1,12 @@
 import socket
-import interface_socket.interface_socket as soc
-import json
+
+# import interface_socket as soc
+# import interface_socket.interface_socket as soc
+import interface_socket.interface_socket3 as soc
 import threading
 
 HOST = "localhost"
-PORT = 5123
+PORT = 50051
 
 tokenCliente = None
 cont_pages = 0
@@ -12,6 +14,7 @@ data_possui_loja = None
 data_meus_pedidos = None
 data_pedidos_minha_loja = None
 data_catalogo = None
+
 
 def cadastrar(nome, apelido, senha, ccm, contato):
     """
@@ -37,8 +40,8 @@ def cadastrar(nome, apelido, senha, ccm, contato):
                 "apelido": apelido,
                 "senha": senha,
                 "ccm": ccm,
-                "contato": contato
-            }
+                "contato": contato,
+            },
         }
 
         # Aguarda e recebe a resposta do servidor
@@ -56,6 +59,12 @@ def cadastrar(nome, apelido, senha, ccm, contato):
         return 0, e, {}
 
 
+def logout():
+    global tokenCliente
+    tokenCliente = None
+    return [200, "Logout feito com sucesso", {}]
+
+
 def autenticar(ccm, senha):
     """
     Envia os dados de autenticação para o servidor.
@@ -69,30 +78,34 @@ def autenticar(ccm, senha):
     global data_meus_pedidos
     global data_pedidos_minha_loja
     global data_catalogo
-        
+
     try:
-        mensagem = {
-            "funcao": "autenticar",
-            "dados": {
-                "ccm": ccm,
-                "senha": senha
-            }
-        }
+        mensagem = {"funcao": "autenticar", "dados": {"ccm": ccm, "senha": senha}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
         if resposta["status"] == 200:
             tokenCliente = resposta["dados"].get("tokenCliente")
-            
+            print("Threads. Token:", tokenCliente)
+
             results = {}
 
             def run_and_store(name, func, *args, **kwargs):
                 results[name] = func(*args, **kwargs)
 
-            thread1 = threading.Thread(target=run_and_store, args=("minha_loja", get_minha_loja))
-            thread2 = threading.Thread(target=run_and_store, args=("pedidos", get_pedidos))
-            thread3 = threading.Thread(target=run_and_store, args=("pedidos_minha_loja", get_pedidos_minha_loja))
-            thread4 = threading.Thread(target=run_and_store, args=("catalogo", get_catalago))
+            thread1 = threading.Thread(
+                target=run_and_store, args=("minha_loja", get_minha_loja)
+            )
+            thread2 = threading.Thread(
+                target=run_and_store, args=("pedidos", get_pedidos)
+            )
+            thread3 = threading.Thread(
+                target=run_and_store,
+                args=("pedidos_minha_loja", get_pedidos_minha_loja),
+            )
+            thread4 = threading.Thread(
+                target=run_and_store, args=("catalogo", get_catalogo)
+            )
 
             thread1.start()
             thread2.start()
@@ -122,6 +135,7 @@ def esta_logado():
 
     :return: True se o usuário estiver logado, False caso contrário
     """
+    print("Local", tokenCliente)
     if tokenCliente is not None:
         return [200, "Usuário está autentificado!", {}]
     else:
@@ -144,8 +158,8 @@ def criar_loja(nome_loja, contato, descricao):
                 "tokenCliente": tokenCliente,
                 "nome_loja": nome_loja,
                 "contato": contato,
-                "descricao": descricao
-            }
+                "descricao": descricao,
+            },
         }
 
         # Resposta do servidor poderia ser o identificador da loja
@@ -159,7 +173,7 @@ def criar_loja(nome_loja, contato, descricao):
 
 
 def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
-    """"Cria um anúncio para um produto.
+    """ "Cria um anúncio para um produto.
     :param nome: Nome do produto
     :param descricao: Descrição do produto
     :param preco: Preço do produto
@@ -175,8 +189,8 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
                 "descricao_servico": descricao,
                 "categoria": categoria,
                 "tipo_pagamento": tipo,
-                "quantidade": quantidade
-            }
+                "quantidade": quantidade,
+            },
         }
 
         # Resposta do servidor poderia ser o identificador do anúncio
@@ -191,10 +205,7 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
 
 def get_categoria():
     try:
-        mensagem = {
-            "funcao": "get_categoria",
-            "dados": {}
-        }
+        mensagem = {"funcao": "get_categoria", "dados": {}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
         return [resposta["status"], resposta["mensagem"], resposta["dados"]]
@@ -202,7 +213,7 @@ def get_categoria():
         return 0, str(e)
 
 
-def get_catalago(categorias = [], idLoja = None):
+def get_catalogo(categorias=[], idLoja=None):
     """
     Obtém o catálogo de produtos disponíveis.
 
@@ -215,11 +226,7 @@ def get_catalago(categorias = [], idLoja = None):
 
         mensagem = {
             "funcao": "get_catalogo",
-            "dados": {
-                "pages": cont_pages,
-                "categorias": categorias,
-                "idLoja": idLoja
-            }
+            "dados": {"pages": cont_pages, "categorias": categorias, "idLoja": idLoja},
         }
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
@@ -238,12 +245,7 @@ def get_servico(idServico):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {
-            "funcao": "get_servico",
-            "dados": {
-                "idServico": idServico
-            }
-        }
+        mensagem = {"funcao": "get_servico", "dados": {"idServico": idServico}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
@@ -261,12 +263,7 @@ def get_loja(idLoja):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {
-            "funcao": "get_loja",
-            "dados": {
-                "idLoja": idLoja
-            }
-        }
+        mensagem = {"funcao": "get_loja", "dados": {"idLoja": idLoja}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
@@ -284,12 +281,7 @@ def get_pedido(idPedido):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {
-            "funcao": "get_pedido",
-            "dados": {
-                "idPedido": idPedido
-            }
-        }
+        mensagem = {"funcao": "get_pedido", "dados": {"idPedido": idPedido}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
@@ -306,12 +298,7 @@ def get_pedidos():
     :return: Resposta do servidor
     """
     try:
-        mensagem = {
-            "funcao": "get_pedidos",
-            "dados": {
-                "tokenCliente": tokenCliente
-            }
-        }
+        mensagem = {"funcao": "get_pedidos", "dados": {"tokenCliente": tokenCliente}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
@@ -330,9 +317,7 @@ def get_pedidos_minha_loja():
     try:
         mensagem = {
             "funcao": "get_pedidos_minha_loja",
-            "dados": {
-                "tokenCliente": tokenCliente
-            }
+            "dados": {"tokenCliente": tokenCliente},
         }
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
@@ -351,12 +336,7 @@ def cancelar_pedido(idPedido):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {
-            "funcao": "cancelar_pedido",
-            "dados": {
-                "idPedido": idPedido
-            }
-        }
+        mensagem = {"funcao": "cancelar_pedido", "dados": {"idPedido": idPedido}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
@@ -388,8 +368,8 @@ def editar_servico(idServico, nome, descricao, categoria, tipo, quantidade):
                 "descricao_servico": descricao,
                 "categoria": categoria,
                 "tipo_pagamento": tipo,
-                "quantidade": quantidade
-            }
+                "quantidade": quantidade,
+            },
         }
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
@@ -408,12 +388,7 @@ def ocultar_servico(idServico):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {
-            "funcao": "ocultar_servico",
-            "dados": {
-                "idServico": idServico
-            }
-        }
+        mensagem = {"funcao": "ocultar_servico", "dados": {"idServico": idServico}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
@@ -432,12 +407,7 @@ def desocultar_servico(idServico):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {
-            "funcao": "desocultar_servico",
-            "dados": {
-                "idServico": idServico
-            }
-        }
+        mensagem = {"funcao": "desocultar_servico", "dados": {"idServico": idServico}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
@@ -456,12 +426,7 @@ def apagar_servico(idServico):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {
-            "funcao": "apagar_servico",
-            "dados": {
-                "idServico": idServico
-            }
-        }
+        mensagem = {"funcao": "apagar_servico", "dados": {"idServico": idServico}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
@@ -479,12 +444,7 @@ def get_minha_loja():
     :return: Resposta do servidor
     """
     try:
-        mensagem = {
-            "funcao": "get_minha_loja",
-            "dados": {
-                "tokenCliente": tokenCliente
-            }
-        }
+        mensagem = {"funcao": "get_minha_loja", "dados": {"tokenCliente": tokenCliente}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
@@ -503,12 +463,7 @@ def realizar_pedido(idPedido):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {
-            "funcao": "realizar_pedido",
-            "dados": {
-                "idPedido": idPedido
-            }
-        }
+        mensagem = {"funcao": "realizar_pedido", "dados": {"idPedido": idPedido}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
@@ -517,6 +472,7 @@ def realizar_pedido(idPedido):
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e, {}
+
 
 def usuario_possui_loja():
     """
@@ -527,9 +483,7 @@ def usuario_possui_loja():
     try:
         mensagem = {
             "funcao": "usuario_possui_loja",
-            "dados": {
-                "tokenCliente": tokenCliente
-            }
+            "dados": {"tokenCliente": tokenCliente},
         }
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
@@ -539,6 +493,7 @@ def usuario_possui_loja():
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e, {}
+
 
 if __name__ == "__main__":
     # Exemplo de uso

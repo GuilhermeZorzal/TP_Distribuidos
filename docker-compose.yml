@@ -1,6 +1,6 @@
 services:
   client:
-    build: ./client
+    build: ./frontend
     container_name: client-app
     # adicionando tty, senão o print não funciona
     tty: true

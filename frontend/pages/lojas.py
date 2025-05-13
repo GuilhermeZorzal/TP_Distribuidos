@@ -26,6 +26,7 @@ from PyQt6.QtGui import QPalette, QColor
 # FIXME: TODAS AS REQUISIÇÕES DO CLIENTE ESTÃO SUJEITAS A SEREM FEITAS COM THREADS
 from pages.erroAutenticacao import Erro
 from requestAPI.moc_gpt import (
+    # from client.client import (
     apagar_servico,
     esta_logado,
     criar_loja,

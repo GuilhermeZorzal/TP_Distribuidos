@@ -14,7 +14,9 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette, QColor
-from requestAPI.moc_gpt import (
+
+# from requestAPI.moc_gpt import (
+from client.client import (
     cancelar_pedido,
     get_pedido,
     get_pedidos,
@@ -407,7 +409,8 @@ class MeusPedidos(QWidget):
         # Get pedidos
         resp = get_pedidos()
         if not resp[0]:
-            raise Exception(resp[1])
+            print("ERRO DOIDO", resp)
+            raise Exception(str(resp[1]))
 
         dados = resp[2]
 
@@ -513,13 +516,13 @@ class Pedidos(QStackedWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.meus_pedidos = MeusPedidos(self)
-        self.pedidos_loja = PedidosLoja(self)
+        # self.pedidos_loja = PedidosLoja(self)
         self.area_pedidos = AreaPedidos(self)
         self.pedidos_unico = PedidoUnico(self)
         self.pedidos_unico_usuario = PedidoUnicoUsuario(self)
 
         self.addWidget(self.meus_pedidos)
-        self.addWidget(self.pedidos_loja)
+        # self.addWidget(self.pedidos_loja)
         self.addWidget(self.area_pedidos)
         self.addWidget(self.pedidos_unico)
         self.addWidget(self.pedidos_unico_usuario)
@@ -542,9 +545,10 @@ class Pedidos(QStackedWidget):
         self.setCurrentWidget(self.pedidos_unico_usuario)
 
     def goto_pedidos_loja(self):
-        self.setCurrentWidget(self.pedidos_loja)
+        # self.setCurrentWidget(self.pedidos_loja)
+        pass
 
     def load(self):
         print("Carregando pedidos")
-        self.pedidos_loja.load()
+        # self.pedidos_loja.load()
         self.meus_pedidos.load()

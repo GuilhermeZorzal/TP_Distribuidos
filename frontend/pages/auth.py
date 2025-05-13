@@ -18,9 +18,9 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import QSaveFile, Qt
 from PyQt6.QtGui import QPalette, QColor
-from requestAPI.moc_gpt import cadastrar, autenticar, esta_logado, logout
-import threading
 
+# from requestAPI.moc_gpt import cadastrar, autenticar, esta_logado, logout
+from client.client import cadastrar, autenticar, esta_logado, logout
 
 FILE = "../assets/shrek.jpg"
 
@@ -299,17 +299,18 @@ class Auth(QStackedWidget):
             self.setCurrentWidget(self.page_logout)
 
     def cadastro(self, nome, apelido, senha, ccm, contato):
-        codigo, message = cadastrar(nome, apelido, senha, ccm, contato)
-        if not codigo:
-            QMessageBox.warning(self, "Erro no cadastro", message)
+        resp = cadastrar(nome, apelido, senha, ccm, contato)
+        if not resp[0]:
+            QMessageBox.warning(self, "Erro no cadastro", str(resp[1]))
         else:
             self.setCurrentWidget(self.page_login)
 
     def login(self, ccm, senha):
-        status, message = autenticar(ccm, senha)
+        resp = autenticar(ccm, senha)
+        print("RESP", resp)
         self.setCurrentWidget(self.page_login)
-        if not status:
-            QMessageBox.warning(self, "Erro no login", message)
+        if not resp[0]:
+            QMessageBox.warning(self, "Erro no login", str(resp[1]))
         else:
             self.setCurrentWidget(self.page_logout)
             self.parent.loadPages()

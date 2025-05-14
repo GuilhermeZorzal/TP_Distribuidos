@@ -235,7 +235,7 @@ class Logout(QWidget):
         image_label = QLabel(self)
 
         # Por algum motivo esse troço carrega a imagem com path relativo ao arquivo interface, e não ao atual (apanhei pra descobrir viu)
-        pixmap = QPixmap("./assets/triste.jpg")
+        pixmap = QPixmap("./assets/gato.jpg")
         image_label.setPixmap(pixmap)
         self.setStyleSheet("""
             QLabel {

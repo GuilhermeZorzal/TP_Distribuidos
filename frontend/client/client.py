@@ -289,7 +289,7 @@ def get_pedido(idPedido):
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
-        return [resposta["status"], resposta["mensagem"], resposta["dados"]]
+        return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedido"]]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e, {}
@@ -306,7 +306,7 @@ def get_pedidos():
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
-        return [resposta["status"], resposta["mensagem"], resposta["dados"]]
+        return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedidos"]]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e, {}
@@ -326,7 +326,7 @@ def get_pedidos_minha_loja():
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
-        return [resposta["status"], resposta["mensagem"], resposta["dados"]]
+        return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedidos"]]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e, {}

@@ -44,6 +44,7 @@ servicos = {
 
 pedidos = {
     1: {
+        "idPedido": 2,
         "cliente_id": 1,
         "loja_id": 1,
         "servicos": [1, 2],
@@ -51,6 +52,7 @@ pedidos = {
         "data": "2025-05-12",
     },
     2: {
+        "idPedido": 2,
         "cliente_id": 2,
         "loja_id": 2,
         "servicos": [3],
@@ -58,6 +60,7 @@ pedidos = {
         "data": "2025-05-10",
     },
     3: {
+        "idPedido": 2,
         "cliente_id": 3,
         "loja_id": 3,
         "servicos": [4],
@@ -257,7 +260,7 @@ def handle_get_pedidos(dados):
     resultado = [
         {
             "idPedido": str(uuid.uuid4()),
-            "data_pedido": str(datetime.now()),
+            "data_pedido": "hoje",
             "servico": "Serviço Exemplo",
             "estado_pedido": "registrado",
             "total": 100,
@@ -268,17 +271,22 @@ def handle_get_pedidos(dados):
 
 
 def handle_get_pedidos_minha_loja(dados):
-    idCliente = dados["tokenCliente"]["idCliente"]
-    minhas_lojas = [l["idLoja"] for l in lojas.values() if l["idCliente"] == idCliente]
-    resultado = [p for p in pedidos.values() if p["servico"]["idLoja"] in minhas_lojas]
-    return [1, "Pedidos da loja encontrados", {"pedidos": resultado}]
+    pedidos = [
+        {
+            "idPedido": str(uuid.uuid4()),
+            "data_pedido": "amanha",
+            "nome_cliente": "robson",
+            "servico": "Serviço Exemplo",
+            "estado_pedido": "concluido",
+            "total": 150,
+        }
+        for _ in range(5)
+    ]
+    return [1, "Pedidos da loja encontrados", {"pedidos": pedidos}]
 
 
 def handle_cancelar_pedido(dados):
-    idPedido = dados["idPedido"]
-    if idPedido in pedidos:
-        pedidos.pop(idPedido)
-        return [1, "Pedido cancelado", {}]
+    return [1, "Pedido cancelado", {}]
     return [0, "Pedido não encontrado", {}]
 
 
@@ -339,6 +347,7 @@ funcoes = {
     "get_servico": handle_get_servico,
     "get_loja": handle_get_loja,
     "get_minha_loja": handle_get_minha_loja,
+    "get_pedido": handle_get_pedido,
     "get_pedidos": handle_get_pedidos,
     "get_pedidos_minha_loja": handle_get_pedidos_minha_loja,
     "cancelar_pedido": handle_cancelar_pedido,

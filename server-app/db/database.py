@@ -252,8 +252,7 @@ def getPedidos(idCliente):
     ]
 
 
-def getPedidosLoja(idCliente: int) -> list[dict]:
-    # busca a loja desse cliente
+def getPedidosLoja(idCliente) :
     loja = getLoja(idCliente=idCliente)
     if not loja:
         return []
@@ -303,16 +302,17 @@ def addPedido(pedido: Pedido):
     cur = con.cursor()
     try:
         cur.execute(
-          "INSERT INTO pedido (data_pedido, idServico, estado_pedido, total, nome_cliente, idCliente) VALUES (?, ?, ?, ?, ?, ?)",
+          "INSERT INTO pedido (data_pedido, idServico, estado_pedido, total, nome_cliente,  idCliente) VALUES (?, ?, ?, ?, ?, ?)",
           (pedido.data_pedido,
            pedido.idServico,
            pedido.estado_pedido,
            pedido.total,
-           pedido.nome_cliente,  # precisa existir no objeto Pedido
+           pedido.nome_cliente,
            pedido.idCliente)
         )
         con.commit()
         pedido.idPedido = cur.lastrowid
+        print(f"Pedido inserido com ID: {pedido.idPedido}")
         return pedido.idPedido
     except Exception as e:
         print("Erro ao inserir pedido:", e)
@@ -320,11 +320,31 @@ def addPedido(pedido: Pedido):
         return None
     finally:
         con.close()
+    
+# mudar o estado do pedido para ANDAMENTO
+def mudarEstadoPedido(idPedido, estado):
+    if estado != 'ANDAMENTO' and estado != 'CONCLUÍDO':
+        return False
+    
+    print("ERRO")
+    con = conectar()
+    cur = con.cursor()
+    try:
+        cur.execute(
+            "UPDATE pedido SET estado_pedido = ? WHERE idPedido = ?",
+            (estado, idPedido)
+        )
+        con.commit()
+        return cur.rowcount > 0
+    except Exception as e:
+        print("Erro ao atualizar status do pedido:", e)
+        con.rollback()
+        return False
+    finally:
+        con.close()
+
 
 def reset_database():
-    """
-    Remove o arquivo de banco (se existir) e recria todas as tabelas.
-    """
     if os.path.exists(FILE):
         os.remove(FILE)
 
@@ -381,7 +401,6 @@ def criar_banco():
         idServico INTEGER NOT NULL,
         estado_pedido TEXT NOT NULL,
         total REAL NOT NULL,
-        nome_cliente TEXT NOT NULL,
         idCliente INTEGER NOT NULL,
         FOREIGN KEY (idServico) REFERENCES servico(idServico),
         FOREIGN KEY (idCliente) REFERENCES cliente(idCliente)

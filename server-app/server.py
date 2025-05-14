@@ -40,35 +40,54 @@ def tratar_mensagem(mensagem):
             if status != 200:
                 return status, msg, {}
         except Exception as e:
-            return 0, f"Erro ao verificar loja: {e}", {}
+            return 0, f"Erro ao verificar Token: {e}", {}
+        
+        idCliente = int(idCliente)
+        
         if func == "criar_loja":
-            return loja.criar_loja(dados)
+            return loja.criar_loja(dados, idCliente)
+        
         elif func == "tem_loja":
-            return loja.tem_loja(dados)
+            return loja.tem_loja(idCliente)
+        
         elif func == "get_loja":
             return loja.get_loja(dados)
+        
         elif func == "criar_anuncio":
-            return servico.criar_anuncio(dados)
+            return servico.criar_anuncio(dados, idCliente)
+        
         elif func == "get_categoria":
             return servico.get_categoria()
+        
         elif func == "get_catalogo":
             return servico.get_catalogo(dados)
+        
         elif func == "get_servico":
             return servico.get_servico(dados)
-        # elif func == "realizar_pedido":
-        #     return pedido.realizar_pedido(dados)
-        # elif func == "get_pedido":
-        #     return pedido.get_pedido(dados)
-        # elif func == "get_pedido s":
-        #     return pedido.get_pedidos(dados)
-        # elif func == "get_pedidos_minha_loja":
-        #     return pedido.get_pedidos_minha_loja(dados)
-        # elif func == "cancelar_pedido":
-        #     return pedido.get_pedido(dados)
+        
+        elif func == "add_pedido":
+            return pedido.add_pedido(dados, idCliente)
+        
+        elif func == "pagar_pedido":
+            return pedido.pagar_pedido(dados, idCliente)
+        
+        elif func == "get_pedido":
+            return pedido.get_pedido(dados, idCliente)
+        
+        elif func == "get_pedidos":
+            return pedido.get_pedidos(idCliente)
+        
+        elif func == "get_pedidos_minha_loja":
+            return pedido.get_pedidos_minha_loja(idCliente)
+        
+        elif func == "cancelar_pedido":
+            return pedido.cancelar_pedido(dados, idCliente)
+
         elif func == "reset":
             reset_database()
             return 200, "Banco de dados resetado", {}
-
+        
+    print(f"Função não reconhecida: {func}")
     return 0, "Função não reconhecida", {}
 
 def main():

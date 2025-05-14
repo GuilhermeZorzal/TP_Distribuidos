@@ -3,14 +3,8 @@ from objetos import Servico, categorias
 from utils.token import autorizarToken
 
 
-def criar_anuncio(dados):
+def criar_anuncio(dados, idCliente):
     try:
-        # Cria a instância do serviço com os dados recebidos
-        status, msg, idCliente =  autorizarToken(dados['token'])
-        
-        if status != 200:
-            return status, msg, {}
-        
         idLoja = getLoja(idCliente=idCliente).idLoja
         print(f"ID Loja: {idLoja}")
         

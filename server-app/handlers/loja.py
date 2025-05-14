@@ -2,14 +2,14 @@ from db.database import addLoja, getLoja
 from objetos import Loja
 from utils.token import autorizarToken
 
-def criar_loja(dados):
+def criar_loja(dados, idCliente):
+    aux = tem_loja(idCliente)
+    if aux[0] == 0:
+        return 0, "Erro ao verificar loja", {}
+    if aux[2]['resposta']:
+        return 0, "Usuário já possui loja", {}
+
     try:
-        # Cria a instância da loja com os dados recebidos
-        status, msg, idCliente =  autorizarToken(dados['token'])
-        
-        if status != 200:
-            return status, msg, {}
-        
         loja = Loja(
             nome=dados['nome'],
             contato=dados['contato'],
@@ -32,13 +32,9 @@ def criar_loja(dados):
 
 
 # faça verificar caso o usuario possui uma loja
-def tem_loja(dados):
+def tem_loja(idCliente):
     
     try:
-        status, msg, idCliente = autorizarToken(dados['token'])
-        if status != 200:
-            return status, msg, {}
-
         loja = getLoja(idCliente=idCliente)
         if loja:
             return 200, "Usuário possui loja", {"resposta": True}

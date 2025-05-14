@@ -1,6 +1,7 @@
 import sys
 from PyQt6.QtWidgets import (
     QListWidget,
+    QDialog,
     QListWidgetItem,
     QMessageBox,
     QScrollArea,
@@ -14,8 +15,12 @@ from PyQt6.QtWidgets import (
     QStackedWidget,
     QFrame,
 )
+from PyQt6.QtGui import QPixmap, QImage
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette, QColor
+
+import qrcode
+from io import BytesIO
 
 # from requestAPI.moc_gpt import (
 from client.client import (
@@ -23,9 +28,36 @@ from client.client import (
     get_pedido,
     get_pedidos,
     get_pedidos_minha_loja,
+    pagar_pedido,
 )
 
-import threading
+
+class QRCodePopup(QDialog):
+    def __init__(self, data, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("QR Code")
+        self.setMinimumSize(300, 300)
+
+        layout = QVBoxLayout()
+
+        # Generate QR code as image
+        qr = qrcode.make(data)
+        buf = BytesIO()
+        qr.save(buf, format="png")
+        qimage = QImage.fromData(buf.getvalue())
+        pixmap = QPixmap.fromImage(qimage)
+
+        self.label = QLabel()
+        self.label.setPixmap(pixmap)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.close_button = QPushButton("Fechar")
+        self.close_button.clicked.connect(self.accept)
+
+        layout.addWidget(self.label)
+        layout.addWidget(self.close_button)
+
+        self.setLayout(layout)
 
 
 # TODO:
@@ -140,16 +172,23 @@ class PedidoUnico(QWidget):
             }
         """)
         self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.button_voltar = QPushButton("Voltar")
+        self.button_voltar.clicked.connect(self.voltar)
+
         self.id = QLabel("id")
         self.data = QLabel("data:")
         self.cliente = QLabel("servico:")
         self.servico = QLabel("servico:")
         self.estado = QLabel("estado:")
         self.total = QLabel("total:")
+
         self.delete = QPushButton("Cancelar pedido")
         self.delete.clicked.connect(self.deletar)
-        self.button_voltar = QPushButton("Voltar")
-        self.button_voltar.clicked.connect(self.voltar)
+        self.button_pagar = QPushButton("Realizar Pagamento ")
+        self.button_pagar.setEnabled(False)  # Make it unclickable
+        self.button_pagar.clicked.connect(self.pagar)
+
         layout = QVBoxLayout()
         self.setStyleSheet("""
             QLabel {
@@ -160,6 +199,10 @@ class PedidoUnico(QWidget):
                 color: white;
                 font-size: 20px;
                 background-color: #2c3e50;
+            }
+            QPushButton:disabled {
+                background-color: #7f8c8d;
+                color: #ecf0f1;
             }
         """)
 
@@ -173,6 +216,7 @@ class PedidoUnico(QWidget):
         layout.addWidget(self.estado)
         layout.addWidget(self.total)
         layout.addWidget(self.delete)
+        layout.addWidget(self.button_pagar)
         layout.addStretch()
 
         outer_layout = QHBoxLayout()
@@ -208,10 +252,29 @@ class PedidoUnico(QWidget):
         self.servico.setText(f"Servico: {dados['servico']}")
         self.servico.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.estado.setText(f"Estado: {dados['estado_pedido']}")
+        self.button_pagar.setEnabled(True)  # Make it unclickable
+        self.delete.setEnabled(False)  # Make it unclickable
+        if dados["estado_pedido"] != "pendente":
+            self.button_pagar.setEnabled(False)  # Make it unclickable
         self.estado.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        if dados["estado_pedido"] != "concluido":
+            self.delete.setEnabled(True)  # Make it unclickable
         self.total.setText(f"Total: {dados['total']}")
         self.total.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.delete = QPushButton("Cancelar pedido")
+
+    def pagar(self):
+        popup = QRCodePopup("https://youtu.be/wLtBGGX8GIk?si=pFbGeLxnuJdIwGU_", self)
+        popup.exec()  # This blocks until closed
+        resp = pagar_pedido(self.id.text())
+        if not resp[0]:
+            QMessageBox.warning(
+                self,
+                "Erro de autenticacao",
+                str(resp[1]),
+            )
+        else:
+            QMessageBox.information(self, "Sucesso", str(resp[1]))
+            self.parent.goto_meus_pedidos()
 
     def deletar(self):
         resp = cancelar_pedido(self.id.text())

@@ -244,7 +244,7 @@ def handle_get_pedido(dados):
         "data_pedido": str("kdf"),
         "servico": "Serviço Exemplo",
         "nome_cliente": "robson",
-        "estado_pedido": random.choice(["registrado", "andamento", "concluido"]),
+        "estado_pedido": random.choice(["pendente", "andamento", "concluido"]),
         "total": random.randint(50, 200),
     }
 
@@ -319,6 +319,22 @@ def handle_apagar_servico(dados):
     return [0, "Serviço não encontrado", {}]
 
 
+def handle_pagar_pedido(dados):
+    global idPedido_counter
+    idPedido = idPedido_counter
+    idPedido_counter += 1
+    pedido = {
+        "idPedido": idPedido,
+        "data_pedido": time.strftime("%Y-%m-%d"),
+        "servico": "batata",
+        "nome_cliente": "robson",
+        "estado_pedido": "registrado",
+        "total": 10,
+    }
+    pedidos[idPedido] = pedido
+    return [1, "Pedido pago com sucesso", {}]
+
+
 def handle_realizar_pedido(dados):
     global idPedido_counter
     idPedido = idPedido_counter
@@ -356,6 +372,7 @@ funcoes = {
     "desocultar_servico": handle_desocultar_servico,
     "apagar_servico": handle_apagar_servico,
     "realizar_pedido": handle_realizar_pedido,
+    "pagar_pedido": handle_pagar_pedido,
 }
 
 

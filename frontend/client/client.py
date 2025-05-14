@@ -277,6 +277,24 @@ def get_loja(idLoja):
         return 0, e, {}
 
 
+def pagar_pedido(idPedido):
+    """
+    Obtém os detalhes de um pedido específico.
+
+    :param idPedido: ID do pedido
+    :return: Resposta do servidor
+    """
+    try:
+        mensagem = {"funcao": "get_pedido", "dados": {"idPedido": idPedido}}
+
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
+        return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedido"]]
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e, {}
+
+
 def get_pedido(idPedido):
     """
     Obtém os detalhes de um pedido específico.

@@ -72,9 +72,9 @@ class BarraLateral(QFrame):
         self.buttons = {
             "home": QPushButton("Home"),
             "auth": QPushButton("Auth"),
-            "catalogo": QPushButton("Catalogo"),
+            # "catalogo": QPushButton("Catalogo"),
             "loja": QPushButton("Loja"),
-            "pedidos": QPushButton("Pedidos"),
+            # "pedidos": QPushButton("Pedidos"),
             # "settings": QPushButton("Settings"),
             "ajuda": QPushButton("Ajuda"),
         }
@@ -111,9 +111,9 @@ class MainWindow(QMainWindow):
 
         self.page_home = PaginaInicial(self)
         self.page_auth = Auth(self)
-        self.page_catalogo = Catalogo(self)
+        # self.page_catalogo = Catalogo(self)
         self.page_lojas = Lojas(self)
-        self.page_pedidos = Pedidos(self)
+        # self.page_pedidos = Pedidos(self)
         # self.page_settings = Settings(self)
         self.page_ajuda = Ajuda(self)
         self.page_erro = Erro(self)
@@ -122,9 +122,9 @@ class MainWindow(QMainWindow):
         self.pages = {
             "home": self.page_home,
             "auth": self.page_auth,
-            "catalogo": self.page_catalogo,
+            # "catalogo": self.page_catalogo,
             "loja": self.page_lojas,
-            "pedidos": self.page_pedidos,
+            # "pedidos": self.page_pedidos,
             # "settings": self.page_settings,
             "ajuda": self.page_ajuda,
             "erro": self.page_erro,
@@ -146,13 +146,17 @@ class MainWindow(QMainWindow):
         if page_name in self.protected_routes and not esta_logado()[0]:
             self.stack.setCurrentWidget(self.pages["erro"])
         else:
+            if page_name == "loja":
+                self.page_lojas.load()
+            # if page_name == "catalogo":
+            #     self.page_catalogo.load()
             self.stack.setCurrentWidget(self.pages[page_name])
-            self.page_catalogo.load()
-            # self.page_lojas.load()
+            # self.page_catalogo.load()
             # self.page_pedidos.load()
 
     def loadPages(self):
-        self.page_catalogo.load()
+        pass
+        # self.page_catalogo.load()
         # self.page_lojas.load()
         # self.page_pedidos.load()
 

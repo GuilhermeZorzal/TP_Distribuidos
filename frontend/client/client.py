@@ -208,16 +208,20 @@ def get_categoria():
         mensagem = {"funcao": "get_categoria", "dados": {}}
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
-        return [resposta["status"], resposta["mensagem"], resposta["dados"]]
+        return [
+            resposta["status"],
+            resposta["mensagem"],
+            resposta["dados"]["categorias"],
+        ]
     except Exception as e:
-        return 0, str(e)
+        return 0, str(e), {}
 
 
 def get_catalogo(categorias=[], idLoja=None):
     """
     Obtém o catálogo de produtos disponíveis.
-
     :param categorias: Lista de categorias
+
     :param idLoja: ID da loja
     :return: Resposta do servidor
     """
@@ -448,7 +452,7 @@ def get_minha_loja():
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
-        return [resposta["status"], resposta["mensagem"], {}]
+        return [resposta["status"], resposta["mensagem"], resposta["dados"]]
 
     except Exception as e:
         print(f"Um erro ocorreu: {e}")

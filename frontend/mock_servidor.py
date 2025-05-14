@@ -1,4 +1,5 @@
 import socket
+import uuid
 import threading
 import json
 import time
@@ -116,7 +117,7 @@ def handle_autenticar(dados):
 
     num = random.random()
     print("Num ", num)
-    if num > 0.5:
+    if num > 0.2:
         # if user and user["senha"] == senha:
         #     token = gerar_token(user["idCliente"], user["apelido"])
         return [1, "Login realizado com sucesso", {"tokenCliente": "Token brabo"}]
@@ -126,19 +127,12 @@ def handle_autenticar(dados):
 
 def handle_criar_loja(dados):
     global idLoja_counter
-    idCliente = dados["tokenCliente"]["idCliente"]
-    nome = dados["nome_loja"]
-
-    for loja in lojas.values():
-        if loja["idCliente"] == idCliente:
-            return [0, "Cliente já possui loja", {}]
-
     loja = {
         "idLoja": idLoja_counter,
-        "nome": nome,
+        "nome": "batata",
         "contato": dados["contato"],
         "descricao": dados["descricao"],
-        "idCliente": idCliente,
+        "idCliente": "8",
     }
     lojas[idLoja_counter] = loja
     idLoja_counter += 1
@@ -146,6 +140,11 @@ def handle_criar_loja(dados):
 
 
 def handle_usuario_possui_loja(dados):
+    if random.random() < 0.5:
+        return [0, "Usuário não possui loja", {}]
+    else:
+        return [1, "Usuário possui loja", {}]
+        return 1, "Usuario possui loja"
     idCliente = dados["tokenCliente"]["idCliente"]
     for loja in lojas.values():
         if loja["idCliente"] == idCliente:
@@ -155,11 +154,6 @@ def handle_usuario_possui_loja(dados):
 
 def handle_criar_anuncio(dados):
     global idServico_counter
-    idCliente = dados["tokenCliente"]["idCliente"]
-    loja = next((l for l in lojas.values() if l["idCliente"] == idCliente), None)
-    if not loja:
-        return [0, "Loja não encontrada para cliente", {}]
-
     servico = {
         "idServico": idServico_counter,
         "nome_servico": dados["nome_servico"],
@@ -168,7 +162,7 @@ def handle_criar_anuncio(dados):
         "tipo_pagamento": dados["tipo_pagamento"],
         "quantidade_pagamento": dados["quantidade"],
         "esta_visivel": True,
-        "idLoja": loja["idLoja"],
+        "idLoja": "8",
     }
     servicos[idServico_counter] = servico
     idServico_counter += 1
@@ -180,16 +174,21 @@ def handle_get_categoria(_):
 
 
 def handle_get_catalogo(dados):
-    index = dados.get("pages", 0) * 20
-    filtrados = list(servicos.values())
+    servicos = [
+        {
+            "idServico": str(uuid.uuid4()),
+            "nome_servico": f"Servico {random.randint(0, 100)}",
+            "descricao_servico": "descriçao",
+            "categoria": random.choice(["limpeza", "reparo", "consultoria"]),
+            "tipo_pagamento": "maldicoes",
+            "quantidade_pagamento": random.randint(1, 10),
+            "esta_visivel": True,
+            "idLoja": str(uuid.uuid4()),
+        }
+        for _ in range(4)
+    ]
 
-    print("AAAAAAAAAAAAAAAAAAAAAAAAAAa")
-    if "categorias" in dados and dados["categorias"]:
-        filtrados = [s for s in filtrados if s["categoria"] in dados["categorias"]]
-    if "idLoja" in dados:
-        filtrados = [s for s in filtrados if s["idLoja"] == dados["idLoja"]]
-
-    return [1, "Catálogo recuperado", {"servicos": filtrados[index : index + 20]}]
+    return [1, "Catálogo recuperado", {"servicos": servicos}]
 
 
 def handle_get_servico(dados):
@@ -198,6 +197,18 @@ def handle_get_servico(dados):
     if servico:
         return [1, "Serviço encontrado", {"servico": servico}]
     return [0, "Serviço não encontrado", {}]
+
+
+def handle_get_minha_loja(dados):
+    loja = {
+        "idLoja": str(uuid.uuid4()),
+        "nome": "Minha Loja",
+        "contato": "999999999",
+        "descricao": "Descrição da loja",
+        "idCliente": str(uuid.uuid4()),
+    }
+    return [1, "Loja do cliente carregada", loja]
+    # return [0, "Loja não encontrada", {}]
 
 
 def handle_get_loja(dados):
@@ -330,7 +341,7 @@ funcoes = {
     "get_catalogo": handle_get_catalogo,
     "get_servico": handle_get_servico,
     "get_loja": handle_get_loja,
-    "get_pedido": handle_get_pedido,
+    "get_minha_loja": handle_get_minha_loja,
     "get_pedidos": handle_get_pedidos,
     "get_pedidos_minha_loja": handle_get_pedidos_minha_loja,
     "cancelar_pedido": handle_cancelar_pedido,

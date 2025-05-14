@@ -5,7 +5,7 @@ import socket
 # import interface_socket.interface_socket3 as soc
 import threading
 import server_app as soc
-import ...server_app as soc
+from ... import server_app as soc 
 
 HOST = "localhost"
 PORT = 50051

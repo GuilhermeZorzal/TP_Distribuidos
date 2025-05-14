@@ -117,7 +117,7 @@ def handle_autenticar(dados):
 
     num = random.random()
     print("Num ", num)
-    if num > 0.2:
+    if num > 0.1:
         # if user and user["senha"] == senha:
         #     token = gerar_token(user["idCliente"], user["apelido"])
         return [1, "Login realizado com sucesso", {"tokenCliente": "Token brabo"}]
@@ -192,11 +192,17 @@ def handle_get_catalogo(dados):
 
 
 def handle_get_servico(dados):
-    idServico = dados["idServico"]
-    servico = servicos.get(idServico)
-    if servico:
-        return [1, "Serviço encontrado", {"servico": servico}]
-    return [0, "Serviço não encontrado", {}]
+    servico = {
+        "idServico": "5",
+        "nome_servico": f"Servico {random.randint(0, 100)}",
+        "descricao_servico": "Exemplo de serviço",
+        "categoria": "limpeza",
+        "tipo_pagamento": "maldicoes",
+        "quantidade_pagamento": random.randint(1, 10),
+        "esta_visivel": True,
+        "idLoja": str(uuid.uuid4()),
+    }
+    return [1, "Serviço encontrado", {"servico": servico}]
 
 
 def handle_get_minha_loja(dados):
@@ -277,39 +283,31 @@ def handle_cancelar_pedido(dados):
 
 
 def handle_editar_servico(dados):
-    idServico = dados["idServico"]
-    if idServico in servicos:
-        servicos[idServico].update(
-            {
-                "nome_servico": dados["nome_servico"],
-                "descricao_servico": dados["descricao_servico"],
-                "categoria": dados["categoria"],
-                "tipo_pagamento": dados["tipo_pagamento"],
-                "quantidade_pagamento": dados["quantidade"],
-            }
-        )
-        return [1, "Serviço atualizado", {"servico": servicos[idServico]}]
-    return [0, "Serviço não encontrado", {}]
+    servico = {
+        "idServico": "5",
+        "nome_servico": f"Servico {random.randint(0, 100)}",
+        "descricao_servico": "Exemplo de serviço",
+        "categoria": "limpeza",
+        "tipo_pagamento": "maldicoes",
+        "quantidade_pagamento": random.randint(1, 10),
+        "esta_visivel": True,
+        "idLoja": str(uuid.uuid4()),
+    }
+    return [1, "Serviço atualizado", {"servico": servico}]
 
 
 def handle_ocultar_servico(dados):
-    if dados["idServico"] in servicos:
-        servicos[dados["idServico"]]["esta_visivel"] = False
-        return [1, "Serviço ocultado", {}]
+    return [1, "Serviço ocultado", {}]
     return [0, "Serviço não encontrado", {}]
 
 
 def handle_desocultar_servico(dados):
-    if dados["idServico"] in servicos:
-        servicos[dados["idServico"]]["esta_visivel"] = True
-        return [1, "Serviço desocultado", {}]
+    return [1, "Serviço desocultado", {}]
     return [0, "Serviço não encontrado", {}]
 
 
 def handle_apagar_servico(dados):
-    if dados["idServico"] in servicos:
-        servicos.pop(dados["idServico"])
-        return [1, "Serviço apagado", {}]
+    return [1, "Serviço apagado", {}]
     return [0, "Serviço não encontrado", {}]
 
 
@@ -317,14 +315,13 @@ def handle_realizar_pedido(dados):
     global idPedido_counter
     idPedido = idPedido_counter
     idPedido_counter += 1
-    servico = servicos.get(dados["idPedido"])  # mesmo id
     pedido = {
         "idPedido": idPedido,
         "data_pedido": time.strftime("%Y-%m-%d"),
-        "servico": servico,
+        "servico": "batata",
         "nome_cliente": "robson",
         "estado_pedido": "registrado",
-        "total": servico["quantidade_pagamento"] * 1,
+        "total": 10,
     }
     pedidos[idPedido] = pedido
     return [1, "Pedido realizado com sucesso", {}]

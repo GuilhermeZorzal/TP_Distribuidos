@@ -162,11 +162,11 @@ class Servico(QWidget):
         self.setLayout(outer_layout)
 
     def atualiza_visibilidade(self):
-        print("foi")
         estado = self.visibilidade.isChecked()
         if estado:
             ocultar_servico(self.id)
-        if estado:
+
+        if not estado:
             desocultar_servico(self.id)
 
     def deletar(self):
@@ -217,12 +217,14 @@ class GerenciarServicos(QWidget):
         self._clear_servicos()
 
         id_loja = self.parent.get_id_loja()
+        print("id_loja", id_loja)
         resp = get_catalogo(id_loja)
         if not resp[0]:
             QMessageBox.critical(self, "Erro", str(resp[1]))
             return
 
         dados = resp[2]
+        print("LOAD SERVICO", dados)
         for dado in dados:
             nome = dado["nome_servico"]
             idServico = dado["idServico"]
@@ -386,7 +388,9 @@ class EditarServico(QWidget):
     def load(self, id):
         resp = get_servico(id)
         if not resp[0]:
-            raise Exception(resp[1])
+            QMessageBox.warning(self, "Erro", str(resp[1]))
+            self.parent.goto_area_gerencia()
+            return
 
         servico = resp[2]
 
@@ -450,20 +454,18 @@ class EditarServico(QWidget):
                 "Por favor, preencha todos os campos",
             )
             return
-        status, mensagem = editar_servico(
-            idServico, nome, desc, categoria, tipo, quantidade
-        )
-        if not status:
+        resp = editar_servico(idServico, nome, desc, categoria, tipo, quantidade)
+        if not resp[0]:
             QMessageBox.warning(
                 self,
                 "Erro criando servico",
-                mensagem,
+                str(resp[1]),
             )
             return
         QMessageBox.warning(
             self,
             "Parabens",
-            "Servico criado com sucesso",
+            "Servico atualizado com sucesso",
         )
         self.parent.goto_area_loja()
 
@@ -477,13 +479,13 @@ class EditarServico(QWidget):
             )
             return
 
-        status, mensagem = apagar_servico(self.id)
+        resp = apagar_servico(self.id)
 
-        if not status:
+        if not resp[0]:
             QMessageBox.warning(
                 self,
                 "Erro criando servico",
-                mensagem,
+                str(resp[1]),
             )
             return
 
@@ -492,7 +494,6 @@ class EditarServico(QWidget):
             "Parabens",
             "Servico deletado com sucesso",
         )
-        return
         self.parent.goto_area_loja()
 
     def cria_servico(self):
@@ -516,12 +517,12 @@ class EditarServico(QWidget):
                 "Por favor, preencha todos os campos",
             )
             return
-        status, mensagem = criar_anuncio(nome, desc, categoria, tipo, quantidade)
-        if not status:
+        resp = criar_anuncio(nome, desc, categoria, tipo, quantidade)
+        if not resp[0]:
             QMessageBox.warning(
                 self,
                 "Erro criando servico",
-                mensagem,
+                str(resp[1]),
             )
             return
         QMessageBox.warning(
@@ -829,14 +830,14 @@ class LojaStack(QStackedWidget):
         self.area_loja = AreaLoja(self)
         self.novo_servico = CriarServico(self)
         self.meus_servicos = GerenciarServicos(self)
-        # self.editar_servico = EditarServico(self)
+        self.editar_servico = EditarServico(self)
         self.id_loja = ""
 
         self.addWidget(self.cria_loja)
         self.addWidget(self.area_loja)
         self.addWidget(self.novo_servico)
         self.addWidget(self.meus_servicos)
-        # self.addWidget(self.editar_servico)
+        self.addWidget(self.editar_servico)
 
         # if not response[0]:
         #     # Não há loja criada

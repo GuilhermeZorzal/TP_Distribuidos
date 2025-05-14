@@ -235,7 +235,7 @@ def get_catalogo(categorias=[], idLoja=None):
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
         cont_pages += 1
-        return [resposta["status"], resposta["mensagem"], resposta["dados"]]
+        return [resposta["status"], resposta["mensagem"], resposta["dados"]["servicos"]]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e, {}
@@ -253,7 +253,7 @@ def get_servico(idServico):
 
         resposta = soc.sendMessage(HOST, PORT, mensagem)
 
-        return [resposta["status"], resposta["mensagem"], resposta["dados"]]
+        return [resposta["status"], resposta["mensagem"], resposta["dados"]["servico"]]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e, {}

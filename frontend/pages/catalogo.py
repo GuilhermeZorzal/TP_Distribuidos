@@ -24,7 +24,7 @@ from PyQt6.QtGui import QPalette, QColor
 
 
 # from requestAPI.moc_gpt import get_catalogo, get_categoria, get_servico
-from client.client import get_catalogo, get_categoria, get_servico
+from client.client import criar_pedido, get_catalogo, get_categoria, get_servico
 
 
 class CardServico(QWidget):
@@ -103,8 +103,9 @@ class CatalogoLista(QWidget):
         self.lista = QListWidget()
 
         resp = get_categoria()
+        print(resp)
         self.filtro_categoria = QComboBox()
-        # self.filtro_categoria.addItems(resp[1])
+        self.filtro_categoria.addItems(resp[2])
         self.filtro_categoria.currentIndexChanged.connect(self.filter_services)
 
         self.main_layout.addWidget(self.filtro_categoria)
@@ -241,7 +242,12 @@ class ServicoEspecifico(QWidget):
 
     def comprar(self):
         quantidade = self.quantidade.value()
-        return quantidade
+        resp = criar_pedido(self.id, quantidade)
+        if not resp[0]:
+            QMessageBox.warning(self, "Erro na criação do pedido", str(resp[1]))
+            return
+        QMessageBox.information(self, "Parabens", "Seu pedido foi efetuado com sucesso")
+        self.voltar()
 
     def voltar(self):
         self.parent.goto_catalogo()

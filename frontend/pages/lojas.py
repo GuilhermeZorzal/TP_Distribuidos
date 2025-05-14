@@ -332,9 +332,10 @@ class EditarServico(QWidget):
         self.desc = QLabel("Insira a nova descrição do servico")
         self.input_desc = QLineEdit()
 
-        # TODO: talvez as categorias irão mudar
         self.categoria = QLabel("Escolha a categoria em que o serviço se enquadra")
         self.input_categoria = QComboBox()
+
+        # FIXME: talvez isso esteja errado
         status, message, categorias = get_categoria()
         self.input_categoria.addItems(categorias)
 

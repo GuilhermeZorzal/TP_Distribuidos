@@ -459,6 +459,31 @@ def get_minha_loja():
         return 0, e, {}
 
 
+def criar_pedido(idServico, quantidade):
+    """
+    Finalizar um pedido específico.
+
+    :param idPedido: ID do pedido
+    :return: Resposta do servidor
+    """
+    try:
+        mensagem = {
+            "funcao": "realizar_pedido",
+            "dados": {
+                "idPedido": idServico,
+                "quantidade": quantidade,
+            },
+        }
+
+        resposta = soc.sendMessage(HOST, PORT, mensagem)
+
+        return [resposta["status"], resposta["mensagem"], {}]
+
+    except Exception as e:
+        print(f"Um erro ocorreu: {e}")
+        return 0, e, {}
+
+
 def realizar_pedido(idPedido):
     """
     Finalizar um pedido específico.

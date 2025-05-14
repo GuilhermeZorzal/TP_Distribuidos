@@ -29,7 +29,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 RUN ls 
 
-COPY client.py .
+# COPY client.py .
 COPY interface.py .
 
 RUN chmod +x interface.py

@@ -6,7 +6,7 @@ services:
     tty: true
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - ./client:/app  
+      - ./frontend:/app  
       # - ./interface_socket:/app/interface_socket
       # - type: bind
       # # copia a biblioteca de comunicação pro container

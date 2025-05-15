@@ -61,6 +61,20 @@ def mudar_estado_servico(dados, estado):
     except Exception as e:
         return 0, f"Erro ao mudar estado do serviço: {e}", {}
 
+def deletar_servico(dados, idCliente):
+    try:
+        idServico = dados["idServico"]
+        servico = db.getServico(idServico)
+        if not servico:
+            return 0, "Serviço não encontrado", {}
+        if servico.idLoja != db.getLoja(idCliente).idLoja:
+            return 0, "Usuário não autorizado a deletar este serviço", {}
+
+        db.delServico(servico.idServico)
+        return 200, "Serviço deletado com sucesso", {}
+    except Exception as e:
+        return 0, f"Erro ao deletar serviço: {e}", {}
+
 def get_catalogo(dados):
     try:
         print(f"Dados recebidos: {dados}")

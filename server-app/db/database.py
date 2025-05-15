@@ -192,18 +192,18 @@ def getServicos(categorias: list[str] = None,
     ]
     return servicos
 
-def mudarEstadoServico(idServico, estado):
+def mudarEstadoServico(idServico: int, estado: bool) -> bool:
     con = conectar()
     cur = con.cursor()
     try:
         cur.execute(
             "UPDATE servico SET esta_visivel = ? WHERE idServico = ?",
-            (estado, idServico)
+            (1 if estado else 0, idServico)
         )
         con.commit()
         return cur.rowcount > 0
     except Exception as e:
-        print("Erro ao atualizar status do serviço:", e)
+        print("Erro ao atualizar estado do serviço:", e)
         con.rollback()
         return False
     finally:

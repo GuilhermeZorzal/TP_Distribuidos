@@ -850,7 +850,7 @@ class LojaStack(QStackedWidget):
         if esta_logado()[0]:
             resp = usuario_possui_loja()
             print("usuario possui loja", resp)
-            if resp[0]:
+            if resp[2]:
                 print("RESPOSTA POSSUI LOJA", resp)
                 self.area_loja.load()
                 self.setCurrentWidget(self.area_loja)

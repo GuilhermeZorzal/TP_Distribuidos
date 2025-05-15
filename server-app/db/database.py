@@ -134,7 +134,7 @@ def getServico(idServico):
             descricao_servico=row[2],
             categoria=row[3],
             tipo_pagamento=row[4],
-            quantidade_pagamento=row[5],
+            quantidade=row[5],
             esta_visivel=bool(row[6]),
             idLoja=row[7]
         )
@@ -144,7 +144,7 @@ def getServico(idServico):
 def getServicos(categorias: list[str] = None,
                idLoja: int = None,
                cont_pages: int = 0,
-               page_size: int = 2):
+               page_size: int = 20):
     con = conectar()
     cur = con.cursor()
 
@@ -184,7 +184,7 @@ def getServicos(categorias: list[str] = None,
             descricao_servico=row[2],
             categoria=row[3],
             tipo_pagamento=row[4],
-            quantidade_pagamento=row[5],
+            quantidade=row[5],
             esta_visivel=row[6],
             idLoja=row[7]
         ).__dict__
@@ -199,7 +199,7 @@ def addServico(servico: Servico):
         nome_servico = getattr(servico, "nome_servico", "")
         cur.execute(
             "INSERT INTO servico (nome_servico, descricao_servico, categoria, tipo_pagamento, quantidade_pagamento, esta_visivel, idLoja) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (nome_servico, servico.descricao_servico, servico.categoria, servico.tipo_pagamento, servico.quantidade_pagamento, servico.esta_visivel, servico.idLoja)
+            (nome_servico, servico.descricao_servico, servico.categoria, servico.tipo_pagamento, servico.quantidade, servico.esta_visivel, servico.idLoja)
         )
         con.commit()
         servico.idServico = cur.lastrowid
@@ -386,7 +386,7 @@ def criar_banco():
         descricao_servico TEXT NOT NULL,
         categoria TEXT NOT NULL,
         tipo_pagamento TEXT NOT NULL,
-        quantidade_pagamento REAL NOT NULL,
+        quantidade REAL NOT NULL,
         esta_visivel BOOLEAN NOT NULL,
         idLoja INTEGER NOT NULL,
         FOREIGN KEY (idLoja) REFERENCES loja(idLoja)

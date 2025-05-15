@@ -220,7 +220,7 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
                 "descricao_servico": descricao,
                 "categoria": categoria,
                 "tipo_pagamento": tipo,
-                "quantidade_pagamento": quantidade,
+                "quantidade": quantidade,
             },
         }
 
@@ -269,7 +269,7 @@ def get_catalogo(categorias=[], idLoja=None):
             "funcao": "get_catalogo",
             "dados": {
                 "tokenCliente": tokenCliente,
-                "pages": cont_pages,
+                "pages": 0,
                 "categorias": categorias,
                 "idLoja": idLoja,
             },
@@ -630,7 +630,7 @@ def usuario_possui_loja():
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
-        return [resposta["status"], resposta["mensagem"], {}]
+        return [resposta["status"], resposta["mensagem"], {resposta["dados"]["resposta"]}]
 
     except Exception as e:
         print(f"Um erro ocorreu: {e}")

@@ -76,7 +76,7 @@ def get_catalogo(categorias=[], idLoja=None):
             "descricao_servico": "descriçao",
             "categoria": random.choice(["limpeza", "reparo", "consultoria"]),
             "tipo_pagamento": "maldicoes",
-            "quantidade_pagamento": random.randint(1, 10),
+            "quantidade": random.randint(1, 10),
             "esta_visivel": True,
             "idLoja": str(uuid.uuid4()),
         }

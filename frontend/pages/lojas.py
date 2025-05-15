@@ -218,7 +218,7 @@ class GerenciarServicos(QWidget):
 
         id_loja = self.parent.get_id_loja()
         print("id_loja", id_loja)
-        resp = get_catalogo(id_loja)
+        resp = get_catalogo(idLoja=id_loja)
         if not resp[0]:
             QMessageBox.critical(self, "Erro", str(resp[1]))
             return
@@ -231,7 +231,7 @@ class GerenciarServicos(QWidget):
             desc = dado["descricao_servico"]
             categoria = dado["categoria"]
             tipo = dado["tipo_pagamento"]
-            quant = dado["quantidade_pagamento"]
+            quant = dado["quantidade"]
             esta_visivel = dado["esta_visivel"]
 
             servico = Servico(

@@ -388,26 +388,6 @@ class EditarServico(QWidget):
         outer_layout.addLayout(layout)
         layout.addStretch()
         self.setLayout(outer_layout)
-
-    def voltar(self):
-        self.parent.goto_area_loja()
-
-    def load(self, id):
-        resp = get_servico(id)
-        if not resp[0]:
-            QMessageBox.warning(self, "Erro", str(resp[1]))
-            self.parent.goto_area_gerencia()
-            return
-
-        servico = resp[2]
-
-        self.id = servico["idServico"]
-        self.input_nome.setText(servico["nome_servico"])
-        self.input_desc.setText(servico["descricao_servico"])
-        self.input_categoria.setCurrentText(servico["categoria"])
-        self.input_tipo_pagamento.setText(servico["tipo_pagamento"])
-        self.input_quantidade.setValue(servico["quantidade"])
-
         self.setStyleSheet("""
             QLineEdit {
                 color: #2c3e50;
@@ -438,6 +418,32 @@ class EditarServico(QWidget):
                 font-size: 40px;
             }
         """)
+
+    def voltar(self):
+        self.parent.goto_area_loja()
+
+    def load(self, id):
+        resp = get_servico(id)
+        if not resp[0]:
+            QMessageBox.warning(self, "Erro", str(resp[1]))
+            self.parent.goto_area_gerencia()
+            return
+
+        servico = resp[2]
+
+        resp = get_categoria()
+        print("Categorias carregadas:", resp)
+        print("Categorias carregadas:", resp[2])
+        if not resp[0]:
+            QMessageBox.warning(self, "erro", str(resp[1]))
+        self.input_categoria.addItems(resp[2])
+
+        self.id = servico["idServico"]
+        self.input_nome.setText(servico["nome_servico"])
+        self.input_desc.setText(servico["descricao_servico"])
+        self.input_categoria.setCurrentText(servico["categoria"])
+        self.input_tipo_pagamento.setText(servico["tipo_pagamento"])
+        self.input_quantidade.setValue(servico["quantidade"])
 
     def atualizar(self):
         if not esta_logado()[0]:

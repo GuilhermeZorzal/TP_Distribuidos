@@ -400,7 +400,7 @@ class EditarServico(QWidget):
         self.input_desc.setText(servico["descricao_servico"])
         self.input_categoria.setCurrentText(servico["categoria"])
         self.input_tipo_pagamento.setText(servico["tipo_pagamento"])
-        self.input_quantidade.setValue(servico["quantidade_pagamento"])
+        self.input_quantidade.setValue(servico["quantidade"])
 
         self.setStyleSheet("""
             QLineEdit {

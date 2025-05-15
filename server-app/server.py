@@ -70,6 +70,12 @@ def tratar_mensagem(mensagem):
 
         elif func == "get_servico":
             return servico.get_servico(dados)
+        
+        elif func == "ocultar_servico":
+            return servico.mudar_estado_servico(dados, 0)
+        
+        elif func == "desocultar_servico":
+            return servico.mudar_estado_servico(dados, 1)
 
         elif func == "add_pedido":
             return pedido.add_pedido(dados, idCliente)
@@ -130,6 +136,10 @@ def main():
         resposta = formatar_mensagem(status, msg, dados)
         
         print(f"Resposta Servidor: {resposta}")
+        # FIXME:
+        # if "dados" in resposta:
+        #     if "esta_visivel" in resposta["dados"]:
+        #         print(f"Mensagem recebida: {type(resposta['dados']['esta_visivel'])}")
 
         # TODO: isolar as funcoes de sql.
         # - create {table}

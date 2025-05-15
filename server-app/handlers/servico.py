@@ -1,11 +1,11 @@
-from db.database import addServico, getLoja, getServicos, getServico
+import db.database as db
 from objetos import Servico, categorias
 from utils.token import autorizarToken
 
 
 def criar_anuncio(dados, idCliente):
     try:
-        idLoja = getLoja(idCliente=idCliente).idLoja
+        idLoja = db.getLoja(idCliente=idCliente).idLoja
         print(f"ID Loja: {idLoja}")
 
         servico = Servico(
@@ -17,8 +17,7 @@ def criar_anuncio(dados, idCliente):
             idLoja=idLoja,
         )
 
-
-        id_servico = addServico(servico)
+        id_servico = db.addServico(servico)
         
         print(f"Serviço criado: {servico.__dict__}")
 
@@ -36,7 +35,7 @@ def criar_anuncio(dados, idCliente):
 def get_servico(dados):
     try:
         idServico = dados["idServico"]
-        servico = getServico(idServico)
+        servico = db.getServico(idServico)
         if servico:
             return 200, "Serviço encontrado com sucesso", servico.__dict__
         else:
@@ -49,11 +48,22 @@ def get_categoria():
     print(200, "Categorias mostradas com sucesso", {"categorias": categorias})
     return 200, "Categorias mostradas com sucesso", {"categorias": categorias}
 
+def mudar_estado_servico(dados, estado):
+    try:
+        idServico = dados["idServico"]
+        servico = db.getServico(idServico)
+        if servico:
+            db.mudarEstadoServico(servico, estado)
+            return 200, "Estado do serviço atualizado com sucesso", servico.__dict__
+        else:
+            return 0, "Serviço não encontrado", {}
+    except Exception as e:
+        return 0, f"Erro ao mudar estado do serviço: {e}", {}
 
 def get_catalogo(dados):
     try:
         print(f"Dados recebidos: {dados}")
-        servicos = getServicos(
+        servicos = db.getServicos(
             categorias=dados["categorias"],
             idLoja=dados["idLoja"],
             cont_pages=int(dados["pages"]),

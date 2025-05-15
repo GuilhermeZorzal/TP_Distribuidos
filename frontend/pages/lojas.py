@@ -163,10 +163,11 @@ class Servico(QWidget):
 
     def atualiza_visibilidade(self):
         estado = self.visibilidade.isChecked()
-        if estado:
+        
+        if not estado:
             ocultar_servico(self.id)
 
-        if not estado:
+        if estado:
             desocultar_servico(self.id)
 
     def deletar(self):

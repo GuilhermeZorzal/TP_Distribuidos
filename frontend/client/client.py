@@ -36,7 +36,7 @@ def receiveMessage():
     pass
 
 
-HOST = "0.0.0.0"
+HOST = "server"
 PORT = 50051
 
 tokenCliente = None

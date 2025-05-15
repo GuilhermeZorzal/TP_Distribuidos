@@ -44,7 +44,8 @@ def get_servico(dados):
         return 0, f"Erro ao buscar serviço: {e}", {}
 
 def get_categoria():
-    return 200, "Categorias mostradas com sucesso", categorias
+    print(200, "Categorias mostradas com sucesso", {"categorias": categorias})
+    return 200, "Categorias mostradas com sucesso", {"categorias": categorias}
     
 def get_catalogo(dados):
     try:
@@ -52,7 +53,7 @@ def get_catalogo(dados):
         servicos = getServicos(
             categorias=dados['categorias'],
             idLoja=dados['idLoja'],
-            cont_pages=int(dados['cont_pages'])
+            cont_pages=int(dados['pages'])
         )
         if not servicos:
             return 0, "Nenhum serviço encontrado", {}

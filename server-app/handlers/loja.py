@@ -30,6 +30,16 @@ def criar_loja(dados, idCliente):
     except Exception as e:
         return 0, f"Erro ao criar loja: {str(e)}", {}
 
+def get_minha_loja(idCliente):
+    try:
+        loja = getLoja(idCliente=idCliente)
+        if loja:
+            return 200, "Loja encontrada", loja.__dict__
+        else:
+            return 0, "Loja não encontrada", {}
+    
+    except Exception as e:
+        return 0, f"Erro ao obter loja: {e}", {}
 
 # faça verificar caso o usuario possui uma loja
 def tem_loja(idCliente):

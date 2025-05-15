@@ -239,6 +239,7 @@ def get_categoria():
         mensagem = {"funcao": "get_categoria", "dados": {}}
 
         resposta = sendMessage(HOST, PORT, mensagem)
+        print("\n\nResposta:", resposta)
         return [
             resposta["status"],
             resposta["mensagem"],
@@ -560,7 +561,7 @@ def usuario_possui_loja():
     """
     try:
         mensagem = {
-            "funcao": "usuario_possui_loja",
+            "funcao": "tem_loja",
             "dados": {"tokenCliente": tokenCliente},
         }
 

@@ -4,10 +4,12 @@ from objetos import Cliente, Loja, Servico, Pedido
 
 FILE = "./db/sqlite.db"
 
+
 def conectar():
     if not os.path.exists("./db"):
         os.makedirs("./db")
     return sqlite3.connect(FILE)
+
 
 def mostrar_tabelas():
     conn = conectar()
@@ -32,6 +34,7 @@ def mostrar_tabelas():
     print("\n\n")
     conn.close()
 
+
 def getCliente(id):
     con = conectar()
     cur = con.cursor()
@@ -46,9 +49,10 @@ def getCliente(id):
             apelido=row[2],
             senha=row[3],
             ccm=row[4],
-            contato=row[5]
+            contato=row[5],
         )
     return None
+
 
 def addCliente(cliente: Cliente):
     con = conectar()
@@ -56,7 +60,13 @@ def addCliente(cliente: Cliente):
     try:
         cur.execute(
             "INSERT INTO cliente (nome, apelido, senha, ccm, contato) VALUES (?, ?, ?, ?, ?)",
-            (cliente.nome, cliente.apelido, cliente.senha, cliente.ccm, cliente.contato)
+            (
+                cliente.nome,
+                cliente.apelido,
+                cliente.senha,
+                cliente.ccm,
+                cliente.contato,
+            ),
         )
         con.commit()
         cliente.idCliente = cur.lastrowid
@@ -67,6 +77,7 @@ def addCliente(cliente: Cliente):
         return None
     finally:
         con.close()
+
 
 def getLoja(idCliente: int = None, idLoja: int = None):
     con = conectar()
@@ -93,14 +104,14 @@ def getLoja(idCliente: int = None, idLoja: int = None):
 
     if row:
         return Loja(
-            idLoja   = row[0],
-            nome     = row[1],
-            contato  = row[2],
-            descricao= row[3],
-            idCliente= row[4]
+            idLoja=row[0],
+            nome=row[1],
+            contato=row[2],
+            descricao=row[3],
+            idCliente=row[4],
         )
     return None
-    
+
 
 def addLoja(loja: Loja):
     con = conectar()
@@ -108,7 +119,7 @@ def addLoja(loja: Loja):
     try:
         cur.execute(
             "INSERT INTO loja (nome, contato, descricao, idCliente) VALUES (?, ?, ?, ?)",
-            (loja.nome, loja.contato, loja.descricao, loja.idCliente)
+            (loja.nome, loja.contato, loja.descricao, loja.idCliente),
         )
         con.commit()
         loja.idLoja = cur.lastrowid
@@ -119,6 +130,7 @@ def addLoja(loja: Loja):
         return None
     finally:
         con.close()
+
 
 def getServico(idServico):
     con = conectar()
@@ -136,15 +148,17 @@ def getServico(idServico):
             tipo_pagamento=row[4],
             quantidade=row[5],
             esta_visivel=bool(row[6]),
-            idLoja=row[7]
+            idLoja=row[7],
         )
     return None
 
 
-def getServicos(categorias: list[str] = None,
-               idLoja: int = None,
-               cont_pages: int = 0,
-               page_size: int = 20):
+def getServicos(
+    categorias: list[str] = None,
+    idLoja: int = None,
+    cont_pages: int = 0,
+    page_size: int = 20,
+):
     con = conectar()
     cur = con.cursor()
 
@@ -186,11 +200,12 @@ def getServicos(categorias: list[str] = None,
             tipo_pagamento=row[4],
             quantidade=row[5],
             esta_visivel=row[6],
-            idLoja=row[7]
+            idLoja=row[7],
         ).__dict__
         for row in rows
     ]
     return servicos
+
 
 def mudarEstadoServico(idServico: int, estado: bool) -> bool:
     con = conectar()
@@ -198,7 +213,7 @@ def mudarEstadoServico(idServico: int, estado: bool) -> bool:
     try:
         cur.execute(
             "UPDATE servico SET esta_visivel = ? WHERE idServico = ?",
-            (1 if estado else 0, idServico)
+            (1 if estado else None, idServico),
         )
         con.commit()
         return cur.rowcount > 0
@@ -209,6 +224,7 @@ def mudarEstadoServico(idServico: int, estado: bool) -> bool:
     finally:
         con.close()
 
+
 def addServico(servico: Servico):
     con = conectar()
     cur = con.cursor()
@@ -216,7 +232,15 @@ def addServico(servico: Servico):
         nome_servico = getattr(servico, "nome_servico", "")
         cur.execute(
             "INSERT INTO servico (nome_servico, descricao_servico, categoria, tipo_pagamento, quantidade, esta_visivel, idLoja) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (nome_servico, servico.descricao_servico, servico.categoria, servico.tipo_pagamento, servico.quantidade, servico.esta_visivel, servico.idLoja)
+            (
+                nome_servico,
+                servico.descricao_servico,
+                servico.categoria,
+                servico.tipo_pagamento,
+                servico.quantidade,
+                servico.esta_visivel,
+                servico.idLoja,
+            ),
         )
         con.commit()
         servico.idServico = cur.lastrowid
@@ -227,14 +251,22 @@ def addServico(servico: Servico):
         return None
     finally:
         con.close()
-        
+
+
 def editarServico(servico: Servico):
     con = conectar()
     cur = con.cursor()
     try:
         cur.execute(
             "UPDATE servico SET nome_servico = ?, descricao_servico = ?, categoria = ?, tipo_pagamento = ?, quantidade = ?, WHERE idServico = ?",
-            (servico.nome_servico, servico.descricao_servico, servico.categoria, servico.tipo_pagamento, servico.quantidade, servico.idServico)
+            (
+                servico.nome_servico,
+                servico.descricao_servico,
+                servico.categoria,
+                servico.tipo_pagamento,
+                servico.quantidade,
+                servico.idServico,
+            ),
         )
         con.commit()
         return cur.rowcount > 0
@@ -244,6 +276,7 @@ def editarServico(servico: Servico):
         return False
     finally:
         con.close()
+
 
 def delServico(idServico):
     con = conectar()
@@ -259,6 +292,7 @@ def delServico(idServico):
     finally:
         con.close()
 
+
 def getPedido(idPedido):
     con = conectar()
     cur = con.cursor()
@@ -268,13 +302,13 @@ def getPedido(idPedido):
 
     if row:
         return Pedido(
-            idPedido     = row[0],
-            data_pedido  = row[1],
-            idServico    = row[2],
-            estado_pedido= row[3],
-            total        = row[4],
-            nome_cliente = row[5],
-            idCliente    = row[6]
+            idPedido=row[0],
+            data_pedido=row[1],
+            idServico=row[2],
+            estado_pedido=row[3],
+            total=row[4],
+            nome_cliente=row[5],
+            idCliente=row[6],
         )
     return None
 
@@ -288,19 +322,19 @@ def getPedidos(idCliente):
 
     return [
         Pedido(
-            idPedido     = row[0],
-            data_pedido  = row[1],
-            idServico    = row[2],
-            estado_pedido= row[3],
-            total        = row[4],
-            nome_cliente = row[5],
-            idCliente    = row[6]
+            idPedido=row[0],
+            data_pedido=row[1],
+            idServico=row[2],
+            estado_pedido=row[3],
+            total=row[4],
+            nome_cliente=row[5],
+            idCliente=row[6],
         ).__dict__
         for row in rows
     ]
 
 
-def getPedidosLoja(idCliente) :
+def getPedidosLoja(idCliente):
     loja = getLoja(idCliente=idCliente)
     if not loja:
         return []
@@ -319,13 +353,13 @@ def getPedidosLoja(idCliente) :
 
     return [
         Pedido(
-            idPedido     = row[0],
-            data_pedido  = row[1],
-            idServico    = row[2],
-            estado_pedido= row[3],
-            total        = row[4],
-            nome_cliente = row[5],
-            idCliente    = row[6]
+            idPedido=row[0],
+            data_pedido=row[1],
+            idServico=row[2],
+            estado_pedido=row[3],
+            total=row[4],
+            nome_cliente=row[5],
+            idCliente=row[6],
         ).__dict__
         for row in rows
     ]
@@ -345,18 +379,21 @@ def delPedido(idPedido):
     finally:
         con.close()
 
+
 def addPedido(pedido: Pedido):
     con = conectar()
     cur = con.cursor()
     try:
         cur.execute(
-          "INSERT INTO pedido (data_pedido, idServico, estado_pedido, total, nome_cliente,  idCliente) VALUES (?, ?, ?, ?, ?, ?)",
-          (pedido.data_pedido,
-           pedido.idServico,
-           pedido.estado_pedido,
-           pedido.total,
-           pedido.nome_cliente,
-           pedido.idCliente)
+            "INSERT INTO pedido (data_pedido, idServico, estado_pedido, total, nome_cliente,  idCliente) VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                pedido.data_pedido,
+                pedido.idServico,
+                pedido.estado_pedido,
+                pedido.total,
+                pedido.nome_cliente,
+                pedido.idCliente,
+            ),
         )
         con.commit()
         pedido.idPedido = cur.lastrowid
@@ -368,19 +405,19 @@ def addPedido(pedido: Pedido):
         return None
     finally:
         con.close()
-    
+
+
 # mudar o estado do pedido para ANDAMENTO
 def mudarEstadoPedido(idPedido, estado):
-    if estado != 'ANDAMENTO' and estado != 'CONCLUÍDO':
+    if estado != "ANDAMENTO" and estado != "CONCLUÍDO":
         return False
-    
+
     print("ERRO")
     con = conectar()
     cur = con.cursor()
     try:
         cur.execute(
-            "UPDATE pedido SET estado_pedido = ? WHERE idPedido = ?",
-            (estado, idPedido)
+            "UPDATE pedido SET estado_pedido = ? WHERE idPedido = ?", (estado, idPedido)
         )
         con.commit()
         return cur.rowcount > 0
@@ -397,6 +434,7 @@ def reset_database():
         os.remove(FILE)
 
     criar_banco()
+
 
 def criar_banco():
     con = conectar()
@@ -457,5 +495,6 @@ def criar_banco():
 
     con.commit()
     con.close()
+
 
 criar_banco()

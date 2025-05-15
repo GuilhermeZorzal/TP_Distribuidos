@@ -48,7 +48,7 @@ def tratar_mensagem(mensagem):
 
         if func == "criar_loja":
             return loja.criar_loja(dados, idCliente)
-        
+
         elif func == "get_minha_loja":
             return loja.get_minha_loja(idCliente)
 
@@ -62,7 +62,7 @@ def tratar_mensagem(mensagem):
             return servico.criar_anuncio(dados, idCliente)
 
         elif func == "get_categoria":
-            print("="*100)
+            print("=" * 100)
             return servico.get_categoria()
 
         elif func == "get_catalogo":
@@ -70,16 +70,16 @@ def tratar_mensagem(mensagem):
 
         elif func == "get_servico":
             return servico.get_servico(dados)
-        
+
         elif func == "ocultar_servico":
             return servico.mudar_estado_servico(dados, 0)
-        
+
         elif func == "desocultar_servico":
             return servico.mudar_estado_servico(dados, 1)
-        
+
         elif func == "deletar_servico":
             return servico.deletar_servico(dados, idCliente)
-        
+        # updateServico
         elif func == "editar_servico":
             return servico.editar_servico(dados, idCliente)
 
@@ -140,7 +140,7 @@ def main():
 
         status, msg, dados = tratar_mensagem(mensagem)
         resposta = formatar_mensagem(status, msg, dados)
-        
+
         print(f"Resposta Servidor: {resposta}")
         # FIXME:
         # if "dados" in resposta:

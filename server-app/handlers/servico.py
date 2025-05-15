@@ -18,7 +18,7 @@ def criar_anuncio(dados, idCliente):
         )
 
         id_servico = db.addServico(servico)
-        
+
         print(f"Serviço criado: {servico.__dict__}")
 
         if id_servico is None:
@@ -48,6 +48,7 @@ def get_categoria():
     print(200, "Categorias mostradas com sucesso", {"categorias": categorias})
     return 200, "Categorias mostradas com sucesso", {"categorias": categorias}
 
+
 def mudar_estado_servico(dados, estado):
     try:
         idServico = dados["idServico"]
@@ -55,11 +56,16 @@ def mudar_estado_servico(dados, estado):
         if servico:
             db.mudarEstadoServico(servico, estado)
             servico.esta_visivel = estado
-            return 200, "Estado do serviço atualizado com sucesso", {"servico": servico.__dict__}
+            return (
+                200,
+                "Estado do serviço atualizado com sucesso",
+                {"servico": servico.__dict__},
+            )
         else:
             return 0, "Serviço não encontrado", {}
     except Exception as e:
         return 0, f"Erro ao mudar estado do serviço: {e}", {}
+
 
 def deletar_servico(dados, idCliente):
     try:
@@ -74,7 +80,8 @@ def deletar_servico(dados, idCliente):
         return 200, "Serviço deletado com sucesso", {}
     except Exception as e:
         return 0, f"Erro ao deletar serviço: {e}", {}
-    
+
+
 def editar_servico(dados, idCliente):
     try:
         idServico = dados["idServico"]
@@ -90,12 +97,12 @@ def editar_servico(dados, idCliente):
         servico.tipo_pagamento = dados["tipo_pagamento"]
         servico.quantidade = dados["quantidade"]
 
-        db.updateServico(servico)
-        
+        db.editarServico(servico)
+
         return 200, "Serviço editado com sucesso", {"servico": servico.__dict__}
     except Exception as e:
         return 0, f"Erro ao editar serviço: {e}", {}
-    
+
 
 def get_catalogo(dados):
     try:
@@ -112,4 +119,3 @@ def get_catalogo(dados):
 
     except Exception as e:
         return 0, f"Erro ao buscar serviços: {str(e)}", {}
-

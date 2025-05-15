@@ -91,8 +91,8 @@ class Servico(QWidget):
         self.visibilidade.setChecked(esta_visivel)
         self.visibilidade.clicked.connect(self.atualiza_visibilidade)
 
-        self.button_deletar = QPushButton("Outras ações")
-        self.button_deletar.clicked.connect(self.deletar)
+        self.button_outra_acao = QPushButton("Outras ações")
+        self.button_outra_acao.clicked.connect(self.outrasAcao)
 
         # self.button_atualiza = QPushButton("Atualizar visibilidade")
         # self.button_atualiza.clicked.connect(self.atualiza_visibilidade)
@@ -117,7 +117,7 @@ class Servico(QWidget):
         layout.addWidget(self.quant)
         layout.addWidget(self.visibilidade)
         # layout.addWidget(self.button_atualiza)
-        layout.addWidget(self.button_deletar)
+        layout.addWidget(self.button_outra_acao)
         layout.addStretch()
         container.setLayout(layout)
 
@@ -175,8 +175,9 @@ class Servico(QWidget):
                 QMessageBox.critical(self, "Erro", str(resp[1]))
                 return
 
-    def deletar(self):
-        apagar_servico(self.id)
+    def outrasAcao(self):
+        # FIXME: arrumar erro do editar servico
+        # Erro ao editar serviço: module 'db.database' has no attribute 'updateServico'
         self.parent.goto_editar_servico(self.id)
 
 

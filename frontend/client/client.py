@@ -220,7 +220,7 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
                 "descricao_servico": descricao,
                 "categoria": categoria,
                 "tipo_pagamento": tipo,
-                "quantidade": quantidade,
+                "quantidade_pagamento": quantidade,
             },
         }
 
@@ -236,7 +236,12 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
 
 def get_categoria():
     try:
-        mensagem = {"funcao": "get_categoria", "dados": {}}
+        mensagem = {
+            "funcao": "get_categoria",
+            "dados": {
+                "tokenCliente": tokenCliente,
+            },
+        }
 
         resposta = sendMessage(HOST, PORT, mensagem)
         print("\n\nResposta:", resposta)
@@ -262,7 +267,12 @@ def get_catalogo(categorias=[], idLoja=None):
 
         mensagem = {
             "funcao": "get_catalogo",
-            "dados": {"pages": cont_pages, "categorias": categorias, "idLoja": idLoja},
+            "dados": {
+                "tokenCliente": tokenCliente,
+                "pages": cont_pages,
+                "categorias": categorias,
+                "idLoja": idLoja,
+            },
         }
         resposta = sendMessage(HOST, PORT, mensagem)
 
@@ -281,7 +291,10 @@ def get_servico(idServico):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "get_servico", "dados": {"idServico": idServico}}
+        mensagem = {
+            "funcao": "get_servico",
+            "dados": {"tokenCliente": tokenCliente, "idServico": idServico},
+        }
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
@@ -299,7 +312,13 @@ def get_loja(idLoja):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "get_loja", "dados": {"idLoja": idLoja}}
+        mensagem = {
+            "funcao": "get_loja",
+            "dados": {
+                "idLoja": idLoja,
+                "tokenCliente": tokenCliente,
+            },
+        }
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
@@ -317,7 +336,13 @@ def pagar_pedido(idPedido):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "get_pedido", "dados": {"idPedido": idPedido}}
+        mensagem = {
+            "funcao": "get_pedido",
+            "dados": {
+                "idPedido": idPedido,
+                "tokenCliente": tokenCliente,
+            },
+        }
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
@@ -335,7 +360,13 @@ def get_pedido(idPedido):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "get_pedido", "dados": {"idPedido": idPedido}}
+        mensagem = {
+            "funcao": "get_pedido",
+            "dados": {
+                "idPedido": idPedido,
+                "tokenCliente": tokenCliente,
+            },
+        }
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
@@ -390,7 +421,13 @@ def cancelar_pedido(idPedido):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "cancelar_pedido", "dados": {"idPedido": idPedido}}
+        mensagem = {
+            "funcao": "cancelar_pedido",
+            "dados": {
+                "idPedido": idPedido,
+                "tokenCliente": tokenCliente,
+            },
+        }
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
@@ -418,6 +455,7 @@ def editar_servico(idServico, nome, descricao, categoria, tipo, quantidade):
             "funcao": "editar_servico",
             "dados": {
                 "idServico": idServico,
+                "tokenCliente": tokenCliente,
                 "nome_servico": nome,
                 "descricao_servico": descricao,
                 "categoria": categoria,
@@ -442,7 +480,13 @@ def ocultar_servico(idServico):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "ocultar_servico", "dados": {"idServico": idServico}}
+        mensagem = {
+            "funcao": "ocultar_servico",
+            "dados": {
+                "idServico": idServico,
+                "tokenCliente": tokenCliente,
+            },
+        }
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
@@ -461,7 +505,13 @@ def desocultar_servico(idServico):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "desocultar_servico", "dados": {"idServico": idServico}}
+        mensagem = {
+            "funcao": "desocultar_servico",
+            "dados": {
+                "idServico": idServico,
+                "tokenCliente": tokenCliente,
+            },
+        }
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
@@ -480,7 +530,13 @@ def apagar_servico(idServico):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "apagar_servico", "dados": {"idServico": idServico}}
+        mensagem = {
+            "funcao": "apagar_servico",
+            "dados": {
+                "idServico": idServico,
+                "tokenCliente": tokenCliente,
+            },
+        }
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
@@ -522,6 +578,7 @@ def criar_pedido(idServico, quantidade):
             "dados": {
                 "idPedido": idServico,
                 "quantidade": quantidade,
+                "tokenCliente": tokenCliente,
             },
         }
 
@@ -542,7 +599,13 @@ def realizar_pedido(idPedido):
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "realizar_pedido", "dados": {"idPedido": idPedido}}
+        mensagem = {
+            "funcao": "realizar_pedido",
+            "dados": {
+                "idPedido": idPedido,
+                "tokenCliente": tokenCliente,
+            },
+        }
 
         resposta = sendMessage(HOST, PORT, mensagem)
 

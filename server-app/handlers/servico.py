@@ -74,6 +74,28 @@ def deletar_servico(dados, idCliente):
         return 200, "Serviço deletado com sucesso", {}
     except Exception as e:
         return 0, f"Erro ao deletar serviço: {e}", {}
+    
+def editar_servico(dados, idCliente):
+    try:
+        idServico = dados["idServico"]
+        servico = db.getServico(idServico)
+        if not servico:
+            return 0, "Serviço não encontrado", {}
+        if servico.idLoja != db.getLoja(idCliente).idLoja:
+            return 0, "Usuário não autorizado a editar este serviço", {}
+
+        servico.nome_servico = dados["nome_servico"]
+        servico.descricao_servico = dados["descricao_servico"]
+        servico.categoria = dados["categoria"]
+        servico.tipo_pagamento = dados["tipo_pagamento"]
+        servico.quantidade = dados["quantidade"]
+
+        db.updateServico(servico)
+        
+        return 200, "Serviço editado com sucesso", {"servico": servico.__dict__}
+    except Exception as e:
+        return 0, f"Erro ao editar serviço: {e}", {}
+    
 
 def get_catalogo(dados):
     try:

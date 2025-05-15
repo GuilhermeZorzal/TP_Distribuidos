@@ -227,6 +227,23 @@ def addServico(servico: Servico):
         return None
     finally:
         con.close()
+        
+def editarServico(servico: Servico):
+    con = conectar()
+    cur = con.cursor()
+    try:
+        cur.execute(
+            "UPDATE servico SET nome_servico = ?, descricao_servico = ?, categoria = ?, tipo_pagamento = ?, quantidade = ?, WHERE idServico = ?",
+            (servico.nome_servico, servico.descricao_servico, servico.categoria, servico.tipo_pagamento, servico.quantidade, servico.idServico)
+        )
+        con.commit()
+        return cur.rowcount > 0
+    except Exception as e:
+        print("Erro ao atualizar serviço:", e)
+        con.rollback()
+        return False
+    finally:
+        con.close()
 
 def delServico(idServico):
     con = conectar()

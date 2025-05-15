@@ -25,7 +25,7 @@ def criar_loja(dados, idCliente):
         
         loja.idLoja = id_loja
         
-        return 200, "Loja criada com sucesso", loja.__dict__
+        return 200, "Loja criada com sucesso", {"loja": loja.__dict__}
     
     except Exception as e:
         return 0, f"Erro ao criar loja: {str(e)}", {}
@@ -34,7 +34,7 @@ def get_minha_loja(idCliente):
     try:
         loja = getLoja(idCliente=idCliente)
         if loja:
-            return 200, "Loja encontrada", loja.__dict__
+            return 200, "Loja encontrada", {"loja": loja.__dict__}
         else:
             return 0, "Loja não encontrada", {}
     
@@ -59,7 +59,7 @@ def get_loja(dados):
         idLoja = dados['idLoja']
         loja = getLoja(idLoja=idLoja)
         if loja:
-            return 200, "Loja encontrada", loja.__dict__
+            return 200, "Loja encontrada", {"loja": loja.__dict__}
         else:
             return 0, "Loja não encontrada", {}
     

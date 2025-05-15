@@ -26,7 +26,7 @@ def criar_anuncio(dados, idCliente):
 
         servico.idServico = id_servico
 
-        return 200, "Serviço criado com sucesso", servico.__dict__
+        return 200, "Serviço criado com sucesso", {"servico": servico.__dict__}
 
     except Exception as e:
         return 0, f"Erro ao criar serviço: {str(e)}", {}
@@ -37,7 +37,7 @@ def get_servico(dados):
         idServico = dados["idServico"]
         servico = db.getServico(idServico)
         if servico:
-            return 200, "Serviço encontrado com sucesso", servico.__dict__
+            return 200, "Serviço encontrado com sucesso", {"servico": servico.__dict__}
         else:
             return 0, "Serviço não encontrado", {}
     except Exception as e:
@@ -54,7 +54,8 @@ def mudar_estado_servico(dados, estado):
         servico = db.getServico(idServico)
         if servico:
             db.mudarEstadoServico(servico, estado)
-            return 200, "Estado do serviço atualizado com sucesso", servico.__dict__
+            servico.esta_visivel = estado
+            return 200, "Estado do serviço atualizado com sucesso", {"servico": servico.__dict__}
         else:
             return 0, "Serviço não encontrado", {}
     except Exception as e:

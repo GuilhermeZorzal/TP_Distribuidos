@@ -855,6 +855,7 @@ class LojaStack(QStackedWidget):
                 return
             possui = resp[2]
             if possui:
+                self.area_loja.load()
                 self.setCurrentWidget(self.area_loja)
             else:
                 print("Nao possui loja")

@@ -17,9 +17,10 @@ def criar_anuncio(dados, idCliente):
             idLoja=idLoja,
         )
 
-        print(f"Serviço criado: {servico.__dict__}")
 
         id_servico = addServico(servico)
+        
+        print(f"Serviço criado: {servico.__dict__}")
 
         if id_servico is None:
             return 0, "Erro ao criar o serviço: não foi possível inserir no banco", {}

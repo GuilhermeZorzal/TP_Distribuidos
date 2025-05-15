@@ -198,7 +198,7 @@ def addServico(servico: Servico):
     try:
         nome_servico = getattr(servico, "nome_servico", "")
         cur.execute(
-            "INSERT INTO servico (nome_servico, descricao_servico, categoria, tipo_pagamento, quantidade_pagamento, esta_visivel, idLoja) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO servico (nome_servico, descricao_servico, categoria, tipo_pagamento, quantidade, esta_visivel, idLoja) VALUES (?, ?, ?, ?, ?, ?, ?)",
             (nome_servico, servico.descricao_servico, servico.categoria, servico.tipo_pagamento, servico.quantidade, servico.esta_visivel, servico.idLoja)
         )
         con.commit()

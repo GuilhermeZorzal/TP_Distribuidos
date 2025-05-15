@@ -531,7 +531,7 @@ def apagar_servico(idServico):
     """
     try:
         mensagem = {
-            "funcao": "apagar_servico",
+            "funcao": "deletar_servico",
             "dados": {
                 "idServico": idServico,
                 "tokenCliente": tokenCliente,
@@ -574,7 +574,7 @@ def criar_pedido(idServico, quantidade):
     """
     try:
         mensagem = {
-            "funcao": "realizar_pedido",
+            "funcao": "add_pedido",
             "dados": {
                 "idPedido": idServico,
                 "quantidade": quantidade,
@@ -600,7 +600,7 @@ def realizar_pedido(idPedido):
     """
     try:
         mensagem = {
-            "funcao": "realizar_pedido",
+            "funcao": "add_pedido",
             "dados": {
                 "idPedido": idPedido,
                 "tokenCliente": tokenCliente,

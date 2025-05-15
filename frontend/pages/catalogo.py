@@ -203,8 +203,8 @@ class ServicoEspecifico(QWidget):
         self.quantidade.setMaximum(1000)
         self.quantidade.setValue(1)
 
-        self.button_comprar = QPushButton("Comprar")
-        self.button_comprar.clicked.connect(self.comprar)
+        self.button_comprar = QPushButton("Adicionar pedido")
+        self.button_comprar.clicked.connect(self.criar_pedido)
         self.button_voltar = QPushButton("Voltar")
         self.button_voltar.clicked.connect(self.voltar)
 
@@ -241,7 +241,7 @@ class ServicoEspecifico(QWidget):
             f"Pagamento: {servico['quantidade']} {servico['tipo_pagamento']}"
         )
 
-    def comprar(self):
+    def criar_pedido(self):
         quantidade = self.quantidade.value()
         resp = criar_pedido(self.id, quantidade)
         if not resp[0]:

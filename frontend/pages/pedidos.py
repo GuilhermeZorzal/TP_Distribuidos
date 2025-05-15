@@ -275,6 +275,7 @@ class PedidoUnico(QWidget):
         else:
             QMessageBox.information(self, "Sucesso", str(resp[1]))
             self.parent.goto_meus_pedidos()
+        # FIXME: adicionar pagamento
 
     def deletar(self):
         resp = cancelar_pedido(self.id.text())

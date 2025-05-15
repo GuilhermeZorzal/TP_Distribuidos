@@ -85,8 +85,8 @@ def cadastrar(nome, apelido, senha, ccm, contato):
         return [resposta["status"], resposta["mensagem"], {}]
 
     except Exception as e:
-        # Em caso de erro, exibe a mensagem e retorna o erro
-        print(f"Um erro ocorreu: {e}")
+        # Em caso de erro, exibe a m cadaensagem e retorna o erro
+        print(f"Um erro ocorreu: {e} cadastrar")
         return 0, e, {}
 
 
@@ -156,7 +156,7 @@ def autenticar(ccm, senha):
         return [resposta["status"], resposta["mensagem"], {}]
 
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} autenticar")
         return 0, e, {}
 
 
@@ -199,7 +199,7 @@ def criar_loja(nome_loja, contato, descricao):
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
 
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} ciar loja")
         return 0, e, {}
 
 
@@ -230,7 +230,7 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
         return [resposta["status"], resposta["mensagem"], {}]
 
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} criar_anuncio")
         return 0, e, {}
 
 
@@ -279,7 +279,7 @@ def get_catalogo(categorias=[], idLoja=None):
         cont_pages += 1
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["servicos"]]
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} get_catalogo")
         return 0, e, {}
 
 
@@ -300,7 +300,7 @@ def get_servico(idServico):
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["servico"]]
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} get_servico")
         return 0, e, {}
 
 
@@ -324,7 +324,7 @@ def get_loja(idLoja):
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} get_loja")
         return 0, e, {}
 
 
@@ -348,7 +348,7 @@ def pagar_pedido(idPedido):
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedido"]]
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} pagar_pedido")
         return 0, e, {}
 
 
@@ -372,7 +372,7 @@ def get_pedido(idPedido):
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedido"]]
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} get_pedido")
         return 0, e, {}
 
 
@@ -389,7 +389,7 @@ def get_pedidos():
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedidos"]]
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} get_pedidoS")
         return 0, e, {}
 
 
@@ -409,7 +409,7 @@ def get_pedidos_minha_loja():
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedidos"]]
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} get_pedidos_minha_loja")
         return 0, e, {}
 
 
@@ -434,7 +434,7 @@ def cancelar_pedido(idPedido):
         return [resposta["status"], resposta["mensagem"], {}]
 
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} cancelar_pedido")
         return 0, e, {}
 
 
@@ -468,7 +468,7 @@ def editar_servico(idServico, nome, descricao, categoria, tipo, quantidade):
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]]
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} editar_servico")
         return 0, e, {}
 
 
@@ -493,7 +493,7 @@ def ocultar_servico(idServico):
         return [resposta["status"], resposta["mensagem"], {}]
 
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} ocultar_servico")
         return 0, e, {}
 
 
@@ -518,7 +518,7 @@ def desocultar_servico(idServico):
         return [resposta["status"], resposta["mensagem"], {}]
 
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} desocultar_servico")
         return 0, e, {}
 
 
@@ -543,7 +543,7 @@ def apagar_servico(idServico):
         return [resposta["status"], resposta["mensagem"], {}]
 
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} apagar_servico")
         return 0, e, {}
 
 
@@ -561,7 +561,7 @@ def get_minha_loja():
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
 
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} get_minha_loja")
         return 0, e, {}
 
 
@@ -587,7 +587,7 @@ def criar_pedido(idServico, quantidade):
         return [resposta["status"], resposta["mensagem"], {}]
 
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} criar_pedido")
         return 0, e, {}
 
 
@@ -612,7 +612,7 @@ def realizar_pedido(idPedido):
         return [resposta["status"], resposta["mensagem"], {}]
 
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} realizar_pedido")
         return 0, e, {}
 
 
@@ -633,7 +633,7 @@ def usuario_possui_loja():
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["resposta"]]
 
     except Exception as e:
-        print(f"Um erro ocorreu: {e}")
+        print(f"Um erro ocorreu: {e} usuario_possui_loja")
         return 0, e, {}
 
 

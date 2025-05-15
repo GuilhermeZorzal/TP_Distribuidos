@@ -19,7 +19,7 @@ def enviar_nome(nome):
         resposta = soc.sendMessage(HOST, PORT, nome)
         return 1, resposta
     except Exception as e:
-        print(f"Um erro ocorreu {e}")
+        print(f"Um erro ocorreu {e} enviar_nome")
         return 0, e
 
 

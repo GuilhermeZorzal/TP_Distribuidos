@@ -76,6 +76,9 @@ def tratar_mensagem(mensagem):
         
         elif func == "desocultar_servico":
             return servico.mudar_estado_servico(dados, 1)
+        
+        elif func == "deletar_servico":
+            return servico.deletar_servico(dados, idCliente)
 
         elif func == "add_pedido":
             return pedido.add_pedido(dados, idCliente)

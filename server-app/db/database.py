@@ -228,6 +228,20 @@ def addServico(servico: Servico):
     finally:
         con.close()
 
+def delServico(idServico):
+    con = conectar()
+    cur = con.cursor()
+    try:
+        cur.execute("DELETE FROM servico WHERE idServico = ?", (idServico,))
+        con.commit()
+        return cur.rowcount > 0
+    except Exception as e:
+        print("Erro ao deletar serviço:", e)
+        con.rollback()
+        return False
+    finally:
+        con.close()
+
 def getPedido(idPedido):
     con = conectar()
     cur = con.cursor()

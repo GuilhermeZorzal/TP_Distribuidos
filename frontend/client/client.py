@@ -630,7 +630,7 @@ def usuario_possui_loja():
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
-        return [resposta["status"], resposta["mensagem"], {resposta["dados"]["resposta"]}]
+        return [resposta["status"], resposta["mensagem"], resposta["dados"]["resposta"]]
 
     except Exception as e:
         print(f"Um erro ocorreu: {e}")

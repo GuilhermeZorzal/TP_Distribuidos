@@ -128,6 +128,8 @@ def main():
 
         status, msg, dados = tratar_mensagem(mensagem)
         resposta = formatar_mensagem(status, msg, dados)
+        
+        print(f"Resposta Servidor: {resposta}")
 
         # TODO: isolar as funcoes de sql.
         # - create {table}

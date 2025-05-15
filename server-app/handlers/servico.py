@@ -13,8 +13,7 @@ def criar_anuncio(dados, idCliente):
             descricao_servico=dados["descricao_servico"],
             categoria=dados["categoria"],
             tipo_pagamento=dados["tipo_pagamento"],
-            quantidade_pagamento=dados["quantidade_pagamento"],
-            esta_visivel=dados["esta_visivel"],
+            quantidade=dados["quantidade"],
             idLoja=idLoja,
         )
 
@@ -52,6 +51,7 @@ def get_categoria():
 
 def get_catalogo(dados):
     try:
+        print(f"Dados recebidos: {dados}")
         servicos = getServicos(
             categorias=dados["categorias"],
             idLoja=dados["idLoja"],
@@ -60,7 +60,7 @@ def get_catalogo(dados):
         if not servicos:
             return 0, "Nenhum serviço encontrado", {}
         print(f"Serviços encontrados: {servicos}")
-        return 200, "Serviços encontrados com sucesso", servicos
+        return 200, "Serviços encontrados com sucesso", {"servicos": servicos}
 
     except Exception as e:
         return 0, f"Erro ao buscar serviços: {str(e)}", {}

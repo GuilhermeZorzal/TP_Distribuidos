@@ -11,7 +11,7 @@ def add_pedido(dados, idCliente):
         pedido = Pedido(
             data_pedido   = datetime.datetime.utcnow().isoformat(),
             idServico     = dados.get("idServico"),
-            total         = int(dados.get("quantidade")) * servico.quantidade_pagamento,
+            total         = int(dados.get("quantidade")) * servico.quantidade,
             nome_cliente= db.getCliente(idCliente).nome,
             idCliente     = idCliente,
         )

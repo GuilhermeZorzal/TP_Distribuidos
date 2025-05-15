@@ -50,7 +50,7 @@ class Servico:
     descricao_servico: str = ""
     categoria: str = ""
     tipo_pagamento: str = ""
-    quantidade_pagamento: float = 0.0
+    quantidade: float = 0.0
     esta_visivel: bool = True
     idLoja: int = 0
 

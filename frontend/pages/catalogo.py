@@ -36,7 +36,7 @@ class CardServico(QWidget):
         self.desc = QLabel(service["descricao_servico"])
         self.categoria = QLabel(f"Categoria: {service['categoria']}")
         self.pagamento = QLabel(
-            f"Pagamento: {service['quantidade_pagamento']} {service['tipo_pagamento']}"
+            f"Pagamento: {service['quantidade']} {service['tipo_pagamento']}"
         )
         # QWidget {
         #     background-color: #000044
@@ -133,7 +133,7 @@ class CatalogoLista(QWidget):
 
         self.is_loading = True
         try:
-            resp = get_catalogo(filter_text)
+            resp = get_catalogo(categorias=filter_text)
             print("Catalogo", resp)
             if not resp[0]:
                 raise Exception(resp[1])
@@ -237,7 +237,7 @@ class ServicoEspecifico(QWidget):
         self.desc.setText(f"Descrição: {servico['descricao_servico']}")
         self.categoria.setText(servico["categoria"])
         self.pagamento.setText(
-            f"Pagamento: {servico['quantidade_pagamento']} {servico['tipo_pagamento']}"
+            f"Pagamento: {servico['quantidade']} {servico['tipo_pagamento']}"
         )
 
     def comprar(self):

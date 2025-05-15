@@ -84,7 +84,7 @@ def get_catalogo(dados):
             cont_pages=int(dados["pages"]),
         )
         if not servicos:
-            return 0, "Nenhum serviço encontrado", {}
+            return 200, "Nenhum serviço encontrado", {"servicos": []}
         print(f"Serviços encontrados: {servicos}")
         return 200, "Serviços encontrados com sucesso", {"servicos": servicos}
 

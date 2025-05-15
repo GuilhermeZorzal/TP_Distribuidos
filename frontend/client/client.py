@@ -276,7 +276,7 @@ def get_catalogo(categorias=[], idLoja=None):
         }
         resposta = sendMessage(HOST, PORT, mensagem)
 
-        cont_pages += 1
+        # FIXME cont_pages += 1
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["servicos"]]
     except Exception as e:
         print(f"Um erro ocorreu: {e} get_catalogo")

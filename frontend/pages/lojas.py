@@ -849,18 +849,21 @@ class LojaStack(QStackedWidget):
     def load(self):
         if esta_logado()[0]:
             resp = usuario_possui_loja()
-            if resp[0]:
-                print("RESPOSTA POSSUI LOJA", resp)
-                self.area_loja.load()
-                self.setCurrentWidget(self.area_loja)
+            if not resp[0]:
+                QMessageBox.critical(self, "Erro", str(resp[1]))
+                self.parent.goto_cria_loja()
                 return
-            print("Nao possui loja")
-            self.setCurrentWidget(self.cria_loja)
+            possui = resp[2]
+            if possui:
+                self.setCurrentWidget(self.area_loja)
+            else:
+                print("Nao possui loja")
+                self.setCurrentWidget(self.cria_loja)
+        else:
+            QMessageBox.warning(
+                self, "Erro de autenticação", "O usuario não está autenticado"
+            )
             return
-        QMessageBox.warning(
-            self, "Erro de autenticação", "O usuario não está autenticado"
-        )
-        return
 
     def goto_area_loja(self):
         self.area_loja.load()

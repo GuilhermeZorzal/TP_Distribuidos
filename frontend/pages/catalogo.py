@@ -228,7 +228,8 @@ class ServicoEspecifico(QWidget):
     def load(self, id):
         resp = get_servico(id)
         if not resp[0]:
-            raise Exception(resp[1])
+            QMessageBox.warning(self, "Erro na criação do pedido", str(resp[1]))
+            return
         servico = resp[2]
 
         self.quantidade.setValue(1)

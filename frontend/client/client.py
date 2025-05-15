@@ -196,7 +196,7 @@ def criar_loja(nome_loja, contato, descricao):
         # Resposta do servidor poderia ser o identificador da loja
         resposta = sendMessage(HOST, PORT, mensagem)
 
-        return [resposta["status"], resposta["mensagem"], {}]
+        return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
 
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
@@ -322,7 +322,7 @@ def get_loja(idLoja):
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
-        return [resposta["status"], resposta["mensagem"], resposta["dados"]]
+        return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
     except Exception as e:
         print(f"Um erro ocorreu: {e}")
         return 0, e, {}
@@ -558,7 +558,7 @@ def get_minha_loja():
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
-        return [resposta["status"], resposta["mensagem"], resposta["dados"]]
+        return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
 
     except Exception as e:
         print(f"Um erro ocorreu: {e}")

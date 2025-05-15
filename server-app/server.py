@@ -38,7 +38,7 @@ def tratar_mensagem(mensagem):
         return login.autenticar_cliente(dados)
     else:
         try:
-            status, msg, idCliente = autorizarToken(dados["token"])
+            status, msg, idCliente = autorizarToken(dados["tokenCliente"])
             if status != 200:
                 return status, msg, {}
         except Exception as e:

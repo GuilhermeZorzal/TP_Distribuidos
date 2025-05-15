@@ -134,7 +134,7 @@ class Cadastro(QWidget):
                 "Atenção!! Voce deve aceitar nossos termos de uso",
             )
             return
-        parent.cadastra(nome, apelido, senha, ccm, contato):
+        parent.cadastro(nome, apelido, senha, ccm, contato)
 
 
 class Login(QWidget):

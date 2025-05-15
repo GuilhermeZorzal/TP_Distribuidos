@@ -187,7 +187,7 @@ def criar_loja(nome_loja, contato, descricao):
             "funcao": "criar_loja",
             "dados": {
                 "tokenCliente": tokenCliente,
-                "nome_loja": nome_loja,
+                "nome": nome_loja,
                 "contato": contato,
                 "descricao": descricao,
             },

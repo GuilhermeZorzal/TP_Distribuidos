@@ -36,6 +36,9 @@ def tratar_mensagem(mensagem):
         return cadastro.cadastrar(dados)
     elif func == "autenticar":
         return login.autenticar_cliente(dados)
+    elif func == "get_categoria":
+        return servico.get_categoria()
+    
     else:
         try:
             status, msg, idCliente = autorizarToken(dados["tokenCliente"])
@@ -59,10 +62,6 @@ def tratar_mensagem(mensagem):
 
         elif func == "criar_anuncio":
             return servico.criar_anuncio(dados, idCliente)
-
-        elif func == "get_categoria":
-            print("=" * 100)
-            return servico.get_categoria()
 
         elif func == "get_catalogo":
             return servico.get_catalogo(dados)

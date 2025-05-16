@@ -576,7 +576,7 @@ def criar_pedido(idServico, quantidade):
         mensagem = {
             "funcao": "add_pedido",
             "dados": {
-                "nome": idServico,
+                "idServico": idServico,
                 "quantidade": quantidade,
                 "tokenCliente": tokenCliente,
             },

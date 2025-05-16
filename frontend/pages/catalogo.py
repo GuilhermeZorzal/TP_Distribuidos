@@ -133,6 +133,50 @@ class CatalogoLista(QWidget):
         id = item.data(Qt.ItemDataRole.UserRole)
         self.parent.goto_servico(id)
 
+    def load(self, filter_text="", append=False):
+        resp = get_categoria()
+        if not resp[0]:
+            raise Exception(resp[1])
+        categorias = resp[2]
+        self.filtro_categoria.addItems(categorias)
+        print("load_services")
+
+        if self.is_loading:
+            return
+
+        self.is_loading = True
+        try:
+            resp = get_catalogo()
+            print("Catalogo", resp)
+            if not resp[0]:
+                QMessageBox.warning(self, "Erro", str(resp[1]))
+                return
+            services = resp[2]
+
+            if not append:
+                self.lista.clear()
+
+            for service in services:
+                item = QListWidgetItem()
+                widget = CardServico(service)
+                item.setSizeHint(widget.sizeHint())
+                item.setData(Qt.ItemDataRole.UserRole, service["idServico"])
+                self.lista.addItem(item)
+                self.lista.setItemWidget(item, widget)
+
+            if services:
+                self.current_page += 1
+
+        except Exception as e:
+            print(f"Erro ao carregar serviços: {e}")
+        finally:
+            self.is_loading = False
+            # resp = get_categoria()
+            # if not resp[0]:
+            #     raise Exception(resp[1])
+            # categorias = resp[2]
+            # self.filtro_categoria.addItems(categorias)
+
     def load_services(self, filter_text="", append=False):
         resp = get_categoria()
         if not resp[0]:
@@ -146,7 +190,7 @@ class CatalogoLista(QWidget):
 
         self.is_loading = True
         try:
-            resp = get_catalogo(categorias=filter_text)
+            resp = get_catalogo(categorias=[filter_text])
             print("Catalogo", resp)
             if not resp[0]:
                 QMessageBox.warning(self, "Erro", str(resp[1]))
@@ -310,4 +354,4 @@ class Catalogo(QStackedWidget):
 
     def load(self):
         print("Carregando catalogo")
-        self.catalogo.load_services()
+        self.catalogo.load()

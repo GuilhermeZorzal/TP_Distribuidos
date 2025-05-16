@@ -164,6 +164,9 @@ def getServicos(
 
     conditions = []
     params = []
+    print("#########################")
+    print(categorias)
+    print(idLoja)
 
     if idLoja is not None:
         conditions.append("idLoja = ?")
@@ -258,7 +261,6 @@ def editarServico(servico: Servico):
     con = conectar()
     cur = con.cursor()
     try:
-
         cur.execute(
             "UPDATE servico SET nome_servico = ?, descricao_servico = ?, categoria = ?, tipo_pagamento = ?, quantidade = ? WHERE idServico = ?",
             (
@@ -301,7 +303,7 @@ def getPedido(idPedido):
     cur.execute("SELECT * FROM pedido WHERE idPedido = ?", (idPedido,))
     row = cur.fetchone()
     con.close()
-    
+
     if row:
         return Pedido(
             idPedido=row[0],

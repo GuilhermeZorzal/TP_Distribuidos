@@ -311,6 +311,7 @@ def getPedido(idPedido):
             total=row[4],
             nome_cliente=getCliente(row[5]).nome,
             nome_servico=getServico(row[2]).nome_servico,
+            nome_loja=getLoja(idCliente=row[5]).nome,
             idCliente=row[5],
         )
     return None
@@ -332,6 +333,7 @@ def getPedidos(idCliente):
             total=row[4],
             nome_cliente=getCliente(idCliente).nome,
             nome_servico=getServico(row[2]).nome_servico,
+            nome_loja=getLoja(idCliente=row[5]).nome,
             idCliente=row[5],
         ).__dict__
         for row in rows

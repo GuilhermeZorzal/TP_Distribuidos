@@ -63,4 +63,5 @@ class Pedido:
     total: float = 0.0
     nome_cliente: str = ""
     nome_servico: str = ""
+    nome_loja: str = ""
     idCliente: int = 0

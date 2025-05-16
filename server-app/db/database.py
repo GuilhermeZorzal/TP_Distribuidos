@@ -173,6 +173,7 @@ def getServicos(
         placeholders = ",".join("?" for _ in categorias)
         conditions.append(f"categoria IN ({placeholders})")
         params.extend(categorias)
+        conditions.append("esta_visivel = 1")
 
     where_clause = ""
     if conditions:

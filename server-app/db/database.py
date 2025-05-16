@@ -207,13 +207,13 @@ def getServicos(
     return servicos
 
 
-def mudarEstadoServico(idServico: int, estado: bool) -> bool:
+def mudarEstadoServico(idServico, estado):
     con = conectar()
     cur = con.cursor()
     try:
         cur.execute(
             "UPDATE servico SET esta_visivel = ? WHERE idServico = ?",
-            (1 if estado else None, idServico),
+            (1 if estado else 0, idServico),
         )
         con.commit()
         return cur.rowcount > 0
@@ -473,7 +473,8 @@ def criar_banco():
         categoria TEXT NOT NULL,
         tipo_pagamento TEXT NOT NULL,
         quantidade REAL NOT NULL,
-        esta_visivel BOOLEAN NOT NULL,
+        esta_visivel INTEGER NOT NULL,
+        LEAN NOT NULL,
         idLoja INTEGER NOT NULL,
         FOREIGN KEY (idLoja) REFERENCES loja(idLoja)
     );

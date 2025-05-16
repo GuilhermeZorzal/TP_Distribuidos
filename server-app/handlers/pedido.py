@@ -5,8 +5,17 @@ from objetos import Pedido
 def add_pedido(dados, idCliente):
     try:
         servico = db.getServico(dados.get("idServico"))
+        
         if not servico:
             return 0, "Serviço não encontrado", {}
+
+        if servico.esta_visivel == 0:
+            return 0, "Serviço não disponível", {}
+
+        idVendedor = db.getLoja(servico.idLoja).idCliente
+
+        if idCliente == idVendedor:
+            return 0, "Não é possível comprar o próprio serviço", {}
 
         pedido = Pedido(
             data_pedido   = datetime.datetime.utcnow().isoformat(),
@@ -18,6 +27,8 @@ def add_pedido(dados, idCliente):
         
         new_id = db.addPedido(pedido)
 
+        print(f"Pedido criado: {pedido.__dict__}")
+        
         if not new_id:
             return 0, "Falha ao criar pedido", {}
         

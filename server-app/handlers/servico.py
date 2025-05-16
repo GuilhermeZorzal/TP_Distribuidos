@@ -54,7 +54,7 @@ def mudar_estado_servico(dados, estado):
         idServico = dados["idServico"]
         servico = db.getServico(idServico)
         if servico:
-            db.mudarEstadoServico(servico, estado)
+            db.mudarEstadoServico(idServico, estado)
             servico.esta_visivel = estado
             return (
                 200,

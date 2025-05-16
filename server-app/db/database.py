@@ -410,9 +410,8 @@ def addPedido(pedido: Pedido):
         con.close()
 
 
-# mudar o estado do pedido para ANDAMENTO
 def mudarEstadoPedido(idPedido, estado):
-    if estado != "ANDAMENTO" and estado != "CONCLUÍDO":
+    if estado != "ENVIADO" and estado != "CONCLUÍDO":
         return False
 
     con = conectar()

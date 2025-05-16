@@ -2,3 +2,4 @@ PyQt6==6.6.1
 PyQt6-Qt6==6.6.1
 PyQt6-sip==13.6.0 
 qrcode==8.2.0
+pillow>=11.2.0

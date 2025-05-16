@@ -163,6 +163,7 @@ class PedidoUnico(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
+        self.id = ""
         self.title = QLabel("Pedido")
         self.title.setStyleSheet("""
             QLabel {
@@ -176,12 +177,12 @@ class PedidoUnico(QWidget):
         self.button_voltar = QPushButton("Voltar")
         self.button_voltar.clicked.connect(self.voltar)
 
-        self.id = QLabel("id")
         self.data = QLabel("data:")
         self.cliente = QLabel("servico:")
         self.servico = QLabel("servico:")
         self.estado = QLabel("estado:")
         self.total = QLabel("total:")
+        self.nome_loja = QLabel("loja:")
 
         self.delete = QPushButton("Cancelar pedido")
         self.delete.clicked.connect(self.deletar)
@@ -213,6 +214,7 @@ class PedidoUnico(QWidget):
         layout.addWidget(self.data)
         layout.addWidget(self.cliente)
         layout.addWidget(self.servico)
+        layout.addWidget(self.nome_loja)
         layout.addWidget(self.estado)
         layout.addWidget(self.total)
         layout.addWidget(self.delete)
@@ -243,29 +245,48 @@ class PedidoUnico(QWidget):
         #         font-size: 20px;
         #     }
         # """)
-        self.id.setText(f"ID: {id}")
-        self.id.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        print("PEDIDOS DADOS:", dados)
+        self.id = id
+        # self.id.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.data.setText(f"Data: {dados['data_pedido']}")
         self.data.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.cliente.setText(f"Servico: {dados['nome_cliente']}")
-        self.cliente.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.servico.setText(f"Servico: {dados['nome_servico']}")
         self.servico.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.cliente.setText(f"Servico: {dados['nome_cliente']}")
+        self.cliente.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.total.setText(f"Servico: {dados['nome_cliente']}")
+        self.total.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.nome_loja.setText(f"Nome da loja: {dados['nome_loja']}")
+        self.nome_loja.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.estado.setText(f"Estado: {dados['estado_pedido']}")
+
         self.button_pagar.setEnabled(True)  # Make it unclickable
-        self.delete.setEnabled(False)  # Make it unclickable
-        if dados["estado_pedido"] != "pendente":
-            self.button_pagar.setEnabled(False)  # Make it unclickable
+        self.delete.setEnabled(True)  # Make it unclickable
         self.estado.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        if dados["estado_pedido"] != "concluido":
+        print("ESTADO ANTES DE TESTAR IFS", dados["estado_pedido"])
+        if str(dados["estado_pedido"]).upper() == "PENDENTE":
+            self.button_pagar.setEnabled(True)  # Make it unclickable
             self.delete.setEnabled(True)  # Make it unclickable
+        if str(dados["estado_pedido"]).upper() == "ENVIADO":
+            self.button_pagar.setEnabled(False)  # Make it unclickable
+            self.delete.setEnabled(True)  # Make it unclickable
+        if str(dados["estado_pedido"]).upper() == "CONCLUÍDO":
+            self.button_pagar.setEnabled(False)  # Make it unclickable
+            self.delete.setEnabled(False)  # Make it unclickable
         self.total.setText(f"Total: {dados['total']}")
         self.total.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def pagar(self):
         popup = QRCodePopup("https://youtu.be/wLtBGGX8GIk?si=pFbGeLxnuJdIwGU_", self)
         popup.exec()  # This blocks until closed
-        resp = pagar_pedido(self.id.text())
+        resp = pagar_pedido(self.id)
         if not resp[0]:
             QMessageBox.warning(
                 self,
@@ -278,7 +299,7 @@ class PedidoUnico(QWidget):
         # FIXME: adicionar pagamento
 
     def deletar(self):
-        resp = cancelar_pedido(self.id.text())
+        resp = cancelar_pedido(self.id)
         if not resp[0]:
             QMessageBox.warning(
                 self,
@@ -291,7 +312,9 @@ class PedidoUnico(QWidget):
 
 
 class Pedido(QWidget):
-    def __init__(self, parent, id, data, servico, estado, total):
+    def __init__(
+        self, parent, id, data, servico, estado, total, nome_servico, nome_loja
+    ):
         super().__init__(parent)
         self.parent = parent
         self.id = id
@@ -308,6 +331,8 @@ class Pedido(QWidget):
         self.servico = QLabel(f"servico: {servico}")
         self.estado = QLabel(f"estado: {estado}")
         self.total = QLabel(f"total: {total}")
+        self.servico = QLabel(f"servico: {nome_servico}")
+        self.loja = QLabel(f"loja: {nome_loja}")
         self.button_ver = QPushButton("Visualizar")
         self.button_ver.clicked.connect(self.visualizar)
         self.setStyleSheet("""
@@ -329,6 +354,8 @@ class Pedido(QWidget):
         layout.addWidget(self.servico)
         layout.addWidget(self.estado)
         layout.addWidget(self.total)
+        layout.addWidget(self.servico)
+        layout.addWidget(self.loja)
         layout.addWidget(self.button_ver)
         layout.addStretch()
 
@@ -415,6 +442,8 @@ class PedidosLoja(QWidget):
                 dado["idServico"],
                 dado["estado_pedido"],
                 dado["total"],
+                dado["nome_servico"],
+                dado["nome_loja"],
             )
             item = QListWidgetItem()
 
@@ -472,6 +501,7 @@ class MeusPedidos(QWidget):
 
     def load(self):
         # Get pedidos
+        self.lista.clear()
         resp = get_pedidos()
         if not resp[0]:
             QMessageBox.warning(self, "Erro", str(resp[1]))
@@ -486,18 +516,14 @@ class MeusPedidos(QWidget):
                 self,
                 dado["idPedido"],
                 dado["data_pedido"],
-                dado["idServico"],
+                dado["nome_servico"],
+                # dado["idServico"],
                 dado["estado_pedido"],
                 dado["total"],
+                dado["nome_servico"],
+                dado["nome_loja"],
             )
-            print(
-                "000000000000000",
-                dado["idPedido"],
-                dado["data_pedido"],
-                dado["idServico"],
-                dado["estado_pedido"],
-                dado["total"],
-            )
+            print("\n MEU PEDIDO", dado)
 
             item = QListWidgetItem()
 

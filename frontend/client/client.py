@@ -337,7 +337,7 @@ def pagar_pedido(idPedido):
     """
     try:
         mensagem = {
-            "funcao": "get_pedido",
+            "funcao": "pagar_pedido",
             "dados": {
                 "idPedido": idPedido,
                 "tokenCliente": tokenCliente,
@@ -576,7 +576,7 @@ def criar_pedido(idServico, quantidade):
         mensagem = {
             "funcao": "add_pedido",
             "dados": {
-                "nome": idServico,
+                "idServico": idServico,
                 "quantidade": quantidade,
                 "tokenCliente": tokenCliente,
             },

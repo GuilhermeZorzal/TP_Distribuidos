@@ -59,7 +59,7 @@ class Pedido:
     idPedido: Optional[int] = None
     data_pedido: str = ""
     idServico: int = 0
-    estado_pedido: str = "PENDENTE"  # PENDENTE, ANDAMENTO, CONCLUÍDO
+    estado_pedido: str = "PENDENTE"  # PENDENTE, ENVIADO, CONCLUÍDO
     total: float = 0.0
     nome_cliente: str = ""
     nome_servico: str = ""

@@ -54,7 +54,7 @@ def pagar_pedido(dados, idCliente):
     if pedido.estado_pedido != "PENDENTE":
         return 0, "Pedido já pago", {}
     
-    pedido.estado_pedido = "ANDAMENTO"
+    pedido.estado_pedido = "ENVIADO"
 
     if db.mudarEstadoPedido(int(pid), pedido.estado_pedido):
         return 200, "Pagamento realizado com sucesso", {"pedido": pedido.__dict__}

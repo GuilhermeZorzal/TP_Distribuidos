@@ -45,7 +45,6 @@ def tratar_mensagem(mensagem):
             return 0, f"Erro ao verificar Token: {e}", {}
 
         idCliente = int(idCliente)
-
         if func == "criar_loja":
             return loja.criar_loja(dados, idCliente)
 

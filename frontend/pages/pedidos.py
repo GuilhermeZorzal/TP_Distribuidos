@@ -147,7 +147,7 @@ class PedidoUnicoUsuario(QWidget):
         self.id.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.data.setText(f"Data: {dados['data_pedido']}")
         self.data.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.servico.setText(f"Servico: {dados['servico']}")
+        self.servico.setText(f"Servico: {dados['nome_servico']}")
         self.servico.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.estado.setText(f"Estado: {dados['estado_pedido']}")
         self.estado.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -249,7 +249,7 @@ class PedidoUnico(QWidget):
         self.data.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.cliente.setText(f"Servico: {dados['nome_cliente']}")
         self.cliente.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.servico.setText(f"Servico: {dados['servico']}")
+        self.servico.setText(f"Servico: {dados['nome_servico']}")
         self.servico.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.estado.setText(f"Estado: {dados['estado_pedido']}")
         self.button_pagar.setEnabled(True)  # Make it unclickable
@@ -412,7 +412,7 @@ class PedidosLoja(QWidget):
                 self,
                 dado["idPedido"],
                 dado["data_pedido"],
-                dado["servico"],
+                dado["idServico"],
                 dado["estado_pedido"],
                 dado["total"],
             )
@@ -486,7 +486,7 @@ class MeusPedidos(QWidget):
                 self,
                 dado["idPedido"],
                 dado["data_pedido"],
-                dado["servico"],
+                dado["idServico"],
                 dado["estado_pedido"],
                 dado["total"],
             )
@@ -494,7 +494,7 @@ class MeusPedidos(QWidget):
                 "000000000000000",
                 dado["idPedido"],
                 dado["data_pedido"],
-                dado["servico"],
+                dado["idServico"],
                 dado["estado_pedido"],
                 dado["total"],
             )

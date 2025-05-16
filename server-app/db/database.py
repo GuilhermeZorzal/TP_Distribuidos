@@ -308,7 +308,8 @@ def getPedido(idPedido):
             idServico=row[2],
             estado_pedido=row[3],
             total=row[4],
-            nome_cliente="AAAAA",
+            nome_cliente=getCliente(row[5]).nome,
+            nome_servico=getServico(row[2]).nome_servico,
             idCliente=row[5],
         )
     return None
@@ -328,7 +329,8 @@ def getPedidos(idCliente):
             idServico=row[2],
             estado_pedido=row[3],
             total=row[4],
-            nome_cliente="AAAAA",
+            nome_cliente=getCliente(idCliente).nome,
+            nome_servico=getServico(row[2]).nome_servico,
             idCliente=row[5],
         ).__dict__
         for row in rows
@@ -359,7 +361,8 @@ def getPedidosLoja(idCliente):
             idServico=row[2],
             estado_pedido=row[3],
             total=row[4],
-            nome_cliente="AAAAA",
+            nome_cliente=getCliente(idCliente).nome,
+            nome_servico=getServico(row[2]).nome_servico,
             idCliente=row[5],
         ).__dict__
         for row in rows
@@ -412,7 +415,6 @@ def mudarEstadoPedido(idPedido, estado):
     if estado != "ANDAMENTO" and estado != "CONCLUÍDO":
         return False
 
-    print("ERRO")
     con = conectar()
     cur = con.cursor()
     try:

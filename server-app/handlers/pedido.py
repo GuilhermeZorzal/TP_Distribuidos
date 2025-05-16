@@ -23,8 +23,9 @@ def add_pedido(dados, idCliente):
             data_pedido   = datetime.datetime.utcnow().isoformat(),
             idServico     = dados.get("idServico"),
             total         = int(dados.get("quantidade")) * servico.quantidade,
-            nome_cliente= db.getCliente(idCliente).nome,
-            idCliente     = idCliente,
+            nome_cliente = db.getCliente(idCliente).nome,
+            nome_servico = servico.nome_servico,
+            idCliente    = idCliente,
         )
         
         new_id = db.addPedido(pedido)

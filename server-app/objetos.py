@@ -62,4 +62,5 @@ class Pedido:
     estado_pedido: str = "PENDENTE"  # PENDENTE, ANDAMENTO, CONCLUÍDO
     total: float = 0.0
     nome_cliente: str = ""
+    nome_servico: str = ""
     idCliente: int = 0

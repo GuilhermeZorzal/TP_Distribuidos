@@ -257,8 +257,9 @@ def editarServico(servico: Servico):
     con = conectar()
     cur = con.cursor()
     try:
+
         cur.execute(
-            "UPDATE servico SET nome_servico = ?, descricao_servico = ?, categoria = ?, tipo_pagamento = ?, quantidade = ?, WHERE idServico = ?",
+            "UPDATE servico SET nome_servico = ?, descricao_servico = ?, categoria = ?, tipo_pagamento = ?, quantidade = ? WHERE idServico = ?",
             (
                 servico.nome_servico,
                 servico.descricao_servico,

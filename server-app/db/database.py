@@ -386,13 +386,12 @@ def addPedido(pedido: Pedido):
     cur = con.cursor()
     try:
         cur.execute(
-            "INSERT INTO pedido (data_pedido, idServico, estado_pedido, total, nome_cliente,  idCliente) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO pedido (data_pedido, idServico, estado_pedido, total,  idCliente) VALUES (?, ?, ?, ?, ?)",
             (
                 pedido.data_pedido,
                 pedido.idServico,
                 pedido.estado_pedido,
                 pedido.total,
-                pedido.nome_cliente,
                 pedido.idCliente,
             ),
         )

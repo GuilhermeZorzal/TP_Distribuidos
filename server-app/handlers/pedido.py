@@ -17,6 +17,8 @@ def add_pedido(dados, idCliente):
         if idCliente == idVendedor:
             return 0, "Não é possível comprar o próprio serviço", {}
 
+        print(f"ID Cliente: {idCliente}\n\nDados do pedido: {dados}")
+
         pedido = Pedido(
             data_pedido   = datetime.datetime.utcnow().isoformat(),
             idServico     = dados.get("idServico"),

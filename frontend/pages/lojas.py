@@ -177,8 +177,6 @@ class Servico(QWidget):
                 return
 
     def outrasAcao(self):
-        # FIXME: arrumar erro do editar servico
-        # Erro ao editar serviço: module 'db.database' has no attribute 'updateServico'
         self.parent.goto_editar_servico(self.id)
 
 

@@ -103,9 +103,15 @@ class CatalogoLista(QWidget):
         self.lista = QListWidget()
 
         resp = get_categoria()
-        print(resp)
+        if not resp[0]:
+            raise Exception(resp[1])
+        categorias = resp[2]
+        self.filtro_categoria.addItems(categorias)
+
+        # resp = get_categoria()
+        # print(resp)
         self.filtro_categoria = QComboBox()
-        self.filtro_categoria.addItems(resp[2])
+        # self.filtro_categoria.addItems(resp[2])
         self.filtro_categoria.currentIndexChanged.connect(self.filter_services)
 
         self.main_layout.addWidget(self.filtro_categoria)
@@ -118,9 +124,11 @@ class CatalogoLista(QWidget):
 
         # self.load_services()
 
-    def filter_services(self, text):
+    def filter_services(self):
         self.current_page = 0
-        self.load_services(filter_text=text, append=False)
+        self.load_services(
+            filter_text=self.filtro_categoria.currentText(), append=False
+        )
 
     def goto_servico(self, item):
         id = item.data(Qt.ItemDataRole.UserRole)
@@ -136,7 +144,8 @@ class CatalogoLista(QWidget):
             resp = get_catalogo(categorias=filter_text)
             print("Catalogo", resp)
             if not resp[0]:
-                raise Exception(resp[1])
+                QMessageBox.warning(self, "Erro", str(resp[1]))
+                return
             services = resp[2]
 
             if not append:
@@ -157,6 +166,11 @@ class CatalogoLista(QWidget):
             print(f"Erro ao carregar serviços: {e}")
         finally:
             self.is_loading = False
+            resp = get_categoria()
+            if not resp[0]:
+                raise Exception(resp[1])
+            categorias = resp[2]
+            self.filtro_categoria.addItems(categorias)
 
     def check_scroll_position(self):
         scroll_bar = self.lista.verticalScrollBar()

@@ -473,8 +473,7 @@ def criar_banco():
         categoria TEXT NOT NULL,
         tipo_pagamento TEXT NOT NULL,
         quantidade REAL NOT NULL,
-        esta_visivel INTEGER NOT NULL,
-        LEAN NOT NULL,
+        esta_visivel BOOLEAN NOT NULL,
         idLoja INTEGER NOT NULL,
         FOREIGN KEY (idLoja) REFERENCES loja(idLoja)
     );

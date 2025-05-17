@@ -164,19 +164,18 @@ def getServicos(
 
     conditions = []
     params = []
-    print("#########################")
-    print(categorias)
-    print(idLoja)
 
     if idLoja is not None:
         conditions.append("idLoja = ?")
         params.append(idLoja)
+        
+    else:
+        conditions.append("esta_visivel = 1")
 
     if categorias:
         placeholders = ",".join("?" for _ in categorias)
         conditions.append(f"categoria IN ({placeholders})")
         params.extend(categorias)
-        conditions.append("esta_visivel = 1")
 
     where_clause = ""
     if conditions:

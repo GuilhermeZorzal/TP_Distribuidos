@@ -49,8 +49,10 @@ def pagar_pedido(dados, idCliente):
     
     if not pedido:
         return 0, "Pedido não encontrado", {}
+    
     if int(pedido.idCliente) != idCliente:
         return 0, "Usuário não autorizado", {}
+    
     if pedido.estado_pedido != "PENDENTE":
         return 0, "Pedido já pago", {}
     
@@ -63,12 +65,14 @@ def pagar_pedido(dados, idCliente):
 
 def get_pedido(dados, idCliente):
     pid = dados.get("idPedido")
-    print("\n\n", pid, "\n\n")
+    
     pedido = db.getPedido(int(pid))
+    idVendedor = db.getLoja(pedido.idServico).idCliente
     
     if not pedido:
         return 0, "Pedido não encontrado", {}
-    if int(pedido.idCliente) != idCliente:
+    
+    if int(pedido.idCliente) != idCliente and idVendedor != idCliente:
         return 0, "Usuário não autorizado", {}
     
     return 200, "Pedido recuperado", {"pedido": pedido.__dict__}

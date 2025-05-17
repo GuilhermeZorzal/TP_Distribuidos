@@ -28,83 +28,56 @@ def tratar_mensagem(mensagem):
     if "funcao" not in mensagem:
         return formatar_mensagem(0, "Mensagem mal formatada", {})
 
-    func = mensagem.get("funcao")
+    func = mensagem["funcao"]
     dados = mensagem.get("dados", {})
 
-    # Despacha para o handler adequado
-    if func == "cadastrar":
-        return cadastro.cadastrar(dados)
-    elif func == "autenticar":
-        return login.autenticar_cliente(dados)
-    elif func == "get_categoria":
-        return servico.get_categoria()
+    # Handlers que não precisam de autenticação
+    no_auth_handlers = {
+        "cadastrar": cadastro.cadastrar,
+        "autenticar": login.autenticar_cliente,
+        "get_categoria": lambda dados: servico.get_categoria(),
+    }
     
-    else:
-        try:
-            status, msg, idCliente = autorizarToken(dados["tokenCliente"])
-            if status != 200:
-                return status, msg, {}
-        except Exception as e:
-            return 0, f"Erro ao verificar Token: {e}", {}
+    if func in no_auth_handlers:
+        return no_auth_handlers[func](dados)
 
-        idCliente = int(idCliente)
-        if func == "criar_loja":
-            return loja.criar_loja(dados, idCliente)
+    # Autenticação obrigatória
+    try:
+        status, msg, idCliente = autorizarToken(dados.get("tokenCliente", ""))
+        if status != 200:
+            return status, msg, {}
+    except Exception as e:
+        return 0, f"Erro ao verificar Token: {e}", {}
 
-        elif func == "get_minha_loja":
-            return loja.get_minha_loja(idCliente)
+    idCliente = int(idCliente)
 
-        elif func == "tem_loja":
-            return loja.tem_loja(idCliente)
+    # Handlers que requerem autenticação
+    auth_handlers = {
+        "criar_loja": lambda d: loja.criar_loja(d, idCliente),
+        "get_minha_loja": lambda d: loja.get_minha_loja(idCliente),
+        "tem_loja":      lambda d: loja.tem_loja(idCliente),
+        "get_loja":      lambda d: loja.get_loja(d),
+        "criar_anuncio": lambda d: servico.criar_anuncio(d, idCliente),
+        "get_catalogo":  lambda d: servico.get_catalogo(d),
+        "get_servico":   lambda d: servico.get_servico(d),
+        "ocultar_servico":   lambda d: servico.mudar_estado_servico(d, 0),
+        "desocultar_servico": lambda d: servico.mudar_estado_servico(d, 1),
+        "deletar_servico":   lambda d: servico.deletar_servico(d, idCliente),
+        "editar_servico":    lambda d: servico.editar_servico(d, idCliente),
+        "add_pedido":        lambda d: pedido.add_pedido(d, idCliente),
+        "pagar_pedido":      lambda d: pedido.pagar_pedido(d, idCliente),
+        "get_pedido":        lambda d: pedido.get_pedido(d, idCliente),
+        "get_pedidos":       lambda d: pedido.get_pedidos(idCliente),
+        "get_pedidos_minha_loja": lambda d: pedido.get_pedidos_minha_loja(idCliente),
+        "cancelar_pedido":   lambda d: pedido.cancelar_pedido(d, idCliente),
+        "reset":             lambda d: (reset_database(), (200, "Banco de dados resetado", {}))[1],
+    }
 
-        elif func == "get_loja":
-            return loja.get_loja(dados)
+    handler = auth_handlers.get(func)
+    if not handler:
+        return formatar_mensagem(0, "Função não reconhecida", {})
 
-        elif func == "criar_anuncio":
-            return servico.criar_anuncio(dados, idCliente)
-
-        elif func == "get_catalogo":
-            return servico.get_catalogo(dados)
-
-        elif func == "get_servico":
-            return servico.get_servico(dados)
-
-        elif func == "ocultar_servico":
-            return servico.mudar_estado_servico(dados, 0)
-
-        elif func == "desocultar_servico":
-            return servico.mudar_estado_servico(dados, 1)
-
-        elif func == "deletar_servico":
-            return servico.deletar_servico(dados, idCliente)
-        # updateServico
-        elif func == "editar_servico":
-            return servico.editar_servico(dados, idCliente)
-
-        elif func == "add_pedido":
-            return pedido.add_pedido(dados, idCliente)
-
-        elif func == "pagar_pedido":
-            return pedido.pagar_pedido(dados, idCliente)
-
-        elif func == "get_pedido":
-            return pedido.get_pedido(dados, idCliente)
-
-        elif func == "get_pedidos":
-            return pedido.get_pedidos(idCliente)
-
-        elif func == "get_pedidos_minha_loja":
-            return pedido.get_pedidos_minha_loja(idCliente)
-
-        elif func == "cancelar_pedido":
-            return pedido.cancelar_pedido(dados, idCliente)
-
-        elif func == "reset":
-            reset_database()
-            return 200, "Banco de dados resetado", {}
-
-    print(f"Função não reconhecida: {func}")
-    return 0, "Função não reconhecida", {}
+    return handler(dados)
 
 
 def main():

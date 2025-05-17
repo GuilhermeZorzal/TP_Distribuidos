@@ -58,6 +58,9 @@ class Servico:
 class Pedido:
     idPedido: Optional[int] = None
     data_pedido: str = ""
+    data_pagamento: str = "Esperando pagamento"
+    data_entrega: str = "Esperando pagamento"
+    tempo_chegada: str = "Esperando pagamento"
     idServico: int = 0
     estado_pedido: str = "PENDENTE"  # PENDENTE, ENVIADO, CONCLUÍDO
     total: float = 0.0

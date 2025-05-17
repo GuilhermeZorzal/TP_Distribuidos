@@ -1,6 +1,7 @@
 import datetime
 import db.database as db
 from objetos import Pedido
+import random
 
 def add_pedido(dados, idCliente):
     try:
@@ -18,6 +19,8 @@ def add_pedido(dados, idCliente):
             return 0, "Não é possível comprar o próprio serviço", {}
 
         print(f"ID Cliente: {idCliente}\n\nDados do pedido: {dados}")
+        
+        
 
         pedido = Pedido(
             data_pedido   = datetime.datetime.utcnow().isoformat(),
@@ -27,7 +30,7 @@ def add_pedido(dados, idCliente):
             nome_servico = servico.nome_servico,
             idCliente    = idCliente,
         )
-        
+            
         new_id = db.addPedido(pedido)
 
         print(f"Pedido criado: {pedido.__dict__}")
@@ -41,7 +44,33 @@ def add_pedido(dados, idCliente):
     
     except Exception as e:
         return 0, f"Erro ao criar pedido: {e}", {}
+
+def calcular_tempo_chegada(estado_pedido, data_pagamento, data_entrega):
+    # printar tudo
+    print(f"Estado do pedido: {estado_pedido}")
+    print(f"Data do pagamento: {data_pagamento}")
+    print(f"Data da entrega: {data_entrega}")
+    if estado_pedido == "PENDENTE":
+        return "Esperando pagamento"
     
+    elif estado_pedido == "ENVIADO":
+        pago = datetime.datetime.fromisoformat(data_pagamento)
+        entrega = datetime.datetime.fromisoformat(data_entrega)
+        delta = entrega - pago
+        return str(delta)
+    elif estado_pedido == "CONCLUIDO":
+        return "Pedido concluído"
+    
+    return False    
+
+def verificar_entrega(pedido):
+    if pedido.estado_pedido == "ENVIADO":
+        entrega = datetime.datetime.fromisoformat(pedido.data_entrega)
+        if entrega < datetime.datetime.utcnow():
+            pedido.estado_pedido = "CONCLUIDO"
+            db.mudarEstadoPedido(int(pedido.idPedido), pedido.estado_pedido)
+            return True
+    return False
 
 def pagar_pedido(dados, idCliente):
     pid = dados.get("idPedido")
@@ -59,9 +88,21 @@ def pagar_pedido(dados, idCliente):
     pedido.estado_pedido = "ENVIADO"
 
     if db.mudarEstadoPedido(int(pid), pedido.estado_pedido):
-        return 200, "Pagamento realizado com sucesso", {"pedido": pedido.__dict__}
-    
+        pago_em = datetime.datetime.utcnow().isoformat()
+        dias = random.randint(1, 5)
+        previsto_para = (
+            datetime.datetime.utcnow() + datetime.timedelta(minutes=3)
+        ).isoformat()
+
+        if db.atualizarDatasPedido(int(pid), pago_em, previsto_para):
+            return 200, "Pagamento realizado com sucesso", {"pedido": pedido.__dict__}
+        else:
+            db.mudarEstadoPedido(int(pid), "PENDENTE")
+            return 0, "Falha ao atualizar datas do pedido", {}
+
     return 0, "Falha ao realizar pagamento", {}
+
+
 
 def get_pedido(dados, idCliente):
     pid = dados.get("idPedido")
@@ -69,14 +110,15 @@ def get_pedido(dados, idCliente):
     pedido = db.getPedido(int(pid))
     idVendedor = db.getLoja(idLoja=db.getServico(pedido.idServico).idLoja).idCliente
 
-    print(f"ID Vendedor: {idVendedor}, ID Cliente: {idCliente}, ID Pedido: {pid}, pedido: {pedido}")
     
     if not pedido:
         return 0, "Pedido não encontrado", {}
     
     if int(pedido.idCliente) != idCliente and idVendedor != idCliente:
         return 0, "Usuário não autorizado", {}
-    
+
+    verificar_entrega(pedido)
+
     return 200, "Pedido recuperado", {"pedido": pedido.__dict__}
 
 def get_pedidos(idCliente):

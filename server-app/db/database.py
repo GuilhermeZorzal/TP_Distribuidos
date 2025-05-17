@@ -1,6 +1,7 @@
 import sqlite3
 import os
 from objetos import Cliente, Loja, Servico, Pedido
+from handlers.pedido import calcular_tempo_chegada, verificar_entrega
 
 FILE = "./db/sqlite.db"
 
@@ -307,13 +308,16 @@ def getPedido(idPedido):
         return Pedido(
             idPedido=row[0],
             data_pedido=row[1],
-            idServico=row[2],
-            estado_pedido=row[3],
-            total=row[4],
-            nome_cliente=getCliente(row[5]).nome,
-            nome_servico=getServico(row[2]).nome_servico,
-            nome_loja=getLoja(idCliente=row[5]).nome,
-            idCliente=row[5],
+            data_pagamento=row[2],
+            data_entrega=row[3],
+            tempo_chegada=calcular_tempo_chegada(row[5], row[2], row[3]),
+            idServico=row[4],
+            estado_pedido=row[5],
+            total=row[6],
+            nome_cliente=getCliente(row[7]).nome,
+            nome_servico=getServico(row[4]).nome_servico,
+            nome_loja=getLoja(idCliente=row[7]).nome,
+            idCliente=row[7],
         )
     return None
 
@@ -325,20 +329,27 @@ def getPedidos(idCliente):
     rows = cur.fetchall()
     con.close()
 
-    return [
-        Pedido(
+    pedidos = []
+    for row in rows:
+        pedido = Pedido(
             idPedido=row[0],
             data_pedido=row[1],
-            idServico=row[2],
-            estado_pedido=row[3],
-            total=row[4],
-            nome_cliente=getCliente(idCliente).nome,
-            nome_servico=getServico(row[2]).nome_servico,
-            nome_loja=getLoja(idCliente=row[5]).nome,
-            idCliente=row[5],
-        ).__dict__
-        for row in rows
-    ]
+            data_pagamento=row[2],
+            data_entrega=row[3],
+            tempo_chegada=calcular_tempo_chegada(row[5], row[2], row[3]),
+            idServico=row[4],
+            estado_pedido=row[5],
+            total=row[6],
+            nome_cliente=getCliente(row[7]).nome,
+            nome_servico=getServico(row[4]).nome_servico,
+            nome_loja=getLoja(idCliente=row[7]).nome,
+            idCliente=row[7],
+        )
+        # se já passou da data de entrega, marca como concluído
+        verificar_entrega(pedido)
+        pedidos.append(pedido.__dict__)
+
+    return pedidos
 
 
 def getPedidosLoja(idCliente):
@@ -358,21 +369,29 @@ def getPedidosLoja(idCliente):
     rows = cur.fetchall()
     con.close()
 
-    return [
-        Pedido(
+    pedidos = []
+    for row in rows:
+        pedido = Pedido(
             idPedido=row[0],
             data_pedido=row[1],
-            idServico=row[2],
-            estado_pedido=row[3],
-            total=row[4],
-            nome_cliente=getCliente(idCliente).nome,
-            nome_servico=getServico(row[2]).nome_servico,
-            idCliente=row[5],
-        ).__dict__
-        for row in rows
-    ]
+            data_pagamento=row[2],
+            data_entrega=row[3],
+            tempo_chegada=calcular_tempo_chegada(row[5], row[2], row[3]),
+            idServico=row[4],
+            estado_pedido=row[5],
+            total=row[6],
+            nome_cliente=getCliente(row[7]).nome,
+            nome_servico=getServico(row[4]).nome_servico,
+            nome_loja=getLoja(idCliente=row[7]).nome,
+            idCliente=row[7],
+        )
+        # se já passou da data de entrega, marca como concluído
+        verificar_entrega(pedido)
+        pedidos.append(pedido.__dict__)
 
+    return pedidos
 
+# FIXME deletar tudo
 def delPedido(idPedido):
     con = conectar()
     cur = con.cursor()
@@ -393,9 +412,11 @@ def addPedido(pedido: Pedido):
     cur = con.cursor()
     try:
         cur.execute(
-            "INSERT INTO pedido (data_pedido, idServico, estado_pedido, total,  idCliente) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO pedido (data_pedido, data_pagamento, data_entrega, idServico, estado_pedido, total,  idCliente) VALUES (?, ?, ?, ?, ?, ?, ?)",
             (
                 pedido.data_pedido,
+                pedido.data_pagamento,
+                pedido.data_entrega,
                 pedido.idServico,
                 pedido.estado_pedido,
                 pedido.total,
@@ -404,8 +425,8 @@ def addPedido(pedido: Pedido):
         )
         con.commit()
         pedido.idPedido = cur.lastrowid
-        print(f"Pedido inserido com ID: {pedido.idPedido}")
         return pedido.idPedido
+    
     except Exception as e:
         print("Erro ao inserir pedido:", e)
         con.rollback()
@@ -413,6 +434,22 @@ def addPedido(pedido: Pedido):
     finally:
         con.close()
 
+def atualizarDatasPedido(idPedido: int, data_pagamento: str, data_entrega: str) -> bool:
+    con = conectar()
+    cur = con.cursor()
+    try:
+        cur.execute(
+            "UPDATE pedido SET data_pagamento = ?, data_entrega = ? WHERE idPedido = ?",
+            (data_pagamento, data_entrega, idPedido),
+        )
+        con.commit()
+        return cur.rowcount > 0
+    except Exception as e:
+        print("Erro ao atualizar datas do pedido:", e)
+        con.rollback()
+        return False
+    finally:
+        con.close()
 
 def mudarEstadoPedido(idPedido, estado):
     if estado != "ENVIADO" and estado != "CONCLUÍDO":
@@ -489,6 +526,8 @@ def criar_banco():
     CREATE TABLE IF NOT EXISTS pedido (
         idPedido INTEGER PRIMARY KEY AUTOINCREMENT,
         data_pedido TEXT NOT NULL,
+        data_pagamento TEXT NOT NULL,
+        data_entrega TEXT NOT NULL,
         idServico INTEGER NOT NULL,
         estado_pedido TEXT NOT NULL,
         total REAL NOT NULL,

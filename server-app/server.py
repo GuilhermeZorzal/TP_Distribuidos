@@ -38,6 +38,7 @@ def tratar_mensagem(mensagem):
         "get_categoria": lambda dados: servico.get_categoria(),
     }
     
+    print(f"Dados do Cliente: ", func, dados)
     if func in no_auth_handlers:
         return no_auth_handlers[func](dados)
 
@@ -103,6 +104,7 @@ def main():
         try:
             mensagem_json = requisicao.decode()
             mensagem = json.loads(mensagem_json)
+            
         except json.JSONDecodeError:
             resposta = formatar_mensagem(0, "JSON inválido", {})
             conn.sendall(resposta.encode())

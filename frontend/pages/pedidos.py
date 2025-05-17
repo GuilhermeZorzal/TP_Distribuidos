@@ -128,10 +128,11 @@ class PedidoUnicoUsuario(QWidget):
         self.setLayout(outer_layout)
 
     def load(self, id):
-        print("AAAAAaaa")
         resp = get_pedido(id)
+        print("*********************\nPEDIDO UNICO USUARIO", resp)
         if not resp[0]:
-            raise Exception(resp[1])
+            QMessageBox.warning(self, "Erro", str(resp[1]))
+            return
 
         dados = resp[2]
         print(dados)
@@ -426,6 +427,7 @@ class PedidosLoja(QWidget):
         self.setLayout(self.main_layout)
 
     def load(self):
+        self.lista.clear()
         resp = get_pedidos_minha_loja()
         if not resp[0]:
             QMessageBox.warning(self, "Erro", str(resp[1]))

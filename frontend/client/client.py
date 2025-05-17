@@ -370,6 +370,8 @@ def get_pedido(idPedido):
 
         resposta = sendMessage(HOST, PORT, mensagem)
 
+        print("RESPOSTA", resposta)
+
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedido"]]
     except Exception as e:
         print(f"Um erro ocorreu: {e} get_pedido")

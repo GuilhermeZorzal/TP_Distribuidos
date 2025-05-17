@@ -67,7 +67,9 @@ def get_pedido(dados, idCliente):
     pid = dados.get("idPedido")
     
     pedido = db.getPedido(int(pid))
-    idVendedor = db.getLoja(pedido.idServico).idCliente
+    idVendedor = db.getLoja(idLoja=db.getServico(pedido.idServico).idLoja).idCliente
+
+    print(f"ID Vendedor: {idVendedor}, ID Cliente: {idCliente}, ID Pedido: {pid}, pedido: {pedido}")
     
     if not pedido:
         return 0, "Pedido não encontrado", {}

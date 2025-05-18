@@ -31,11 +31,6 @@ def sendMessage(host, port, mensagem):
 
     return json.loads(response)
 
-
-def receiveMessage():
-    pass
-
-
 HOST = "server"
 PORT = 50051
 
@@ -111,8 +106,6 @@ def autenticar(ccm, senha):
 
         if resposta["status"] == 200:
             tokenCliente = resposta["dados"].get("tokenCliente")
-            print("Threads. Token:", tokenCliente)
-
             results = {}
 
             def run_and_store(name, func, *args, **kwargs):
@@ -160,7 +153,6 @@ def esta_logado():
 
     :return: True se o usuário estiver logado, False caso contrário
     """
-    print("Local", tokenCliente)
     if tokenCliente is not None:
         return [200, "Usuário está autentificado!", {}]
     else:
@@ -236,7 +228,6 @@ def get_categoria():
         }
 
         resposta = sendMessage(HOST, PORT, mensagem)
-        print("\n\nResposta:", resposta)
         return [
             resposta["status"],
             resposta["mensagem"],
@@ -358,8 +349,6 @@ def get_pedido(idPedido):
         }
 
         resposta = sendMessage(HOST, PORT, mensagem)
-
-        print("RESPOSTA", resposta)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedido"]]
     except Exception as e:

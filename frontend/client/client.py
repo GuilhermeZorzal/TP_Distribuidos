@@ -40,7 +40,6 @@ HOST = "server"
 PORT = 50051
 
 tokenCliente = None
-cont_pages = 0
 data_possui_loja = None
 data_meus_pedidos = None
 data_pedidos_minha_loja = None
@@ -59,9 +58,7 @@ def cadastrar(nome, apelido, senha, ccm, contato):
     :retorno: Resposta do servidor
     """
     try:
-        global cont_pages
         global tokenCliente
-        cont_pages = 0
 
         mensagem = {
             "funcao": "cadastrar",
@@ -82,9 +79,7 @@ def cadastrar(nome, apelido, senha, ccm, contato):
 
         # Retorna a resposta do servidor
         return [resposta["status"], resposta["mensagem"], {}]
-
     except Exception as e:
-        # Em caso de erro, exibe do erro
         print(f"Um erro ocorreu: {e} cadastrar")
         return 0, e, {}
 
@@ -260,9 +255,6 @@ def get_catalogo(categorias=[], idLoja=None):
     :return: Resposta do servidor
     """
     try:
-        global cont_pages
-        cont_pages += 1
-
         mensagem = {
             "funcao": "get_catalogo",
             "dados": {

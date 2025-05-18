@@ -52,6 +52,7 @@ class Servico:
     tipo_pagamento: str = ""
     quantidade: float = 0.0
     esta_visivel: bool = True
+    apagado: bool = False
     idLoja: int = 0
 
 @dataclass

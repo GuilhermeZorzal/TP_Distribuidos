@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from objetos import Cliente, Loja, Servico, Pedido
-from handlers.pedido import calcular_tempo_chegada, verificar_entrega
+from utils.utils import calcular_tempo_chegada, verificar_entrega
 
 FILE = "./db/sqlite.db"
 
@@ -133,23 +133,33 @@ def addLoja(loja: Loja):
         con.close()
 
 
-def getServico(idServico):
+def getServico(idServico, pegar_apagado=False):
     con = conectar()
     cur = con.cursor()
-    cur.execute("SELECT * FROM servico WHERE idServico = ?", (idServico,))
+    if pegar_apagado:
+        cur.execute(
+            "SELECT * FROM servico WHERE idServico = ?",
+            (idServico,)
+        )
+    else:
+        cur.execute(
+            "SELECT * FROM servico WHERE idServico = ? AND apagado = 0",
+            (idServico,)
+        )
     row = cur.fetchone()
     con.close()
 
     if row:
         return Servico(
-            idServico=row[0],
-            nome_servico=row[1],
-            descricao_servico=row[2],
-            categoria=row[3],
-            tipo_pagamento=row[4],
-            quantidade=row[5],
-            esta_visivel=bool(row[6]),
-            idLoja=row[7],
+            idServico    = row[0],
+            nome_servico = row[1],
+            descricao_servico = row[2],
+            categoria    = row[3],
+            tipo_pagamento   = row[4],
+            quantidade   = row[5],
+            esta_visivel = bool(row[6]),
+            apagado      = bool(row[7]),
+            idLoja       = row[8],
         )
     return None
 
@@ -158,18 +168,21 @@ def getServicos(
     categorias: list[str] = None,
     idLoja: int = None,
     cont_pages: int = 0,
-    page_size: int = 20,
+    page_size: int = 20, 
+    pegar_apagado: bool = False
 ):
     con = conectar()
     cur = con.cursor()
-
     conditions = []
+    
+    if not pegar_apagado:
+        conditions = ["apagado = 0"]
+
     params = []
 
     if idLoja is not None:
         conditions.append("idLoja = ?")
         params.append(idLoja)
-        
     else:
         conditions.append("esta_visivel = 1")
 
@@ -178,9 +191,7 @@ def getServicos(
         conditions.append(f"categoria IN ({placeholders})")
         params.extend(categorias)
 
-    where_clause = ""
-    if conditions:
-        where_clause = "WHERE " + " AND ".join(conditions)
+    where_clause = "WHERE " + " AND ".join(conditions)
 
     offset = cont_pages * page_size
     sql = f"""
@@ -197,14 +208,15 @@ def getServicos(
 
     servicos = [
         Servico(
-            idServico=row[0],
-            nome_servico=row[1],
-            descricao_servico=row[2],
-            categoria=row[3],
-            tipo_pagamento=row[4],
-            quantidade=row[5],
-            esta_visivel=row[6],
-            idLoja=row[7],
+            idServico    = row[0],
+            nome_servico = row[1],
+            descricao_servico = row[2],
+            categoria    = row[3],
+            tipo_pagamento   = row[4],
+            quantidade   = row[5],
+            esta_visivel = bool(row[6]),
+            apagado      = bool(row[7]),
+            idLoja       = row[8],
         ).__dict__
         for row in rows
     ]
@@ -235,7 +247,7 @@ def addServico(servico: Servico):
     try:
         nome_servico = getattr(servico, "nome_servico", "")
         cur.execute(
-            "INSERT INTO servico (nome_servico, descricao_servico, categoria, tipo_pagamento, quantidade, esta_visivel, idLoja) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO servico (nome_servico, descricao_servico, categoria, tipo_pagamento, quantidade, esta_visivel, apagado, idLoja) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 nome_servico,
                 servico.descricao_servico,
@@ -243,6 +255,7 @@ def addServico(servico: Servico):
                 servico.tipo_pagamento,
                 servico.quantidade,
                 servico.esta_visivel,
+                servico.apagado,
                 servico.idLoja,
             ),
         )
@@ -286,11 +299,14 @@ def delServico(idServico):
     con = conectar()
     cur = con.cursor()
     try:
-        cur.execute("DELETE FROM servico WHERE idServico = ?", (idServico,))
+        cur.execute(
+            "UPDATE servico SET apagado = 1 WHERE idServico = ?",
+            (idServico,),
+        )
         con.commit()
         return cur.rowcount > 0
     except Exception as e:
-        print("Erro ao deletar serviço:", e)
+        print("Erro ao marcar serviço como apagado:", e)
         con.rollback()
         return False
     finally:
@@ -316,7 +332,7 @@ def getPedido(idPedido):
             total=row[6],
             nome_cliente=getCliente(row[7]).nome,
             nome_servico=getServico(row[4]).nome_servico,
-            nome_loja=getLoja(idCliente=row[7]).nome,
+            nome_loja=getLoja(idLoja=getServico(row[4]).idLoja).nome,
             idCliente=row[7],
         )
     return None
@@ -342,7 +358,7 @@ def getPedidos(idCliente):
             total=row[6],
             nome_cliente=getCliente(row[7]).nome,
             nome_servico=getServico(row[4]).nome_servico,
-            nome_loja=getLoja(idCliente=row[7]).nome,
+            nome_loja=getLoja(idLoja=getServico(row[4]).idLoja).nome,
             idCliente=row[7],
         )
         # se já passou da data de entrega, marca como concluído
@@ -391,7 +407,7 @@ def getPedidosLoja(idCliente):
 
     return pedidos
 
-# FIXME deletar tudo
+# FIXME deletar 
 def delPedido(idPedido):
     con = conectar()
     cur = con.cursor()
@@ -516,6 +532,7 @@ def criar_banco():
         tipo_pagamento TEXT NOT NULL,
         quantidade REAL NOT NULL,
         esta_visivel BOOLEAN NOT NULL,
+        apagado BOOLEAN NOT NULL,
         idLoja INTEGER NOT NULL,
         FOREIGN KEY (idLoja) REFERENCES loja(idLoja)
     );

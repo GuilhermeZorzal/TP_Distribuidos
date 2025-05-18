@@ -63,7 +63,6 @@ def cadastrar(nome, apelido, senha, ccm, contato):
         global tokenCliente
         cont_pages = 0
 
-        # Monta o objeto de cadastro como um dicionário
         mensagem = {
             "funcao": "cadastrar",
             "dados": {
@@ -85,7 +84,7 @@ def cadastrar(nome, apelido, senha, ccm, contato):
         return [resposta["status"], resposta["mensagem"], {}]
 
     except Exception as e:
-        # Em caso de erro, exibe a m cadaensagem e retorna o erro
+        # Em caso de erro, exibe do erro
         print(f"Um erro ocorreu: {e} cadastrar")
         return 0, e, {}
 
@@ -193,7 +192,6 @@ def criar_loja(nome_loja, contato, descricao):
             },
         }
 
-        # Resposta do servidor poderia ser o identificador da loja
         resposta = sendMessage(HOST, PORT, mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
@@ -224,7 +222,6 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
             },
         }
 
-        # Resposta do servidor poderia ser o identificador do anúncio
         resposta = sendMessage(HOST, PORT, mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
@@ -264,6 +261,7 @@ def get_catalogo(categorias=[], idLoja=None):
     """
     try:
         global cont_pages
+        cont_pages += 1
 
         mensagem = {
             "funcao": "get_catalogo",
@@ -276,7 +274,6 @@ def get_catalogo(categorias=[], idLoja=None):
         }
         resposta = sendMessage(HOST, PORT, mensagem)
 
-        # FIXME cont_pages += 1
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["servicos"]]
     except Exception as e:
         print(f"Um erro ocorreu: {e} get_catalogo")
@@ -638,22 +635,3 @@ def usuario_possui_loja():
         print(f"Um erro ocorreu: {e} usuario_possui_loja")
         return 0, e, {}
 
-
-if __name__ == "__main__":
-    # Exemplo de uso
-    print(cadastrar("Nome", "Apelido", "Senha", "CCM", "Contato"))
-    print(autenticar("CCM", "Senha"))
-    # print(criar_loja("Loja", "Contato", "Descricao"))
-    # print(criar_anuncio("Produto", "Descricao", "Categoria", "Tipo", 10))
-    # print(get_categoria())
-    # print(get_catalago())
-    # print(get_servico(1))
-    # print(get_loja(1))
-    # print(get_pedido(1))
-    # print(get_pedidos())
-    # print(get_pedidos_minha_loja())
-    # print(cancelar_pedido(1))
-    # print(editar_servico(1, "Produto Editado", "Descricao Editada", "Categoria Editada", "Tipo Editado", 5))
-    # print(ocultar_servico(1))
-    # print(desocultar_servico(1))
-    # print(apagar_servico(1))

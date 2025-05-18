@@ -3,7 +3,7 @@ import os
 from objetos import Cliente, Loja, Servico, Pedido
 from utils.utils import calcular_tempo_chegada, verificar_entrega
 
-FILE = "./db/sqliteBom.db"
+FILE = "./db/sqlite.db"
 
 
 def conectar():

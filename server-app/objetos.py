@@ -4,25 +4,16 @@ from typing import Optional
 # categorias de serviços magicos
 categorias = [
     "magia",
-    "maldição",
-    "ser mistico",
-    "proteção",
-    "assassinato",
-    "invocação",
     "cura",
-    "transformação",
-    "adivinhação",
+    "trabalho",
+    "transporte",
+    "assassinato",
+    "ataques",
+    "guarda-costas",
+    "mineração",
+    "rituais",
+    "espionagem",
     "alquimia",
-    "encantamento",
-    "necromancia",
-    "viagem planar",
-    "contrato sombrio",
-    "domesticação mágica",
-    "bênção divina",
-    "ilusão",
-    "espionagem etérea",
-    "caça a monstros",
-    "rompimento de selos"
 ]
 
 
@@ -35,6 +26,7 @@ class Cliente:
     ccm: str = ""
     contato: str = ""
 
+
 @dataclass
 class Loja:
     idLoja: Optional[int] = None
@@ -42,6 +34,7 @@ class Loja:
     contato: str = ""
     descricao: str = ""
     idCliente: int = 0
+
 
 @dataclass
 class Servico:
@@ -54,6 +47,7 @@ class Servico:
     esta_visivel: bool = True
     apagado: bool = False
     idLoja: int = 0
+
 
 @dataclass
 class Pedido:

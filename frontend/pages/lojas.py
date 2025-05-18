@@ -759,6 +759,21 @@ class CrieLoja(QWidget):
         self.parent = parent
         self.title = QLabel("Criar Loja")
         self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setStyleSheet("""
+            QLabel {
+                color: #2c3e50;
+                font-size: 35px;
+            }
+            QLineEdit {
+                color: #2c3e50;
+                font-size: 20px;
+            }
+            QPushButton {
+                color: white;
+                font-size: 35px;
+                background-color: #2c3e50;
+            }
+        """)
 
         self.descricao = QLabel(
             "Parece que voce não ainda não tem nenhuma loja.\nPreencha os dados abaixo para criar"
@@ -773,6 +788,12 @@ class CrieLoja(QWidget):
             "Digite as informações de contato da sua loja"
         )
 
+        self.image_label = QLabel()
+        pixmap = QPixmap("./assets/loja.jpg")
+        self.resize(pixmap.width(), pixmap.height())
+        self.image_label.setPixmap(pixmap)
+        self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.input_desc = QLineEdit()
         self.input_desc.setPlaceholderText("Dê uma breve descrição de sua loja")
 
@@ -781,6 +802,7 @@ class CrieLoja(QWidget):
 
         layout = QVBoxLayout()
         layout.addStretch()
+        layout.addWidget(self.image_label)
         layout.addWidget(self.title)
         layout.addWidget(self.descricao)
         layout.addWidget(self.input_nome_loja)

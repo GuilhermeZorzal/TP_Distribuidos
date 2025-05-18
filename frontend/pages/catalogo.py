@@ -305,7 +305,7 @@ class ServicoEspecifico(QWidget):
         self.id = servico["idServico"]
         self.title.setText(f"Nome do servico: {servico['nome_servico']}")
         self.desc.setText(f"Descrição: {servico['descricao_servico']}")
-        self.categoria.setText(servico["categoria"])
+        self.categoria.setText(f"Categoria de servico: {servico['categoria']}")
         self.pagamento.setText(
             f"Pagamento: {servico['quantidade']} {servico['tipo_pagamento']}"
         )

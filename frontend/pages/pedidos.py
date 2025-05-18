@@ -183,6 +183,7 @@ class PedidoUnico(QWidget):
         self.servico = QLabel("servico:")
         self.estado = QLabel("estado:")
         self.data_entrega = QLabel("data entrega:")
+        self.tempo_entrega = QLabel("tempo entrega:")
         self.total = QLabel("total:")
         self.nome_loja = QLabel("loja:")
         self.delete = QPushButton("Cancelar pedido")
@@ -214,11 +215,11 @@ class PedidoUnico(QWidget):
         layout.addWidget(self.title)
         # layout.addWidget(self.id)
         layout.addWidget(self.data)
-        # layout.addWidget(self.cliente)
+        layout.addWidget(self.data_entrega)
+        layout.addWidget(self.tempo_entrega)
         layout.addWidget(self.servico)
         layout.addWidget(self.nome_loja)
         layout.addWidget(self.estado)
-        layout.addWidget(self.data_entrega)
         layout.addWidget(self.total)
         layout.addWidget(self.delete)
         layout.addWidget(self.button_pagar)
@@ -245,7 +246,7 @@ class PedidoUnico(QWidget):
         # self.id.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.data.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.data.setText(f"Data: {dados['data_pedido']}")
+        self.data.setText(f"Data de realização do pedido: {dados['data_pedido']}")
 
         self.servico.setText(f"Nome do Servico: {dados['nome_servico']}")
         self.servico.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -255,6 +256,9 @@ class PedidoUnico(QWidget):
 
         self.data_entrega.setText(f"Data da entrega: {dados['data_entrega']}")
         self.data_entrega.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.tempo_entrega.setText(f"Tempo de entrega: {dados['tempo_chegada']}")
+        self.tempo_entrega.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.total.setText(f"Servico: {dados['total']}")
         self.total.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -268,15 +272,19 @@ class PedidoUnico(QWidget):
         self.delete.setEnabled(True)
         self.estado.setAlignment(Qt.AlignmentFlag.AlignCenter)
         print("ESTADO ANTES DE TESTAR IFS", dados["estado_pedido"])
+
         if str(dados["estado_pedido"]).upper() == "PENDENTE":
-            self.button_pagar.setEnabled(True)  # Make it unclickable
-            self.delete.setEnabled(True)  # Make it unclickable
+            self.button_pagar.setEnabled(True)
+            self.delete.setEnabled(True)
+            self.data_entrega.setText("Data da entrega: ---")
+            self.tempo_entrega.setText("Tempo de entrega: ---")
         if str(dados["estado_pedido"]).upper() == "ENVIADO":
-            self.button_pagar.setEnabled(False)  # Make it unclickable
-            self.delete.setEnabled(True)  # Make it unclickable
+            self.button_pagar.setEnabled(False)
+            self.delete.setEnabled(True)
         if str(dados["estado_pedido"]).upper() == "CONCLUIDO":
             self.button_pagar.setEnabled(False)
             self.delete.setEnabled(False)
+            self.tempo_entrega.setText("Tempo de entrega: entregue")
         self.total.setText(f"Total: {dados['total']}")
         self.total.setAlignment(Qt.AlignmentFlag.AlignCenter)
 

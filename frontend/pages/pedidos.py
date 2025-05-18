@@ -146,9 +146,7 @@ class PedidoUnicoUsuario(QWidget):
         # """)
         self.id.setText(f"ID: {id}")
         self.id.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        str_data, str_tempo = str(dados["data_pedido"]).split("T")
-        str_tempo = str_tempo[0:8]
-        self.data.setText(f"Data: {str_data}, {str_tempo}")
+        self.data.setText(f"Data: {dados['data_pedido']}")
         self.data.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.servico.setText(f"Servico: {dados['nome_servico']}")
         self.servico.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -246,10 +244,8 @@ class PedidoUnico(QWidget):
         self.id = id
         # self.id.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        str_data, str_tempo = str(dados["data_pedido"]).split("T")
-        str_tempo = str_tempo[0:8]
         self.data.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.data.setText(f"Data: {str_data}, {str_tempo}")
+        self.data.setText(f"Data: {dados['data_pedido']}")
 
         self.servico.setText(f"Nome do Servico: {dados['nome_servico']}")
         self.servico.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -257,9 +253,7 @@ class PedidoUnico(QWidget):
         # self.cliente.setText(f"Servico: {dados['nome_cliente']}")
         # self.cliente.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        str_data, str_tempo = str(dados["data_entrega"]).split("T")
-        str_tempo = str_tempo[0:8]
-        self.data_entrega.setText(f"Data da entrega: {str_data}, {str_tempo}")
+        self.data_entrega.setText(f"Data da entrega: {dados['data_entrega']}")
         self.data_entrega.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.total.setText(f"Servico: {dados['total']}")
@@ -329,9 +323,7 @@ class Pedido(QWidget):
             }
         """)
         # self.id_label = QLabel(f"id {self.id}")
-        str_data, str_tempo = str(data).split("T")
-        str_tempo = str_tempo[0:8]
-        self.data = QLabel(f"Data: {str_data}, {str_tempo}")
+        self.data = QLabel(f"Data: {data}")
         self.estado = QLabel(f"Estado: {estado}")
         self.total = QLabel(f"Total: {total}")
         self.servico = QLabel(f"Nome do Servico: {nome_servico}")

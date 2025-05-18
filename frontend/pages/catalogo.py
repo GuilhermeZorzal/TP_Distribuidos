@@ -23,7 +23,6 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette, QColor
 
 
-# from requestAPI.moc_gpt import get_catalogo, get_categoria, get_servico
 from client.client import criar_pedido, get_catalogo, get_categoria, get_servico
 
 
@@ -112,20 +111,11 @@ class CatalogoLista(QWidget):
                 background-color: #2c3e50;
             }
         """)
-        # UI setup
         self.main_layout = QVBoxLayout()
         self.lista = QListWidget()
 
-        # resp = get_categoria()
-        # print(resp)
         self.filtro_categoria = QComboBox()
-        # self.filtro_categoria.addItems(resp[2])
         self.filtro_categoria.currentIndexChanged.connect(self.filter_services)
-        # resp = get_categoria()
-        # if not resp[0]:
-        #     raise Exception(resp[1])
-        # categorias = resp[2]
-        # self.filtro_categoria.addItems(categorias)
 
         self.main_layout.addWidget(self.filtro_categoria)
         self.main_layout.addWidget(self.lista)
@@ -152,7 +142,9 @@ class CatalogoLista(QWidget):
         if not resp[0]:
             raise Exception(resp[1])
         categorias = resp[2]
-        self.filtro_categoria.addItems(categorias)
+        if self.filtro_categoria.count() == 0:
+            self.filtro_categoria.addItems(categorias)
+        # self.filtro_categoria.addItems(categorias)
         print("load_services")
 
         if self.is_loading:
@@ -196,7 +188,10 @@ class CatalogoLista(QWidget):
         if not resp[0]:
             raise Exception(resp[1])
         categorias = resp[2]
-        self.filtro_categoria.addItems(categorias)
+
+        if self.filtro_categoria.count() == 0:
+            # self.filtro_categoria.addItems(list(categorias).sort())
+            self.filtro_categoria.addItems(categorias)
         print("load_services")
 
         if self.is_loading:
@@ -229,11 +224,6 @@ class CatalogoLista(QWidget):
             print(f"Erro ao carregar serviços: {e}")
         finally:
             self.is_loading = False
-            # resp = get_categoria()
-            # if not resp[0]:
-            #     raise Exception(resp[1])
-            # categorias = resp[2]
-            # self.filtro_categoria.addItems(categorias)
 
     def check_scroll_position(self):
         scroll_bar = self.lista.verticalScrollBar()

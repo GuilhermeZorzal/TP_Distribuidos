@@ -36,7 +36,7 @@ def tratar_mensagem(mensagem):
         "autenticar": login.autenticar_cliente,
         "get_categoria": lambda dados: servico.get_categoria(),
     }
-    
+
     print(f"Dados do Cliente: ", func, dados)
     if func in no_auth_handlers:
         return no_auth_handlers[func](dados)
@@ -55,22 +55,22 @@ def tratar_mensagem(mensagem):
     auth_handlers = {
         "criar_loja": lambda d: loja.criar_loja(d, idCliente),
         "get_minha_loja": lambda d: loja.get_minha_loja(idCliente),
-        "tem_loja":      lambda d: loja.tem_loja(idCliente),
-        "get_loja":      lambda d: loja.get_loja(d),
+        "tem_loja": lambda d: loja.tem_loja(idCliente),
+        "get_loja": lambda d: loja.get_loja(d),
         "criar_anuncio": lambda d: servico.criar_anuncio(d, idCliente),
-        "get_catalogo":  lambda d: servico.get_catalogo(d),
-        "get_servico":   lambda d: servico.get_servico(d),
-        "ocultar_servico":   lambda d: servico.mudar_estado_servico(d, 0),
+        "get_catalogo": lambda d: servico.get_catalogo(d),
+        "get_servico": lambda d: servico.get_servico(d),
+        "ocultar_servico": lambda d: servico.mudar_estado_servico(d, 0),
         "desocultar_servico": lambda d: servico.mudar_estado_servico(d, 1),
-        "deletar_servico":   lambda d: servico.deletar_servico(d, idCliente),
-        "editar_servico":    lambda d: servico.editar_servico(d, idCliente),
-        "add_pedido":        lambda d: pedido.add_pedido(d, idCliente),
-        "pagar_pedido":      lambda d: pedido.pagar_pedido(d, idCliente),
-        "get_pedido":        lambda d: pedido.get_pedido(d, idCliente),
-        "get_pedidos":       lambda d: pedido.get_pedidos(idCliente),
+        "deletar_servico": lambda d: servico.deletar_servico(d, idCliente),
+        "editar_servico": lambda d: servico.editar_servico(d, idCliente),
+        "add_pedido": lambda d: pedido.add_pedido(d, idCliente),
+        "pagar_pedido": lambda d: pedido.pagar_pedido(d, idCliente),
+        "get_pedido": lambda d: pedido.get_pedido(d, idCliente),
+        "get_pedidos": lambda d: pedido.get_pedidos(idCliente),
         "get_pedidos_minha_loja": lambda d: pedido.get_pedidos_minha_loja(idCliente),
-        "cancelar_pedido":   lambda d: pedido.cancelar_pedido(d, idCliente),
-        "reset":             lambda d: (reset_database(), (200, "Banco de dados resetado", {}))[1],
+        "cancelar_pedido": lambda d: pedido.cancelar_pedido(d, idCliente),
+        "reset": lambda d: (reset_database(), (200, "Banco de dados resetado", {}))[1],
     }
 
     handler = auth_handlers.get(func)
@@ -106,12 +106,14 @@ def main():
 
     while True:
         conn, addr = server.accept()
-        
+
         # thread para processar cada conexão
         t = threading.Thread(target=handle_client, args=(conn, addr), daemon=True)
+        t2 = threading.Thread(target=handle_client, args=(conn, addr), daemon=True)
         t.start()
-        
+        t2.start()
         t.join()
+        t2.join()
 
 
 if __name__ == "__main__":

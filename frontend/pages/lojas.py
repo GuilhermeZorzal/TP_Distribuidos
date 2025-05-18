@@ -507,7 +507,10 @@ class EditarServico(QWidget):
         print("Categorias carregadas:", resp[2])
         if not resp[0]:
             QMessageBox.warning(self, "erro", str(resp[1]))
-        self.input_categoria.addItems(resp[2])
+
+        if self.input_categoria.count() == 0:
+            self.input_categoria.addItems(resp[2])
+        # self.input_categoria.addItems(resp[2])
 
         self.id = servico["idServico"]
         self.input_nome.setText(servico["nome_servico"])
@@ -704,8 +707,10 @@ class CriarServico(QWidget):
         print("Categorias carregadas:", resp[2])
         if not resp[0]:
             QMessageBox.warning(self, "erro", str(resp[1]))
-        self.input_categoria.addItems(resp[2])
-        # self.input_categoria.addItems(["bata", "asd", "lds"])
+
+        if self.input_categoria.count() == 0:
+            self.input_categoria.addItems(resp[2])
+        # self.input_categoria.addItems(resp[2])
 
     def voltar(self):
         self.parent.goto_area_loja()

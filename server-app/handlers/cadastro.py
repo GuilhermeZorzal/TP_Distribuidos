@@ -1,7 +1,7 @@
 from utils.token import gerar_token
 from db.database import addCliente
 from objetos import Cliente
-import json
+from utils.hash import hash_password
 
 def cadastrar(dados):
     try:
@@ -9,7 +9,7 @@ def cadastrar(dados):
         cliente = Cliente(
             nome=dados['nome'],
             apelido=dados['apelido'],
-            senha=dados['senha'],
+            senha=hash_password(dados['senha']),
             ccm=dados['ccm'],
             contato=dados['contato']
         )

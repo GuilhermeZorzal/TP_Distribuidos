@@ -168,33 +168,38 @@ def getServicos(
     categorias: list[str] = None,
     idLoja: int = None,
     cont_pages: int = 0,
-    page_size: int = 20, 
+    page_size: int = 10,
     pegar_apagado: bool = False
 ):
     con = conectar()
     cur = con.cursor()
-    conditions = []
-    
-    if not pegar_apagado:
-        conditions = ["apagado = 0"]
 
+    conditions = []
     params = []
+
+    # só filtra apagados se não quisermos pegá-los
+    if not pegar_apagado:
+        conditions.append("apagado = 0")
+
+    # só filtra invisíveis se não quisermos pegá-los
+    if not pegar_apagado and idLoja is None:
+        conditions.append("esta_visivel = 1")
 
     if idLoja is not None:
         conditions.append("idLoja = ?")
         params.append(idLoja)
-
-    else:
-        conditions.append("esta_visivel = 1")
 
     if categorias:
         placeholders = ",".join("?" for _ in categorias)
         conditions.append(f"categoria IN ({placeholders})")
         params.extend(categorias)
 
-    where_clause = "WHERE " + " AND ".join(conditions)
+    where_clause = ""
+    if conditions:
+        where_clause = "WHERE " + " AND ".join(conditions)
 
     offset = cont_pages * page_size
+    
     sql = f"""
         SELECT *
           FROM servico
@@ -207,7 +212,7 @@ def getServicos(
     rows = cur.fetchall()
     con.close()
 
-    servicos = [
+    return [
         Servico(
             idServico    = row[0],
             nome_servico = row[1],
@@ -221,7 +226,6 @@ def getServicos(
         ).__dict__
         for row in rows
     ]
-    return servicos
 
 
 def mudarEstadoServico(idServico, estado):
@@ -332,8 +336,8 @@ def getPedido(idPedido):
             estado_pedido=row[5],
             total=row[6],
             nome_cliente=getCliente(row[7]).nome,
-            nome_servico=getServico(row[4]).nome_servico,
-            nome_loja=getLoja(idLoja=getServico(row[4]).idLoja).nome,
+            nome_servico=getServico(row[4], pegar_apagado=True).nome_servico,
+            nome_loja=getLoja(idLoja=getServico(row[4], pegar_apagado=True).idLoja).nome,
             idCliente=row[7],
         )
     return None
@@ -359,8 +363,8 @@ def getPedidos(idCliente):
             estado_pedido=row[5],
             total=row[6],
             nome_cliente=getCliente(row[7]).nome,
-            nome_servico=getServico(row[4]).nome_servico,
-            nome_loja=getLoja(idLoja=getServico(row[4]).idLoja).nome,
+            nome_servico=getServico(row[4], pegar_apagado=True).nome_servico,
+            nome_loja=getLoja(idLoja=getServico(row[4], pegar_apagado=True).idLoja).nome,
             idCliente=row[7],
         )
         # se já passou da data de entrega, marca como concluído
@@ -401,8 +405,8 @@ def getPedidosLoja(idCliente):
             estado_pedido=row[5],
             total=row[6],
             nome_cliente=getCliente(row[7]).nome,
-            nome_servico=getServico(row[4]).nome_servico,
-            nome_loja=getLoja(idCliente=row[7]).nome,
+            nome_servico=getServico(row[4], pegar_apagado=True).nome_servico,
+            nome_loja=getLoja(idLoja=getServico(row[4], pegar_apagado=True).idLoja).nome,
             idCliente=row[7],
         )
         # se já passou da data de entrega, marca como concluído

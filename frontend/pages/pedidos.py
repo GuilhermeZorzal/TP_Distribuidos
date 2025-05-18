@@ -146,7 +146,9 @@ class PedidoUnicoUsuario(QWidget):
         # """)
         self.id.setText(f"ID: {id}")
         self.id.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.data.setText(f"Data: {dados['data_pedido']}")
+        str_data, str_tempo = str(dados["data_pedido"]).split("T")
+        str_tempo = str_tempo[0:8]
+        self.data.setText(f"Data: {str_data}, {str_tempo}")
         self.data.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.servico.setText(f"Servico: {dados['nome_servico']}")
         self.servico.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -182,14 +184,15 @@ class PedidoUnico(QWidget):
         self.cliente = QLabel("servico:")
         self.servico = QLabel("servico:")
         self.estado = QLabel("estado:")
+        self.data_entrega = QLabel("data entrega:")
         self.total = QLabel("total:")
         self.nome_loja = QLabel("loja:")
-
         self.delete = QPushButton("Cancelar pedido")
-        self.delete.clicked.connect(self.deletar)
         self.button_pagar = QPushButton("Realizar Pagamento ")
-        self.button_pagar.setEnabled(False)  # Make it unclickable
+
+        self.delete.clicked.connect(self.deletar)
         self.button_pagar.clicked.connect(self.pagar)
+        self.button_pagar.setEnabled(False)  # Make it unclickable
 
         layout = QVBoxLayout()
         self.setStyleSheet("""
@@ -213,10 +216,11 @@ class PedidoUnico(QWidget):
         layout.addWidget(self.title)
         # layout.addWidget(self.id)
         layout.addWidget(self.data)
-        layout.addWidget(self.cliente)
+        # layout.addWidget(self.cliente)
         layout.addWidget(self.servico)
         layout.addWidget(self.nome_loja)
         layout.addWidget(self.estado)
+        layout.addWidget(self.data_entrega)
         layout.addWidget(self.total)
         layout.addWidget(self.delete)
         layout.addWidget(self.button_pagar)
@@ -237,30 +241,28 @@ class PedidoUnico(QWidget):
             QMessageBox.warning(self, "Erro", str(resp[1]))
 
         dados = resp[2]
-        print(dados)
-        # self.title.setText("Pedido")
-        # self.title.setStyleSheet("""
-        #     QLabel {
-        #         color: #2c3e50;
-        #         font-weight: bold;
-        #         font-size: 20px;
-        #     }
-        # """)
-
         print("PEDIDOS DADOS:", dados)
+
         self.id = id
         # self.id.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.data.setText(f"Data: {dados['data_pedido']}")
+        str_data, str_tempo = str(dados["data_pedido"]).split("T")
+        str_tempo = str_tempo[0:8]
         self.data.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.data.setText(f"Data: {str_data}, {str_tempo}")
 
-        self.servico.setText(f"Servico: {dados['nome_servico']}")
+        self.servico.setText(f"Nome do Servico: {dados['nome_servico']}")
         self.servico.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.cliente.setText(f"Servico: {dados['nome_cliente']}")
-        self.cliente.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # self.cliente.setText(f"Servico: {dados['nome_cliente']}")
+        # self.cliente.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.total.setText(f"Servico: {dados['nome_cliente']}")
+        str_data, str_tempo = str(dados["data_entrega"]).split("T")
+        str_tempo = str_tempo[0:8]
+        self.data_entrega.setText(f"Data da entrega: {str_data}, {str_tempo}")
+        self.data_entrega.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.total.setText(f"Servico: {dados['total']}")
         self.total.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.nome_loja.setText(f"Nome da loja: {dados['nome_loja']}")
@@ -268,8 +270,8 @@ class PedidoUnico(QWidget):
 
         self.estado.setText(f"Estado: {dados['estado_pedido']}")
 
-        self.button_pagar.setEnabled(True)  # Make it unclickable
-        self.delete.setEnabled(True)  # Make it unclickable
+        self.button_pagar.setEnabled(True)
+        self.delete.setEnabled(True)
         self.estado.setAlignment(Qt.AlignmentFlag.AlignCenter)
         print("ESTADO ANTES DE TESTAR IFS", dados["estado_pedido"])
         if str(dados["estado_pedido"]).upper() == "PENDENTE":
@@ -278,9 +280,9 @@ class PedidoUnico(QWidget):
         if str(dados["estado_pedido"]).upper() == "ENVIADO":
             self.button_pagar.setEnabled(False)  # Make it unclickable
             self.delete.setEnabled(True)  # Make it unclickable
-        if str(dados["estado_pedido"]).upper() == "CONCLUÍDO":
-            self.button_pagar.setEnabled(False)  # Make it unclickable
-            self.delete.setEnabled(False)  # Make it unclickable
+        if str(dados["estado_pedido"]).upper() == "CONCLUIDO":
+            self.button_pagar.setEnabled(False)
+            self.delete.setEnabled(False)
         self.total.setText(f"Total: {dados['total']}")
         self.total.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -327,12 +329,13 @@ class Pedido(QWidget):
             }
         """)
         # self.id_label = QLabel(f"id {self.id}")
-        self.data = QLabel(f"data: {data}")
-        self.servico = QLabel(f"servico: {servico}")
-        self.estado = QLabel(f"estado: {estado}")
-        self.total = QLabel(f"total: {total}")
-        self.servico = QLabel(f"servico: {nome_servico}")
-        self.loja = QLabel(f"loja: {nome_loja}")
+        str_data, str_tempo = str(data).split("T")
+        str_tempo = str_tempo[0:8]
+        self.data = QLabel(f"Data: {str_data}, {str_tempo}")
+        self.estado = QLabel(f"Estado: {estado}")
+        self.total = QLabel(f"Total: {total}")
+        self.servico = QLabel(f"Nome do Servico: {nome_servico}")
+        self.loja = QLabel(f"Loja: {nome_loja}")
         self.button_ver = QPushButton("Visualizar")
         self.button_ver.clicked.connect(self.visualizar)
         self.setStyleSheet("""
@@ -354,7 +357,6 @@ class Pedido(QWidget):
         layout.addWidget(self.servico)
         layout.addWidget(self.estado)
         layout.addWidget(self.total)
-        layout.addWidget(self.servico)
         layout.addWidget(self.loja)
         layout.addWidget(self.button_ver)
         layout.addStretch()

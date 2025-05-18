@@ -169,7 +169,7 @@ def getServicos(
     if idLoja is not None:
         conditions.append("idLoja = ?")
         params.append(idLoja)
-        
+
     else:
         conditions.append("esta_visivel = 1")
 
@@ -331,6 +331,7 @@ def getPedidos(idCliente):
 
     pedidos = []
     for row in rows:
+        print("AAAAAAAAAAAAAAA\n\n", row)
         pedido = Pedido(
             idPedido=row[0],
             data_pedido=row[1],
@@ -353,6 +354,7 @@ def getPedidos(idCliente):
 
 
 def getPedidosLoja(idCliente):
+    print("\n\n\n AQUI")
     loja = getLoja(idCliente=idCliente)
     if not loja:
         return []
@@ -371,6 +373,7 @@ def getPedidosLoja(idCliente):
 
     pedidos = []
     for row in rows:
+        print("****************************\nROW NO BACK", row)
         pedido = Pedido(
             idPedido=row[0],
             data_pedido=row[1],
@@ -390,6 +393,7 @@ def getPedidosLoja(idCliente):
         pedidos.append(pedido.__dict__)
 
     return pedidos
+
 
 # FIXME deletar tudo
 def delPedido(idPedido):
@@ -426,13 +430,14 @@ def addPedido(pedido: Pedido):
         con.commit()
         pedido.idPedido = cur.lastrowid
         return pedido.idPedido
-    
+
     except Exception as e:
         print("Erro ao inserir pedido:", e)
         con.rollback()
         return None
     finally:
         con.close()
+
 
 def atualizarDatasPedido(idPedido: int, data_pagamento: str, data_entrega: str) -> bool:
     con = conectar()
@@ -450,6 +455,7 @@ def atualizarDatasPedido(idPedido: int, data_pagamento: str, data_entrega: str) 
         return False
     finally:
         con.close()
+
 
 def mudarEstadoPedido(idPedido, estado):
     if estado != "ENVIADO" and estado != "CONCLUÍDO":

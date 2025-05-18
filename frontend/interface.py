@@ -100,7 +100,7 @@ class MainWindow(QMainWindow):
 
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)  # Also remove space between widgets
+        layout.setSpacing(0)
         central_widget.setLayout(layout)
 
         self.sidebar = BarraLateral(self)
@@ -114,18 +114,15 @@ class MainWindow(QMainWindow):
         self.page_catalogo = Catalogo(self)
         self.page_lojas = Lojas(self)
         self.page_pedidos = Pedidos(self)
-        # self.page_settings = Settings(self)
         self.page_ajuda = Ajuda(self)
         self.page_erro = Erro(self)
 
-        # Add pages to stack and track their names
         self.pages = {
             "home": self.page_home,
             "auth": self.page_auth,
             "catalogo": self.page_catalogo,
             "loja": self.page_lojas,
             "pedidos": self.page_pedidos,
-            # "settings": self.page_settings,
             "ajuda": self.page_ajuda,
             "erro": self.page_erro,
         }
@@ -137,7 +134,6 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentWidget(self.page_home)
 
         # Listas de paginas que requerem autenticacao
-        # self.protected_routes = {"catalogo", "loja", "pedidos", "settings"}
         self.protected_routes = {"catalogo", "loja", "pedidos"}
 
     def navigate_to(self, page_name):
@@ -158,9 +154,6 @@ class MainWindow(QMainWindow):
 
     def loadPages(self):
         pass
-        # self.page_catalogo.load()
-        # self.page_lojas.load()
-        # self.page_pedidos.load()
 
 
 if __name__ == "__main__":

@@ -31,16 +31,10 @@ def sendMessage(host, port, mensagem):
 
     return json.loads(response)
 
-
-def receiveMessage():
-    pass
-
-
 HOST = "server"
 PORT = 50051
 
 tokenCliente = None
-cont_pages = 0
 data_possui_loja = None
 data_meus_pedidos = None
 data_pedidos_minha_loja = None
@@ -59,11 +53,8 @@ def cadastrar(nome, apelido, senha, ccm, contato):
     :retorno: Resposta do servidor
     """
     try:
-        global cont_pages
         global tokenCliente
-        cont_pages = 0
 
-        # Monta o objeto de cadastro como um dicionário
         mensagem = {
             "funcao": "cadastrar",
             "dados": {
@@ -83,9 +74,7 @@ def cadastrar(nome, apelido, senha, ccm, contato):
 
         # Retorna a resposta do servidor
         return [resposta["status"], resposta["mensagem"], {}]
-
     except Exception as e:
-        # Em caso de erro, exibe a m cadaensagem e retorna o erro
         print(f"Um erro ocorreu: {e} cadastrar")
         return 0, e, {}
 
@@ -117,8 +106,6 @@ def autenticar(ccm, senha):
 
         if resposta["status"] == 200:
             tokenCliente = resposta["dados"].get("tokenCliente")
-            print("Threads. Token:", tokenCliente)
-
             results = {}
 
             def run_and_store(name, func, *args, **kwargs):
@@ -166,7 +153,6 @@ def esta_logado():
 
     :return: True se o usuário estiver logado, False caso contrário
     """
-    print("Local", tokenCliente)
     if tokenCliente is not None:
         return [200, "Usuário está autentificado!", {}]
     else:
@@ -193,7 +179,6 @@ def criar_loja(nome_loja, contato, descricao):
             },
         }
 
-        # Resposta do servidor poderia ser o identificador da loja
         resposta = sendMessage(HOST, PORT, mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
@@ -224,7 +209,6 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
             },
         }
 
-        # Resposta do servidor poderia ser o identificador do anúncio
         resposta = sendMessage(HOST, PORT, mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
@@ -244,7 +228,6 @@ def get_categoria():
         }
 
         resposta = sendMessage(HOST, PORT, mensagem)
-        print("\n\nResposta:", resposta)
         return [
             resposta["status"],
             resposta["mensagem"],
@@ -263,8 +246,6 @@ def get_catalogo(categorias=[], idLoja=None):
     :return: Resposta do servidor
     """
     try:
-        global cont_pages
-
         mensagem = {
             "funcao": "get_catalogo",
             "dados": {
@@ -276,7 +257,6 @@ def get_catalogo(categorias=[], idLoja=None):
         }
         resposta = sendMessage(HOST, PORT, mensagem)
 
-        # FIXME cont_pages += 1
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["servicos"]]
     except Exception as e:
         print(f"Um erro ocorreu: {e} get_catalogo")
@@ -330,7 +310,7 @@ def get_loja(idLoja):
 
 def pagar_pedido(idPedido):
     """
-    Obtém os detalhes de um pedido específico.
+    Paga um pedido específico.
 
     :param idPedido: ID do pedido
     :return: Resposta do servidor
@@ -369,8 +349,6 @@ def get_pedido(idPedido):
         }
 
         resposta = sendMessage(HOST, PORT, mensagem)
-
-        print("RESPOSTA", resposta)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedido"]]
     except Exception as e:
@@ -592,32 +570,6 @@ def criar_pedido(idServico, quantidade):
         print(f"Um erro ocorreu: {e} criar_pedido")
         return 0, e, {}
 
-
-def realizar_pedido(idPedido):
-    """
-    Finalizar um pedido específico.
-
-    :param idPedido: ID do pedido
-    :return: Resposta do servidor
-    """
-    try:
-        mensagem = {
-            "funcao": "add_pedido",
-            "dados": {
-                "idPedido": idPedido,
-                "tokenCliente": tokenCliente,
-            },
-        }
-
-        resposta = sendMessage(HOST, PORT, mensagem)
-
-        return [resposta["status"], resposta["mensagem"], {}]
-
-    except Exception as e:
-        print(f"Um erro ocorreu: {e} realizar_pedido")
-        return 0, e, {}
-
-
 def usuario_possui_loja():
     """
     Verifica se o usuário possui uma loja.
@@ -638,22 +590,3 @@ def usuario_possui_loja():
         print(f"Um erro ocorreu: {e} usuario_possui_loja")
         return 0, e, {}
 
-
-if __name__ == "__main__":
-    # Exemplo de uso
-    print(cadastrar("Nome", "Apelido", "Senha", "CCM", "Contato"))
-    print(autenticar("CCM", "Senha"))
-    # print(criar_loja("Loja", "Contato", "Descricao"))
-    # print(criar_anuncio("Produto", "Descricao", "Categoria", "Tipo", 10))
-    # print(get_categoria())
-    # print(get_catalago())
-    # print(get_servico(1))
-    # print(get_loja(1))
-    # print(get_pedido(1))
-    # print(get_pedidos())
-    # print(get_pedidos_minha_loja())
-    # print(cancelar_pedido(1))
-    # print(editar_servico(1, "Produto Editado", "Descricao Editada", "Categoria Editada", "Tipo Editado", 5))
-    # print(ocultar_servico(1))
-    # print(desocultar_servico(1))
-    # print(apagar_servico(1))

@@ -570,32 +570,6 @@ def criar_pedido(idServico, quantidade):
         print(f"Um erro ocorreu: {e} criar_pedido")
         return 0, e, {}
 
-
-def realizar_pedido(idPedido):
-    """
-    Finalizar um pedido específico.
-
-    :param idPedido: ID do pedido
-    :return: Resposta do servidor
-    """
-    try:
-        mensagem = {
-            "funcao": "add_pedido",
-            "dados": {
-                "idPedido": idPedido,
-                "tokenCliente": tokenCliente,
-            },
-        }
-
-        resposta = sendMessage(HOST, PORT, mensagem)
-
-        return [resposta["status"], resposta["mensagem"], {}]
-
-    except Exception as e:
-        print(f"Um erro ocorreu: {e} realizar_pedido")
-        return 0, e, {}
-
-
 def usuario_possui_loja():
     """
     Verifica se o usuário possui uma loja.

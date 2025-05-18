@@ -1,6 +1,5 @@
 import socket
-import sqlite3
-import os
+import threading
 import json
 from handlers import cadastro, login, loja, servico, pedido
 from db.database import conectar, mostrar_tabelas, reset_database
@@ -81,56 +80,38 @@ def tratar_mensagem(mensagem):
     return handler(dados)
 
 
+def handle_client(conn, addr):
+    print(f"Conexão recebida de {addr}")
+    try:
+        req = conn.recv(1024)
+        if not req:
+            return
+        msg = json.loads(req.decode())
+    except json.JSONDecodeError:
+        conn.sendall(formatar_mensagem(0, "JSON inválido", {}).encode())
+        return
+    status, texto, dados = tratar_mensagem(msg)
+    resp = formatar_mensagem(status, texto, dados)
+    print(f"Resposta Servidor: {resp}")
+    conn.sendall(resp.encode())
+    conn.close()
+
+
 def main():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # Especifica a qual porta conectar o socket
     server.bind((HOST, PORT))
     server.listen()
-
     print(f"Servidor ouvindo em {HOST}:{PORT}")
     mostrar_tabelas()
 
     while True:
-        # Conn = connection:  é a nova conexão
-        # TODO: usar thread aqui
         conn, addr = server.accept()
-        print(f"Conexão recebida de {addr}")
-
-        requisicao = conn.recv(1024)
-        if not requisicao:
-            conn.close()
-            continue
-
-        try:
-            mensagem_json = requisicao.decode()
-            mensagem = json.loads(mensagem_json)
-            
-        except json.JSONDecodeError:
-            resposta = formatar_mensagem(0, "JSON inválido", {})
-            conn.sendall(resposta.encode())
-            conn.close()
-            continue
-
-        status, msg, dados = tratar_mensagem(mensagem)
-        resposta = formatar_mensagem(status, msg, dados)
-
-        print(f"Resposta Servidor: {resposta}")
-        # FIXME:
-        # if "dados" in resposta:
-        #     if "esta_visivel" in resposta["dados"]:
-        #         print(f"Mensagem recebida: {type(resposta['dados']['esta_visivel'])}")
-
-        # TODO: isolar as funcoes de sql.
-        # - create {table}
-        # - select ...
-        # -> se encapsular em funcoes fica mais facil de gerenciar
-        # O arquivo sqlite.db é o banco de dados: não existe um servico de bando de dados dedicao
-
-        mostrar_tabelas()
-
-        conn.sendall(resposta.encode())
-
-        conn.close()
+        
+        # thread para processar cada conexão
+        t = threading.Thread(target=handle_client, args=(conn, addr), daemon=True)
+        t.start()
+        
+        t.join()
 
 
 if __name__ == "__main__":

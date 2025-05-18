@@ -1,7 +1,7 @@
 import datetime
 import db.database as db
 from objetos import Pedido
-from utils.utils import verificar_entrega
+from utils.utils import verificar_entrega, BR
 import random
 
 def add_pedido(dados, idCliente):
@@ -24,7 +24,7 @@ def add_pedido(dados, idCliente):
         
 
         pedido = Pedido(
-            data_pedido   = datetime.datetime.utcnow().isoformat(),
+            data_pedido   = datetime.datetime.now(BR).isoformat(),
             idServico     = dados.get("idServico"),
             total         = int(dados.get("quantidade")) * servico.quantidade,
             nome_cliente = db.getCliente(idCliente).nome,
@@ -62,10 +62,10 @@ def pagar_pedido(dados, idCliente):
     pedido.estado_pedido = "ENVIADO"
 
     if db.mudarEstadoPedido(int(pid), pedido.estado_pedido):
-        pago_em = datetime.datetime.utcnow().isoformat()
+        pago_em = datetime.datetime.now(BR).isoformat()
         dias = random.randint(1, 5)
         previsto_para = (
-            datetime.datetime.utcnow() + datetime.timedelta(minutes=3)
+            datetime.datetime.now(BR) + datetime.timedelta(minutes=3)
         ).isoformat()
 
         if db.atualizarDatasPedido(int(pid), pago_em, previsto_para):

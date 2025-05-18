@@ -310,7 +310,7 @@ def get_loja(idLoja):
 
 def pagar_pedido(idPedido):
     """
-    Obtém os detalhes de um pedido específico.
+    Paga um pedido específico.
 
     :param idPedido: ID do pedido
     :return: Resposta do servidor

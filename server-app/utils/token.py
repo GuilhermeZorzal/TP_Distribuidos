@@ -47,7 +47,6 @@ def decode_token(token):
     except jwt.MissingRequiredClaimError as e:
         return 0, f"Claim ausente: {e.claim}", {}
     except jwt.InvalidTokenError as error:
-        print(f"Erro ao decodificar o token: {error}")
         return 0, "Token inválido. Verifique suas credenciais.", {}
 
 def protected(token):
@@ -56,7 +55,6 @@ def protected(token):
 
 def autorizarToken(token):
     status, msg, payload = protected(token)
-    print(status, msg, payload, "\n", token)
     
     if status != 200:
         return status, msg, {}

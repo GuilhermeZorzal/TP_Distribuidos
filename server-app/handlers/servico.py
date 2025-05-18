@@ -6,7 +6,6 @@ from utils.token import autorizarToken
 def criar_anuncio(dados, idCliente):
     try:
         idLoja = db.getLoja(idCliente=idCliente).idLoja
-        print(f"ID Loja: {idLoja}")
 
         servico = Servico(
             nome_servico=dados["nome_servico"],
@@ -18,8 +17,6 @@ def criar_anuncio(dados, idCliente):
         )
 
         id_servico = db.addServico(servico)
-
-        print(f"Serviço criado: {servico.__dict__}")
 
         if id_servico is None:
             return 0, "Erro ao criar o serviço: não foi possível inserir no banco", {}
@@ -45,7 +42,6 @@ def get_servico(dados):
 
 
 def get_categoria():
-    print(200, "Categorias mostradas com sucesso", {"categorias": categorias})
     return 200, "Categorias mostradas com sucesso", {"categorias": categorias}
 
 
@@ -106,7 +102,6 @@ def editar_servico(dados, idCliente):
 
 def get_catalogo(dados):
     try:
-        print(f"Dados recebidos: {dados}")
         servicos = db.getServicos(
             categorias=dados["categorias"],
             idLoja=dados["idLoja"],
@@ -114,7 +109,6 @@ def get_catalogo(dados):
         )
         if not servicos:
             return 200, "Nenhum serviço encontrado", {"servicos": []}
-        print(f"Serviços encontrados: {servicos}")
         return 200, "Serviços encontrados com sucesso", {"servicos": servicos}
 
     except Exception as e:

@@ -8,7 +8,6 @@ from utils.token import autorizarToken
 
 HOST = "0.0.0.0"
 PORT = 50051
-print("PORTA", PORT)
 
 # formato de resposta para o cliente:
 # dicionario = {status, mensagem, dados}

@@ -352,7 +352,6 @@ def getPedidos(idCliente):
 
     pedidos = []
     for row in rows:
-        print("AAAAAAAAAAAAAAA\n\n", row)
         pedido = Pedido(
             idPedido=row[0],
             data_pedido=row[1],
@@ -375,7 +374,6 @@ def getPedidos(idCliente):
 
 
 def getPedidosLoja(idCliente):
-    print("\n\n\n AQUI")
     loja = getLoja(idCliente=idCliente)
     if not loja:
         return []
@@ -394,7 +392,6 @@ def getPedidosLoja(idCliente):
 
     pedidos = []
     for row in rows:
-        print("****************************\nROW NO BACK", row)
         pedido = Pedido(
             idPedido=row[0],
             data_pedido=row[1],

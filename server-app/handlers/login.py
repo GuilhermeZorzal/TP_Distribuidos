@@ -25,7 +25,6 @@ def autenticar_cliente(dados):
             return 0, "Erro: cliente não encontrado", {}
 
         token = gerar_token(cliente)
-        print(f"Token gerado: {token}")
         return 200, "Autenticação realizada com sucesso", {"tokenCliente": token}
 
     except Exception as e:

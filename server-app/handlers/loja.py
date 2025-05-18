@@ -16,7 +16,6 @@ def criar_loja(dados, idCliente):
             descricao=dados['descricao'],
             idCliente=idCliente
         )
-        print(f"Loja criada: {loja.__dict__}")
         
         id_loja = addLoja(loja)
         

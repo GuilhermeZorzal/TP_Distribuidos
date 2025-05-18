@@ -23,14 +23,18 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette, QColor
 
 
-# from requestAPI.moc_gpt import get_catalogo, get_categoria, get_servico
 from client.client import criar_pedido, get_catalogo, get_categoria, get_servico
 
 
 class CardServico(QWidget):
     def __init__(self, service):
         super().__init__()
-        layout = QVBoxLayout()
+
+        # Widget interno com nome para o estilo
+        container = QWidget()
+        container.setObjectName("cardServico")
+
+        layout = QVBoxLayout(container)
 
         self.title = QLabel(service["nome_servico"])
         self.desc = QLabel(service["descricao_servico"])
@@ -38,30 +42,39 @@ class CardServico(QWidget):
         self.pagamento = QLabel(
             f"Pagamento: {service['quantidade']} {service['tipo_pagamento']}"
         )
-        # QWidget {
-        #     background-color: #000044
-        # }
-        self.setStyleSheet("""
-            QLabel {
-                font-size: 20px;
-                color: #2c3e50;
-            }
-            QCheckBox {
-                font-size: 15px;
-            }
-            QPushButton {
-                color: white;
-                font-size: 15px;
-                background-color: #2c3e50;
-            }
-        """)
 
         layout.addWidget(self.title)
         layout.addWidget(self.desc)
         layout.addWidget(self.categoria)
         layout.addWidget(self.pagamento)
 
-        self.setLayout(layout)
+        container.setLayout(layout)
+
+        outer_layout = QHBoxLayout()
+        outer_layout.addWidget(container)
+        self.setLayout(outer_layout)
+
+        # Aplica estilo usando o ID do container
+        self.setStyleSheet("""
+            QLabel {
+                font-size: 20px;
+                color: #2c3e50;
+            }
+            QPushButton {
+                color: white;
+                font-size: 15px;
+                background-color: #2c3e50;
+            }
+            QCheckBox {
+                font-size: 15px;
+            }
+            #cardServico {
+                border: 1px solid #2c3e50;
+                border-radius: 8px;
+                padding: 8px;
+                background-color: #f9f9f9;
+            }
+        """)
 
 
 class CatalogoLista(QWidget):
@@ -98,20 +111,11 @@ class CatalogoLista(QWidget):
                 background-color: #2c3e50;
             }
         """)
-        # UI setup
         self.main_layout = QVBoxLayout()
         self.lista = QListWidget()
 
-        # resp = get_categoria()
-        # print(resp)
         self.filtro_categoria = QComboBox()
-        # self.filtro_categoria.addItems(resp[2])
         self.filtro_categoria.currentIndexChanged.connect(self.filter_services)
-        # resp = get_categoria()
-        # if not resp[0]:
-        #     raise Exception(resp[1])
-        # categorias = resp[2]
-        # self.filtro_categoria.addItems(categorias)
 
         self.main_layout.addWidget(self.filtro_categoria)
         self.main_layout.addWidget(self.lista)
@@ -138,7 +142,9 @@ class CatalogoLista(QWidget):
         if not resp[0]:
             raise Exception(resp[1])
         categorias = resp[2]
-        self.filtro_categoria.addItems(categorias)
+        if self.filtro_categoria.count() == 0:
+            self.filtro_categoria.addItems(sorted(categorias))
+        # self.filtro_categoria.addItems(categorias)
         print("load_services")
 
         if self.is_loading:
@@ -180,9 +186,14 @@ class CatalogoLista(QWidget):
     def load_services(self, filter_text="", append=False):
         resp = get_categoria()
         if not resp[0]:
-            raise Exception(resp[1])
+            QMessageBox.warning(self, "erro carregando categorias", resp[1])
+            return
+
         categorias = resp[2]
-        self.filtro_categoria.addItems(categorias)
+
+        if self.filtro_categoria.count() == 0:
+            # self.filtro_categoria.addItems(list(categorias).sort())
+            self.filtro_categoria.addItems(sorted(categorias))
         print("load_services")
 
         if self.is_loading:
@@ -215,11 +226,6 @@ class CatalogoLista(QWidget):
             print(f"Erro ao carregar serviços: {e}")
         finally:
             self.is_loading = False
-            # resp = get_categoria()
-            # if not resp[0]:
-            #     raise Exception(resp[1])
-            # categorias = resp[2]
-            # self.filtro_categoria.addItems(categorias)
 
     def check_scroll_position(self):
         scroll_bar = self.lista.verticalScrollBar()

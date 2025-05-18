@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 # Banco de dados
-*.db
+sqlite.db
 
 # C extensions
 *.so

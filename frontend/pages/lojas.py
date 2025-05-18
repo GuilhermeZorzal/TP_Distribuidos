@@ -4,6 +4,8 @@ from typing import Self
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import (
     QApplication,
+    QListWidget,
+    QListWidgetItem,
     QCheckBox,
     QComboBox,
     QMainWindow,
@@ -196,43 +198,34 @@ class GerenciarServicos(QWidget):
         self.button_voltar = QPushButton("Voltar para área da loja")
         self.button_voltar.clicked.connect(self.voltar)
 
-        # Layout de conteúdo (inicialmente vazio)
-        self.content_layout = QVBoxLayout()
-        self.content_layout.addWidget(self.title)
-
-        self.content_widget = QWidget()
-        self.content_widget.setLayout(self.content_layout)
-
-        self.scroll_area = QScrollArea()
-        self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setWidget(self.content_widget)
+        # QListWidget substitui o layout anterior
+        self.lista_servicos = QListWidget()
 
         main_layout = QVBoxLayout(self)
         main_layout.addWidget(self.button_voltar)
-        main_layout.addWidget(self.scroll_area)
+        main_layout.addWidget(self.title)
+        main_layout.addWidget(self.lista_servicos)
         self.setLayout(main_layout)
 
         self.setStyleSheet("""
-            QVBoxLayout {
-                background-color: #2c3e50;
+            QListWidget {
+                background-color: #f5f5f5;
+                border: none;
             }
         """)
 
     def load(self):
         """Carrega os serviços da loja e atualiza a UI."""
-        self._clear_servicos()
+        self.lista_servicos.clear()
 
         id_loja = self.parent.get_id_loja()
-        print("id_loja", id_loja)
         resp = get_catalogo(idLoja=id_loja)
         if not resp[0]:
             QMessageBox.critical(self, "Erro", str(resp[1]))
             return
 
         dados = resp[2]
-        print("LOAD SERVICO", dados)
         for dado in dados:
-            nome = dado["nome_servico"]
             idServico = dado["idServico"]
             desc = dado["descricao_servico"]
             categoria = dado["categoria"]
@@ -240,26 +233,104 @@ class GerenciarServicos(QWidget):
             quant = dado["quantidade"]
             esta_visivel = dado["esta_visivel"]
 
-            servico = Servico(
+            # Cria o widget personalizado
+            widget_servico = Servico(
                 self, idServico, desc, categoria, tipo, quant, esta_visivel
             )
-            self.content_layout.addWidget(servico)
 
-        self.content_layout.addStretch()
+            item = QListWidgetItem()
+            item.setSizeHint(widget_servico.sizeHint())
 
-    def _clear_servicos(self):
-        """Remove widgets antigos antes de carregar novamente."""
-        while self.content_layout.count() > 1:  # mantém o título
-            item = self.content_layout.takeAt(1)
-            widget = item.widget()
-            if widget:
-                widget.setParent(None)
+            self.lista_servicos.addItem(item)
+            self.lista_servicos.setItemWidget(item, widget_servico)
 
     def goto_editar_servico(self, id):
         self.parent.goto_editar_servico(id)
 
     def voltar(self):
         self.parent.goto_area_loja()
+
+
+# class GerenciarServicos(QWidget):
+#     def __init__(self, parent):
+#         super().__init__(parent)
+#         self.parent = parent
+#
+#         self.title = QLabel("Meus serviços")
+#         self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+#         self.title.setStyleSheet("""
+#             QLabel {
+#                 font-size: 20px;
+#             }
+#         """)
+#
+#         self.button_voltar = QPushButton("Voltar para área da loja")
+#         self.button_voltar.clicked.connect(self.voltar)
+#
+#         # Layout de conteúdo (inicialmente vazio)
+#         self.content_layout = QVBoxLayout()
+#         self.content_layout.addWidget(self.title)
+#
+#         self.content_widget = QWidget()
+#         self.content_widget.setLayout(self.content_layout)
+#
+#         self.scroll_area = QScrollArea()
+#         self.scroll_area.setWidgetResizable(True)
+#         self.scroll_area.setWidget(self.content_widget)
+#
+#         main_layout = QVBoxLayout(self)
+#         main_layout.addWidget(self.button_voltar)
+#         main_layout.addWidget(self.scroll_area)
+#         self.setLayout(main_layout)
+#
+#         self.setStyleSheet("""
+#             QVBoxLayout {
+#                 background-color: #2c3e50;
+#             }
+#         """)
+#
+#     def load(self):
+#         """Carrega os serviços da loja e atualiza a UI."""
+#         self._clear_servicos()
+#
+#         id_loja = self.parent.get_id_loja()
+#         print("id_loja", id_loja)
+#         resp = get_catalogo(idLoja=id_loja)
+#         if not resp[0]:
+#             QMessageBox.critical(self, "Erro", str(resp[1]))
+#             return
+#
+#         dados = resp[2]
+#         print("LOAD SERVICO", dados)
+#         for dado in dados:
+#             nome = dado["nome_servico"]
+#             idServico = dado["idServico"]
+#             desc = dado["descricao_servico"]
+#             categoria = dado["categoria"]
+#             tipo = dado["tipo_pagamento"]
+#             quant = dado["quantidade"]
+#             esta_visivel = dado["esta_visivel"]
+#
+#             servico = Servico(
+#                 self, idServico, desc, categoria, tipo, quant, esta_visivel
+#             )
+#             self.content_layout.addWidget(servico)
+#
+#         self.content_layout.addStretch()
+#
+#     def _clear_servicos(self):
+#         """Remove widgets antigos antes de carregar novamente."""
+#         while self.content_layout.count() > 1:  # mantém o título
+#             item = self.content_layout.takeAt(1)
+#             widget = item.widget()
+#             if widget:
+#                 widget.setParent(None)
+#
+#     def goto_editar_servico(self, id):
+#         self.parent.goto_editar_servico(id)
+#
+#     def voltar(self):
+#         self.parent.goto_area_loja()
 
 
 # class GerenciarServicos(QWidget):
@@ -436,7 +507,10 @@ class EditarServico(QWidget):
         print("Categorias carregadas:", resp[2])
         if not resp[0]:
             QMessageBox.warning(self, "erro", str(resp[1]))
-        self.input_categoria.addItems(resp[2])
+
+        if self.input_categoria.count() == 0:
+            self.input_categoria.addItems(sorted(resp[2]))
+        # self.input_categoria.addItems(resp[2])
 
         self.id = servico["idServico"]
         self.input_nome.setText(servico["nome_servico"])
@@ -633,8 +707,11 @@ class CriarServico(QWidget):
         print("Categorias carregadas:", resp[2])
         if not resp[0]:
             QMessageBox.warning(self, "erro", str(resp[1]))
-        self.input_categoria.addItems(resp[2])
-        # self.input_categoria.addItems(["bata", "asd", "lds"])
+
+        if self.input_categoria.count() == 0:
+            # self.input_categoria.addItems(resp[2])
+            self.input_categoria.addItems(sorted(resp[2]))
+        # self.input_categoria.addItems(resp[2])
 
     def voltar(self):
         self.parent.goto_area_loja()

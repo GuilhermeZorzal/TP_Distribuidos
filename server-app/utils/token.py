@@ -1,13 +1,14 @@
 import jwt
 import datetime
 from db.database import getCliente
+from utils.utils import BR
 
 SECRET_KEY = "my_secret"
 ALGORITHM  = "HS256"
 EXP_DELTA  = datetime.timedelta(days=2)
 
 def gerar_token(cliente):
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.now(BR)
     
     payload = {
         "sub": str(cliente.idCliente),

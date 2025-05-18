@@ -1,7 +1,10 @@
 import datetime
 import json
+from zoneinfo import ZoneInfo
 from objetos import Pedido 
 import db.database as db
+
+BR = ZoneInfo("America/Sao_Paulo") 
 
 def formatar_mensagem(status, mensagem, dados):
     dados["pedido"] = formatar_pedido(dados)
@@ -63,7 +66,7 @@ def calcular_tempo_chegada(estado_pedido, data_pagamento, data_entrega):
 def verificar_entrega(pedido: Pedido):
     if pedido.estado_pedido == "ENVIADO":
         entrega = datetime.datetime.fromisoformat(pedido.data_entrega)
-        if entrega < datetime.datetime.utcnow():
+        if entrega < datetime.datetime.now(BR):
             pedido.estado_pedido = "CONCLUIDO"
             db.mudarEstadoPedido(int(pedido.idPedido), pedido.estado_pedido)
             return True

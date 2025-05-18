@@ -509,7 +509,7 @@ class EditarServico(QWidget):
             QMessageBox.warning(self, "erro", str(resp[1]))
 
         if self.input_categoria.count() == 0:
-            self.input_categoria.addItems(resp[2])
+            self.input_categoria.addItems(sorted(resp[2]))
         # self.input_categoria.addItems(resp[2])
 
         self.id = servico["idServico"]
@@ -709,7 +709,8 @@ class CriarServico(QWidget):
             QMessageBox.warning(self, "erro", str(resp[1]))
 
         if self.input_categoria.count() == 0:
-            self.input_categoria.addItems(resp[2])
+            # self.input_categoria.addItems(resp[2])
+            self.input_categoria.addItems(sorted(resp[2]))
         # self.input_categoria.addItems(resp[2])
 
     def voltar(self):

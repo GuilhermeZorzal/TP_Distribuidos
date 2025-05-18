@@ -143,7 +143,7 @@ class CatalogoLista(QWidget):
             raise Exception(resp[1])
         categorias = resp[2]
         if self.filtro_categoria.count() == 0:
-            self.filtro_categoria.addItems(categorias)
+            self.filtro_categoria.addItems(sorted(categorias))
         # self.filtro_categoria.addItems(categorias)
         print("load_services")
 
@@ -186,12 +186,14 @@ class CatalogoLista(QWidget):
     def load_services(self, filter_text="", append=False):
         resp = get_categoria()
         if not resp[0]:
-            raise Exception(resp[1])
+            QMessageBox.warning(self, "erro carregando categorias", resp[1])
+            return
+
         categorias = resp[2]
 
         if self.filtro_categoria.count() == 0:
             # self.filtro_categoria.addItems(list(categorias).sort())
-            self.filtro_categoria.addItems(categorias)
+            self.filtro_categoria.addItems(sorted(categorias))
         print("load_services")
 
         if self.is_loading:

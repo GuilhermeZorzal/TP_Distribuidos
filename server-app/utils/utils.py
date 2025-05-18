@@ -44,7 +44,8 @@ def formatar_data(pedido: Pedido):
 
     if pedido["tempo_chegada"] != "Esperando pagamento":
         # formato =  hora : minuto : segundo
-        hms, *_ = pedido["tempo_chegada"].split(".")
+
+        hms, *_ = calcular_tempo_chegada(pedido["estado_pedido"], pedido["data_pagamento"], pedido["data_entrega"]).split(".")
         h, m, s = hms.split(":")
 
         pedido["tempo_chegada"] = f"{int(h):02d}:{int(m):02d}:{int(s):02d}"

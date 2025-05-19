@@ -4,14 +4,15 @@ from objetos import Cliente, Loja, Servico, Pedido
 from utils.utils import calcular_tempo_chegada, verificar_entrega
 
 FILE = "./db/sqlite.db"
+FILEBASE = "./db/sqliteBase.db"
 
 
-def conectar():
+def conectar(file: str = FILE):
     if not os.path.exists("./db"):
         os.makedirs("./db")
-    return sqlite3.connect(FILE)
+    return sqlite3.connect(file)
 
-
+    
 def mostrar_tabelas():
     conn = conectar()
     cursor = conn.cursor()
@@ -504,7 +505,7 @@ def reset_database():
 
 
 def criar_banco():
-    con = conectar()
+    con = conectar(FILEBASE)
     cur = con.cursor()
 
     # Tabela Cliente
@@ -565,6 +566,17 @@ def criar_banco():
 
     con.commit()
     con.close()
+    
+def copiar_banco_base():
+    if not os.path.exists(FILE):
+        if os.path.exists(FILEBASE):
+            with open(FILEBASE, "rb") as f:
+                base = f.read()
+            with open(FILE, "wb") as f:
+                f.write(base)
+        else:
+            criar_banco()
+            copiar_banco_base()
 
 
-criar_banco()
+copiar_banco_base()

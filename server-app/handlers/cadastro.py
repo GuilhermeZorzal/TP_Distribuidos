@@ -25,3 +25,4 @@ def cadastrar(dados):
     
     except Exception as e:
         return 0, f"Erro ao cadastrar: {str(e)}", {}
+    

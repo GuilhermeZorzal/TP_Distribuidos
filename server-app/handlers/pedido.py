@@ -86,7 +86,7 @@ def get_pedido(dados, idCliente):
         return 0, "Usuário não autorizado", {}
 
     verificar_entrega(pedido)
-    formato = "%Y-%m-%dT%H:%M:%S.%f"
+    # formato = "%Y-%m-%dT%H:%M:%S.%f"
     
 
     return 200, "Pedido recuperado", {"pedido": pedido.__dict__}

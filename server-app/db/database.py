@@ -189,7 +189,7 @@ def getServicos(
         conditions.append("idLoja = ?")
         params.append(idLoja)
 
-    if categorias:
+    if categorias and "todas" not in categorias:
         placeholders = ",".join("?" for _ in categorias)
         conditions.append(f"categoria IN ({placeholders})")
         params.extend(categorias)

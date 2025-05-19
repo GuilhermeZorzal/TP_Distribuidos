@@ -3,19 +3,19 @@ from typing import Optional
 
 # categorias de serviços magicos
 categorias = [
-    "magia",
-    "cura",
-    "trabalho",
-    "transporte",
-    "assassinato",
-    "ataques",
-    "guarda-costas",
-    "mineração",
-    "rituais",
-    "espionagem",
-    "alquimia",
+    'todas',
+    'alquimia',
+    'assassinato',
+    'ataques',
+    'cura',
+    'espionagem',
+    'guarda-costas',
+    'magia',
+    'mineração',
+    'rituais',
+    'trabalho',
+    'transporte'
 ]
-
 
 @dataclass
 class Cliente:

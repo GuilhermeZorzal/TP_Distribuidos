@@ -42,7 +42,6 @@ def formatar_data(pedido: Pedido):
         if ":" in pedido["tempo_chegada"] or "." in pedido["tempo_chegada"]:
             hms, *_ = calcular_tempo_chegada(
                 pedido["estado_pedido"],
-                pedido["data_pagamento"],
                 pedido["data_entrega"],
             ).split(".")
             if hms == "Esperando pagamento" or hms == "Pedido concluído":

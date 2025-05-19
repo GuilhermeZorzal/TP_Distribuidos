@@ -164,7 +164,7 @@ def getServicos(
     categorias: list[str] = None,
     idLoja: int = None,
     cont_pages: int = 0,
-    page_size: int = 2,
+    page_size: int = 10,
     pegar_apagado: bool = False,
 ):
     con = conectar()

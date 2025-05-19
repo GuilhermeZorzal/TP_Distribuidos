@@ -44,11 +44,11 @@ def formatar_data(pedido: Pedido):
 
     if pedido["tempo_chegada"] != "Esperando pagamento":
         # formato =  hora : minuto : segundo
+        if ":" in pedido["tempo_chegada"] or "." in pedido["tempo_chegada"]:
+            hms, *_ = calcular_tempo_chegada(pedido["estado_pedido"], pedido["data_pagamento"], pedido["data_entrega"]).split(".")
+            h, m, s = hms.split(":")
 
-        hms, *_ = calcular_tempo_chegada(pedido["estado_pedido"], pedido["data_pagamento"], pedido["data_entrega"]).split(".")
-        h, m, s = hms.split(":")
-
-        pedido["tempo_chegada"] = f"{int(h):02d}:{int(m):02d}:{int(s):02d}"
+            pedido["tempo_chegada"] = f"{int(h):02d}:{int(m):02d}:{int(s):02d}"
 
 def calcular_tempo_chegada(estado_pedido, data_pagamento, data_entrega):
     if estado_pedido == "PENDENTE":

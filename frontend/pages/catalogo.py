@@ -37,6 +37,13 @@ class CardServico(QWidget):
         layout = QVBoxLayout(container)
 
         self.title = QLabel(service["nome_servico"])
+        self.title.setStyleSheet("""
+            QLabel {
+                font-size: 20px;
+                font-weight: bold;
+            }
+        """)
+
         self.desc = QLabel(service["descricao_servico"])
         self.categoria = QLabel(f"Categoria: {service['categoria']}")
         self.pagamento = QLabel(
@@ -177,11 +184,6 @@ class CatalogoLista(QWidget):
             print(f"Erro ao carregar serviços: {e}")
         finally:
             self.is_loading = False
-            # resp = get_categoria()
-            # if not resp[0]:
-            #     raise Exception(resp[1])
-            # categorias = resp[2]
-            # self.filtro_categoria.addItems(categorias)
 
     def load_services(self, filter_text="", append=False):
         resp = get_categoria()

@@ -149,24 +149,18 @@ class MainWindow(QMainWindow):
                 self.page_lojas.load()
             if page_name == "catalogo":
                 self.page_catalogo.load()
-            # if page_name == "pedidos":
-            #     self.page_pedidos.load()
+            if page_name == "pedidos":
+                self.page_pedidos.load()
 
             self.stack.setCurrentWidget(self.pages[page_name])
-            # self.page_catalogo.load()
-            # self.page_pedidos.load()
 
     def loadPages(self):
         pass
-        # self.page_catalogo.load()
-        # self.page_lojas.load()
-        # self.page_pedidos.load()
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    # Paleta de cores do aplicativo
     palette = QPalette()
     palette.setColor(QPalette.ColorRole.Window, QColor("#ecf0f1"))
     app.setPalette(palette)

@@ -495,4 +495,5 @@ class Catalogo(QStackedWidget):
 
     def load(self):
         print("Carregando catalogo")
+        self.setCurrentWidget(self.catalogo)
         self.catalogo.load()

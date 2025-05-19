@@ -407,7 +407,7 @@ class PedidosLoja(QWidget):
             }
         """)
 
-        text = QLabel("Página de Pedidos")
+        text = QLabel("Página Pedidos na Minha Loja")
         text.setAlignment(Qt.AlignmentFlag.AlignCenter)
         text.setStyleSheet("""
             QLabel {
@@ -492,7 +492,7 @@ class MeusPedidos(QWidget):
         self.button_voltar = QPushButton("Voltar")
         self.button_voltar.clicked.connect(self.voltar)
 
-        self.title = QLabel("Pagina de Pedidos")
+        self.title = QLabel("Pagina com Meus Pedidos")
 
         self.lista = QListWidget()
 
@@ -713,6 +713,5 @@ class Pedidos(QStackedWidget):
         self.setCurrentWidget(self.pedidos_loja)
 
     def load(self):
-        print("Carregando pedidos")
-        # self.pedidos_loja.load()
+        self.setCurrentWidget(self.area_pedidos)
         self.meus_pedidos.load()

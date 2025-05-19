@@ -928,10 +928,6 @@ class LojaStack(QStackedWidget):
         self.addWidget(self.meus_servicos)
         self.addWidget(self.editar_servico)
 
-        # if not response[0]:
-        #     # Não há loja criada
-        #     self.setCurrentWidget(self.cria_loja)
-        #
         self.setCurrentWidget(self.cria_loja)
 
     def load(self):

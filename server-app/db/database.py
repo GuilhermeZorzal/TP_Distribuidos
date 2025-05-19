@@ -415,7 +415,6 @@ def getPedidosLoja(idCliente):
     return pedidos
 
 
-# FIXME deletar tudo
 def delPedido(idPedido):
     con = conectar()
     cur = con.cursor()

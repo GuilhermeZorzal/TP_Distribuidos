@@ -46,23 +46,16 @@ def formatar_data(pedido: Pedido):
             ).split(".")
             if hms == "Esperando pagamento" or hms == "Pedido concluído":
                 pedido["tempo_chegada"] = hms
-                return
 
-            h, m, s = hms.split(":")
-
-            pedido["tempo_chegada"] = f"{int(h):02d}:{int(m):02d}:{int(s):02d}"
+            else:
+                h, m, s = hms.split(":")
+                pedido["tempo_chegada"] = f"{int(h):02d}:{int(m):02d}:{int(s):02d}"
 
     if pedido["data_pagamento"] != "Esperando pagamento":
         pedido["data_pagamento"] = datetime.datetime.fromisoformat(pedido["data_pagamento"]).strftime(formato)
 
     if pedido["data_entrega"] != "Esperando pagamento":
         pedido["data_entrega"] = datetime.datetime.fromisoformat(pedido["data_entrega"]).strftime(formato)
-
-    if pedido["tempo_chegada"] != "Esperando pagamento":
-        # formato =  hora : minuto : segundo
-        if ":" in pedido["tempo_chegada"] or "." in pedido["tempo_chegada"]:
-            hms, *_ = calcular_tempo_chegada(pedido["estado_pedido"], pedido["data_entrega"]).split(".")
-            h, m, s = hms.split(":")
 
 
 # tempo de entrega - tempo atual
@@ -71,9 +64,18 @@ def calcular_tempo_chegada(estado_pedido, data_entrega):
         return "Esperando pagamento"
 
     elif estado_pedido == "ENVIADO":
-        entrega = datetime.datetime.fromisoformat(data_entrega)
-        delta = entrega - datetime.datetime.now(BR)
-        return str(delta)
+        # aceita ISO ou formato já formatado (dd/mm/YYYY - HH:MM:SS)
+        try:
+            if "/" in data_entrega:
+                entrega = datetime.datetime.strptime(
+                    data_entrega, "%d/%m/%Y - %H:%M:%S"
+                )
+            else:
+                entrega = datetime.datetime.fromisoformat(data_entrega)
+            delta = entrega - datetime.datetime.now(BR) 
+            return str(delta)
+        except Exception:
+            return "Data de entrega inválida"
     elif estado_pedido == "CONCLUIDO":
         return "Pedido concluído"
 

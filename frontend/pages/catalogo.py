@@ -119,7 +119,7 @@ class CatalogoLista(QWidget):
 
         self.main_layout = QVBoxLayout()
         self.filtro_categoria = QComboBox()
-        self.filtro_categoria.currentIndexChanged.connect(self.reset_and_load)
+        self.filtro_categoria.currentIndexChanged.connect(self.filtrando)
 
         self.lista = QListWidget()
         self.load_more_button = QPushButton("Carregar mais")
@@ -132,7 +132,7 @@ class CatalogoLista(QWidget):
 
         self.lista.itemClicked.connect(self.goto_servico)
 
-    def reset_and_load(self):
+    def filtrando(self):
         self.current_page = 0
         self.lista.clear()
         self.load_services()

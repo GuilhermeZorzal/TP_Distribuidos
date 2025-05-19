@@ -64,15 +64,33 @@ def formatar_data(pedido: Pedido):
 
             pedido["tempo_chegada"] = f"{int(h):02d}:{int(m):02d}:{int(s):02d}"
 
+    if pedido["tempo_chegada"] != "Esperando pagamento":
+        # formato =  hora : minuto : segundo
+        if ":" in pedido["tempo_chegada"] or "." in pedido["tempo_chegada"]:
+            hms, *_ = calcular_tempo_chegada(
+                pedido["estado_pedido"],
+                pedido["data_pagamento"],
+                pedido["data_entrega"],
+            ).split(".")
+            if hms == "Esperando pagamento" or hms == "Pedido concluído":
+                pedido["tempo_chegada"] = hms
+                return
+
+            print("ERRRROOO\n\n\n\n\nhms", hms)
+            h, m, s = hms.split(":")
+
+            pedido["tempo_chegada"] = f"{int(h):02d}:{int(m):02d}:{int(s):02d}"
+
 
 def calcular_tempo_chegada(estado_pedido, data_pagamento, data_entrega):
+    # tempo de entrega - tempo atual
+    # def calcular_tempo_chegada(estado_pedido, data_entrega):
     if estado_pedido == "PENDENTE":
         return "Esperando pagamento"
 
     elif estado_pedido == "ENVIADO":
-        pago = datetime.datetime.fromisoformat(data_pagamento)
         entrega = datetime.datetime.fromisoformat(data_entrega)
-        delta = entrega - pago
+        delta = entrega - datetime.datetime.now(BR)
         return str(delta)
     elif estado_pedido == "CONCLUIDO":
         return "Pedido concluído"
@@ -88,4 +106,3 @@ def verificar_entrega(pedido: Pedido):
             db.mudarEstadoPedido(int(pedido.idPedido), pedido.estado_pedido)
             return True
     return False
-

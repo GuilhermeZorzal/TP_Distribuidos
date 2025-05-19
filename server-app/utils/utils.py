@@ -50,7 +50,7 @@ def formatar_data(pedido: Pedido):
 
             pedido["tempo_chegada"] = f"{int(h):02d}:{int(m):02d}:{int(s):02d}"
 
-# tempo atual - tempo de entrega
+# tempo de entrega - tempo atual
 def calcular_tempo_chegada(estado_pedido, data_entrega):
     if estado_pedido == "PENDENTE":
         return "Esperando pagamento"

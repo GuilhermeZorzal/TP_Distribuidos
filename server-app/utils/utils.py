@@ -36,12 +36,6 @@ def formatar_data(pedido: Pedido):
     
     pedido["data_pedido"] = datetime.datetime.fromisoformat(pedido["data_pedido"]).strftime(formato)
 
-    if pedido["data_pagamento"] != "Esperando pagamento":
-        pedido["data_pagamento"] = datetime.datetime.fromisoformat(pedido["data_pagamento"]).strftime(formato)
-
-    if pedido["data_entrega"] != "Esperando pagamento":
-        pedido["data_entrega"] = datetime.datetime.fromisoformat(pedido["data_entrega"]).strftime(formato)
-
     if pedido["tempo_chegada"] != "Esperando pagamento":
         # formato =  hora : minuto : segundo
         if ":" in pedido["tempo_chegada"] or "." in pedido["tempo_chegada"]:
@@ -49,6 +43,14 @@ def formatar_data(pedido: Pedido):
             h, m, s = hms.split(":")
 
             pedido["tempo_chegada"] = f"{int(h):02d}:{int(m):02d}:{int(s):02d}"
+
+    if pedido["data_pagamento"] != "Esperando pagamento":
+        pedido["data_pagamento"] = datetime.datetime.fromisoformat(pedido["data_pagamento"]).strftime(formato)
+
+    if pedido["data_entrega"] != "Esperando pagamento":
+        pedido["data_entrega"] = datetime.datetime.fromisoformat(pedido["data_entrega"]).strftime(formato)
+
+
 
 # tempo de entrega - tempo atual
 def calcular_tempo_chegada(estado_pedido, data_entrega):

@@ -144,8 +144,8 @@ class CatalogoLista(QWidget):
     def load_services(self):
         try:
             categoria = self.filtro_categoria.currentText()
-            # resp = get_catalogo(categorias=[categoria], page=self.current_page)
-            resp = get_catalogo(page=self.current_page)
+            resp = get_catalogo(categorias=[categoria], page=self.current_page)
+            # resp = get_catalogo(page=self.current_page)
             print("Catalogo:", resp)
             if not resp[0]:
                 QMessageBox.warning(self, "Erro", str(resp[1]))
@@ -177,7 +177,13 @@ class CatalogoLista(QWidget):
         self.lista.clear()
         self.current_page = 0
         try:
-            categoria = self.filtro_categoria.currentText()
+            resp = get_categoria()
+            if not resp[0]:
+                QMessageBox.warning(self, "Erro", str(resp[1]))
+                return
+            categoria = resp[2]
+
+            self.filtro_categoria.addItems(categoria)
             resp = get_catalogo(page=self.current_page)
             print("Catalogo:", resp)
             if not resp[0]:
@@ -203,8 +209,6 @@ class CatalogoLista(QWidget):
 
         except Exception as e:
             print(f"Erro ao carregar serviços: {e}")
-        finally:
-            self.is_loading = False
 
 
 #

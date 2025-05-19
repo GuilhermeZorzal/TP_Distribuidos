@@ -119,7 +119,7 @@ class CatalogoLista(QWidget):
 
         self.main_layout = QVBoxLayout()
         self.filtro_categoria = QComboBox()
-        self.filtro_categoria.currentIndexChanged.connect(self.reset_and_load)
+        self.filtro_categoria.currentIndexChanged.connect(self.filtrando)
 
         self.lista = QListWidget()
         self.load_more_button = QPushButton("Carregar mais")
@@ -132,7 +132,7 @@ class CatalogoLista(QWidget):
 
         self.lista.itemClicked.connect(self.goto_servico)
 
-    def reset_and_load(self):
+    def filtrando(self):
         self.current_page = 0
         self.lista.clear()
         self.load_services()
@@ -143,6 +143,8 @@ class CatalogoLista(QWidget):
 
     def load_services(self):
         try:
+            self.load_more_button.setEnabled(True)
+            self.load_more_button.setText("Carregar mais")
             categoria = self.filtro_categoria.currentText()
             resp = get_catalogo(categorias=[categoria], page=self.current_page)
             # resp = get_catalogo(page=self.current_page)
@@ -176,6 +178,8 @@ class CatalogoLista(QWidget):
     def load(self):
         self.lista.clear()
         self.current_page = 0
+        self.load_more_button.setEnabled(True)
+        self.load_more_button.setText("Carregar mais")
         try:
             resp = get_categoria()
             if not resp[0]:

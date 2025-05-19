@@ -70,8 +70,8 @@ def cadastrar(nome, apelido, senha, ccm, contato):
         # Aguarda e recebe a resposta do servidor
         resposta = sendMessage(HOST, PORT, mensagem)
 
-        if resposta["status"] == 200:
-            tokenCliente = resposta["dados"].get("tokenCliente")
+        # if resposta["status"] == 200:
+        #     tokenCliente = resposta["dados"].get("tokenCliente")
 
         # Retorna a resposta do servidor
         return [resposta["status"], resposta["mensagem"], {}]

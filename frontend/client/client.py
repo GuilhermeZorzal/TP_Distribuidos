@@ -31,6 +31,7 @@ def sendMessage(host, port, mensagem):
 
     return json.loads(response)
 
+
 HOST = "server"
 PORT = 50051
 
@@ -237,7 +238,7 @@ def get_categoria():
         return 0, str(e), {}
 
 
-def get_catalogo(categorias=[], idLoja=None):
+def get_catalogo(categorias=[], idLoja=None, page=0):
     """
     Obtém o catálogo de produtos disponíveis.
     :param categorias: Lista de categorias
@@ -250,7 +251,7 @@ def get_catalogo(categorias=[], idLoja=None):
             "funcao": "get_catalogo",
             "dados": {
                 "tokenCliente": tokenCliente,
-                "pages": 0,
+                "pages": page,
                 "categorias": categorias,
                 "idLoja": idLoja,
             },
@@ -570,6 +571,7 @@ def criar_pedido(idServico, quantidade):
         print(f"Um erro ocorreu: {e} criar_pedido")
         return 0, e, {}
 
+
 def usuario_possui_loja():
     """
     Verifica se o usuário possui uma loja.
@@ -589,4 +591,3 @@ def usuario_possui_loja():
     except Exception as e:
         print(f"Um erro ocorreu: {e} usuario_possui_loja")
         return 0, e, {}
-

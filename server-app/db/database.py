@@ -137,29 +137,25 @@ def getServico(idServico, pegar_apagado=False):
     con = conectar()
     cur = con.cursor()
     if pegar_apagado:
-        cur.execute(
-            "SELECT * FROM servico WHERE idServico = ?",
-            (idServico,)
-        )
+        cur.execute("SELECT * FROM servico WHERE idServico = ?", (idServico,))
     else:
         cur.execute(
-            "SELECT * FROM servico WHERE idServico = ? AND apagado = 0",
-            (idServico,)
+            "SELECT * FROM servico WHERE idServico = ? AND apagado = 0", (idServico,)
         )
     row = cur.fetchone()
     con.close()
 
     if row:
         return Servico(
-            idServico    = row[0],
-            nome_servico = row[1],
-            descricao_servico = row[2],
-            categoria    = row[3],
-            tipo_pagamento   = row[4],
-            quantidade   = row[5],
-            esta_visivel = bool(row[6]),
-            apagado      = bool(row[7]),
-            idLoja       = row[8],
+            idServico=row[0],
+            nome_servico=row[1],
+            descricao_servico=row[2],
+            categoria=row[3],
+            tipo_pagamento=row[4],
+            quantidade=row[5],
+            esta_visivel=bool(row[6]),
+            apagado=bool(row[7]),
+            idLoja=row[8],
         )
     return None
 
@@ -168,8 +164,8 @@ def getServicos(
     categorias: list[str] = None,
     idLoja: int = None,
     cont_pages: int = 0,
-    page_size: int = 10,
-    pegar_apagado: bool = False
+    page_size: int = 5,
+    pegar_apagado: bool = False,
 ):
     con = conectar()
     cur = con.cursor()
@@ -199,7 +195,7 @@ def getServicos(
         where_clause = "WHERE " + " AND ".join(conditions)
 
     offset = cont_pages * page_size
-    
+
     sql = f"""
         SELECT *
           FROM servico
@@ -214,15 +210,15 @@ def getServicos(
 
     return [
         Servico(
-            idServico    = row[0],
-            nome_servico = row[1],
-            descricao_servico = row[2],
-            categoria    = row[3],
-            tipo_pagamento   = row[4],
-            quantidade   = row[5],
-            esta_visivel = bool(row[6]),
-            apagado      = bool(row[7]),
-            idLoja       = row[8],
+            idServico=row[0],
+            nome_servico=row[1],
+            descricao_servico=row[2],
+            categoria=row[3],
+            tipo_pagamento=row[4],
+            quantidade=row[5],
+            esta_visivel=bool(row[6]),
+            apagado=bool(row[7]),
+            idLoja=row[8],
         ).__dict__
         for row in rows
     ]
@@ -337,7 +333,9 @@ def getPedido(idPedido):
             total=row[6],
             nome_cliente=getCliente(row[7]).nome,
             nome_servico=getServico(row[4], pegar_apagado=True).nome_servico,
-            nome_loja=getLoja(idLoja=getServico(row[4], pegar_apagado=True).idLoja).nome,
+            nome_loja=getLoja(
+                idLoja=getServico(row[4], pegar_apagado=True).idLoja
+            ).nome,
             idCliente=row[7],
         )
     return None
@@ -363,7 +361,9 @@ def getPedidos(idCliente):
             total=row[6],
             nome_cliente=getCliente(row[7]).nome,
             nome_servico=getServico(row[4], pegar_apagado=True).nome_servico,
-            nome_loja=getLoja(idLoja=getServico(row[4], pegar_apagado=True).idLoja).nome,
+            nome_loja=getLoja(
+                idLoja=getServico(row[4], pegar_apagado=True).idLoja
+            ).nome,
             idCliente=row[7],
         )
         # se já passou da data de entrega, marca como concluído
@@ -403,7 +403,9 @@ def getPedidosLoja(idCliente):
             total=row[6],
             nome_cliente=getCliente(row[7]).nome,
             nome_servico=getServico(row[4], pegar_apagado=True).nome_servico,
-            nome_loja=getLoja(idLoja=getServico(row[4], pegar_apagado=True).idLoja).nome,
+            nome_loja=getLoja(
+                idLoja=getServico(row[4], pegar_apagado=True).idLoja
+            ).nome,
             idCliente=row[7],
         )
         # se já passou da data de entrega, marca como concluído

@@ -90,8 +90,6 @@ class CatalogoLista(QWidget):
         self.parent = parent
 
         self.current_page = 0
-        self.page_size = 10
-        self.is_loading = False
 
         self.setStyleSheet("""
             QListWidgetItem:selected {
@@ -118,56 +116,42 @@ class CatalogoLista(QWidget):
                 background-color: #2c3e50;
             }
         """)
-        self.main_layout = QVBoxLayout()
-        self.lista = QListWidget()
 
+        self.main_layout = QVBoxLayout()
         self.filtro_categoria = QComboBox()
-        self.filtro_categoria.currentIndexChanged.connect(self.filter_services)
+        self.filtro_categoria.currentIndexChanged.connect(self.reset_and_load)
+
+        self.lista = QListWidget()
+        self.load_more_button = QPushButton("Carregar mais")
+        self.load_more_button.clicked.connect(self.load_services)
 
         self.main_layout.addWidget(self.filtro_categoria)
         self.main_layout.addWidget(self.lista)
+        self.main_layout.addWidget(self.load_more_button)
         self.setLayout(self.main_layout)
 
         self.lista.itemClicked.connect(self.goto_servico)
-        # Connect scroll after user_list is created
-        self.lista.verticalScrollBar().valueChanged.connect(self.check_scroll_position)
 
-        # self.load_services()
-
-    def filter_services(self):
+    def reset_and_load(self):
         self.current_page = 0
-        self.load_services(
-            filter_text=self.filtro_categoria.currentText(), append=False
-        )
+        self.lista.clear()
+        self.load_services()
 
     def goto_servico(self, item):
         id = item.data(Qt.ItemDataRole.UserRole)
         self.parent.goto_servico(id)
 
-    def load(self, filter_text="", append=False):
-        resp = get_categoria()
-        if not resp[0]:
-            raise Exception(resp[1])
-        categorias = resp[2]
-        if self.filtro_categoria.count() == 0:
-            self.filtro_categoria.addItems(sorted(categorias))
-        # self.filtro_categoria.addItems(categorias)
-        print("load_services")
-
-        if self.is_loading:
-            return
-
-        self.is_loading = True
+    def load_services(self):
         try:
-            resp = get_catalogo()
-            print("Catalogo", resp)
+            categoria = self.filtro_categoria.currentText()
+            # resp = get_catalogo(categorias=[categoria], page=self.current_page)
+            resp = get_catalogo(page=self.current_page)
+            print("Catalogo:", resp)
             if not resp[0]:
                 QMessageBox.warning(self, "Erro", str(resp[1]))
                 return
-            services = resp[2]
 
-            if not append:
-                self.lista.clear()
+            services = resp[2]
 
             for service in services:
                 item = QListWidgetItem()
@@ -179,39 +163,28 @@ class CatalogoLista(QWidget):
 
             if services:
                 self.current_page += 1
+            else:
+                # Nada mais a carregar, desativa botão
+                self.load_more_button.setEnabled(False)
+                self.load_more_button.setText("Tudo carregado")
 
         except Exception as e:
             print(f"Erro ao carregar serviços: {e}")
         finally:
             self.is_loading = False
 
-    def load_services(self, filter_text="", append=False):
-        resp = get_categoria()
-        if not resp[0]:
-            QMessageBox.warning(self, "erro carregando categorias", resp[1])
-            return
-
-        categorias = resp[2]
-
-        if self.filtro_categoria.count() == 0:
-            # self.filtro_categoria.addItems(list(categorias).sort())
-            self.filtro_categoria.addItems(sorted(categorias))
-        print("load_services")
-
-        if self.is_loading:
-            return
-
-        self.is_loading = True
+    def load(self):
+        self.lista.clear()
+        self.current_page = 0
         try:
-            resp = get_catalogo(categorias=[filter_text])
-            print("Catalogo", resp)
+            categoria = self.filtro_categoria.currentText()
+            resp = get_catalogo(page=self.current_page)
+            print("Catalogo:", resp)
             if not resp[0]:
                 QMessageBox.warning(self, "Erro", str(resp[1]))
                 return
-            services = resp[2]
 
-            if not append:
-                self.lista.clear()
+            services = resp[2]
 
             for service in services:
                 item = QListWidgetItem()
@@ -223,18 +196,170 @@ class CatalogoLista(QWidget):
 
             if services:
                 self.current_page += 1
+            else:
+                # Nada mais a carregar, desativa botão
+                self.load_more_button.setEnabled(False)
+                self.load_more_button.setText("Tudo carregado")
 
         except Exception as e:
             print(f"Erro ao carregar serviços: {e}")
         finally:
             self.is_loading = False
 
-    def check_scroll_position(self):
-        scroll_bar = self.lista.verticalScrollBar()
-        if scroll_bar.value() >= scroll_bar.maximum() - 50:
-            self.load_services(
-                filter_text=self.filtro_categoria.currentText(), append=True
-            )
+
+#
+# class CatalogoLista(QWidget):
+#     def __init__(self, parent=None):
+#         super().__init__(parent)
+#         self.parent = parent
+#
+#         self.current_page = 0
+#         self.page_size = 10
+#         self.is_loading = False
+#
+#         self.setStyleSheet("""
+#             QListWidgetItem:selected {
+#                 background-color: #000066;
+#             }
+#             QComboBox {
+#                 font-size: 20px;
+#             }
+#             QComboBox:selected {
+#                 background-color: #2c3e50;
+#                 font-size: 20px;
+#                 color: white;
+#             }
+#             QLabel {
+#                 font-size: 20px;
+#                 color: #2c3e50;
+#             }
+#             QCheckBox {
+#                 font-size: 15px;
+#             }
+#             QPushButton {
+#                 color: white;
+#                 font-size: 15px;
+#                 background-color: #2c3e50;
+#             }
+#         """)
+#         self.main_layout = QVBoxLayout()
+#         self.lista = QListWidget()
+#
+#         self.filtro_categoria = QComboBox()
+#         self.filtro_categoria.currentIndexChanged.connect(self.filter_services)
+#
+#         self.main_layout.addWidget(self.filtro_categoria)
+#         self.main_layout.addWidget(self.lista)
+#         self.setLayout(self.main_layout)
+#
+#         self.lista.itemClicked.connect(self.goto_servico)
+#         # Connect scroll after user_list is created
+#         self.lista.verticalScrollBar().valueChanged.connect(self.check_scroll_position)
+#
+#         # self.load_services()
+#
+#     def filter_services(self):
+#         self.current_page = 0
+#         self.load_services(
+#             filter_text=self.filtro_categoria.currentText(), append=False
+#         )
+#
+#     def goto_servico(self, item):
+#         id = item.data(Qt.ItemDataRole.UserRole)
+#         self.parent.goto_servico(id)
+#
+#     def load(self, filter_text="", append=False):
+#         resp = get_categoria()
+#         if not resp[0]:
+#             raise Exception(resp[1])
+#         categorias = resp[2]
+#         if self.filtro_categoria.count() == 0:
+#             self.filtro_categoria.addItems(sorted(categorias))
+#         # self.filtro_categoria.addItems(categorias)
+#         print("load_services")
+#
+#         if self.is_loading:
+#             return
+#
+#         self.is_loading = True
+#         try:
+#             resp = get_catalogo()
+#             print("Catalogo", resp)
+#             if not resp[0]:
+#                 QMessageBox.warning(self, "Erro", str(resp[1]))
+#                 return
+#             services = resp[2]
+#
+#             if not append:
+#                 self.lista.clear()
+#
+#             for service in services:
+#                 item = QListWidgetItem()
+#                 widget = CardServico(service)
+#                 item.setSizeHint(widget.sizeHint())
+#                 item.setData(Qt.ItemDataRole.UserRole, service["idServico"])
+#                 self.lista.addItem(item)
+#                 self.lista.setItemWidget(item, widget)
+#
+#             if services:
+#                 self.current_page += 1
+#
+#         except Exception as e:
+#             print(f"Erro ao carregar serviços: {e}")
+#         finally:
+#             self.is_loading = False
+#
+#     def load_services(self, filter_text="", append=False):
+#         resp = get_categoria()
+#         if not resp[0]:
+#             QMessageBox.warning(self, "erro carregando categorias", resp[1])
+#             return
+#
+#         categorias = resp[2]
+#
+#         if self.filtro_categoria.count() == 0:
+#             # self.filtro_categoria.addItems(list(categorias).sort())
+#             self.filtro_categoria.addItems(sorted(categorias))
+#         print("load_services")
+#
+#         if self.is_loading:
+#             return
+#
+#         self.is_loading = True
+#         try:
+#             resp = get_catalogo(categorias=[filter_text])
+#             print("Catalogo", resp)
+#             if not resp[0]:
+#                 QMessageBox.warning(self, "Erro", str(resp[1]))
+#                 return
+#             services = resp[2]
+#
+#             if not append:
+#                 self.lista.clear()
+#
+#             for service in services:
+#                 item = QListWidgetItem()
+#                 widget = CardServico(service)
+#                 item.setSizeHint(widget.sizeHint())
+#                 item.setData(Qt.ItemDataRole.UserRole, service["idServico"])
+#                 self.lista.addItem(item)
+#                 self.lista.setItemWidget(item, widget)
+#
+#             if services:
+#                 self.current_page += 1
+#
+#         except Exception as e:
+#             print(f"Erro ao carregar serviços: {e}")
+#         finally:
+#             self.is_loading = False
+#
+#     def check_scroll_position(self):
+#         scroll_bar = self.lista.verticalScrollBar()
+#         if scroll_bar.value() >= scroll_bar.maximum() - 50:
+#             self.load_services(
+#                 filter_text=self.filtro_categoria.currentText(), append=True
+#             )
+#
 
 
 class ServicoEspecifico(QWidget):

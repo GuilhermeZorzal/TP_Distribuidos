@@ -143,6 +143,8 @@ class CatalogoLista(QWidget):
 
     def load_services(self):
         try:
+            self.load_more_button.setEnabled(True)
+            self.load_more_button.setText("Carregar mais")
             categoria = self.filtro_categoria.currentText()
             resp = get_catalogo(categorias=[categoria], page=self.current_page)
             # resp = get_catalogo(page=self.current_page)
@@ -176,6 +178,8 @@ class CatalogoLista(QWidget):
     def load(self):
         self.lista.clear()
         self.current_page = 0
+        self.load_more_button.setEnabled(True)
+        self.load_more_button.setText("Carregar mais")
         try:
             resp = get_categoria()
             if not resp[0]:

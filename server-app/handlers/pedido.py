@@ -57,9 +57,9 @@ def pagar_pedido(dados, idCliente):
 
     if db.mudarEstadoPedido(int(pid), pedido.estado_pedido):
         pago_em = datetime.datetime.now(BR).isoformat()
-        dias = random.randint(1, 5)
+        min = random.randint(2, 10)
         previsto_para = (
-            datetime.datetime.now(BR) + datetime.timedelta(minutes=3)
+            datetime.datetime.now(BR) + datetime.timedelta(minutes=min)
         ).isoformat()
 
         if db.atualizarDatasPedido(int(pid), pago_em, previsto_para):

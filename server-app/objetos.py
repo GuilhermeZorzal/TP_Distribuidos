@@ -14,7 +14,8 @@ categorias = [
     'mineração',
     'rituais',
     'trabalho',
-    'transporte'
+    'transporte',
+    'outros'
 ]
 
 @dataclass

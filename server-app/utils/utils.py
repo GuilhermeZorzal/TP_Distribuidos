@@ -71,9 +71,18 @@ def calcular_tempo_chegada(estado_pedido, data_entrega):
         return "Esperando pagamento"
 
     elif estado_pedido == "ENVIADO":
-        entrega = datetime.datetime.fromisoformat(data_entrega)
-        delta = entrega - datetime.datetime.now(BR)
-        return str(delta)
+        # aceita ISO ou formato já formatado (dd/mm/YYYY - HH:MM:SS)
+        try:
+            if "/" in data_entrega:
+                entrega = datetime.datetime.strptime(
+                    data_entrega, "%d/%m/%Y - %H:%M:%S"
+                )
+            else:
+                entrega = datetime.datetime.fromisoformat(data_entrega)
+            delta = entrega - datetime.datetime.now(BR)
+            return str(delta)
+        except Exception:
+            return "Data de entrega inválida"
     elif estado_pedido == "CONCLUIDO":
         return "Pedido concluído"
 

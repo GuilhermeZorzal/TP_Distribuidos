@@ -708,8 +708,8 @@ class CriarServico(QWidget):
             QMessageBox.warning(self, "erro", str(resp[1]))
 
         if self.input_categoria.count() == 0:
-            # self.input_categoria.addItems(resp[2])
-            self.input_categoria.addItems(resp[2])
+            categoria = resp[2][1::]
+            self.input_categoria.addItems(categoria)
         # self.input_categoria.addItems(resp[2])
 
     def voltar(self):

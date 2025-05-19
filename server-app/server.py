@@ -110,7 +110,7 @@ def main():
         t = threading.Thread(target=handle_client, args=(conn, addr), daemon=True)
         t.start()
         
-        t.join()
+        # t.join()
 
 
 if __name__ == "__main__":

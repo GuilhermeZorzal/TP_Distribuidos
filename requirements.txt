@@ -1,6 +1,9 @@
+argon2-cffi==23.1.0
 PyQt6==6.6.1
 PyQt6-Qt6==6.6.1
-PyQt6-sip==13.6.0 
+# PyQt6-sip==13.6.0 
 qrcode==8.2.0
 pillow>=11.2.0
+Pyro5
+PyJWT==2.10.1
 Pyro5

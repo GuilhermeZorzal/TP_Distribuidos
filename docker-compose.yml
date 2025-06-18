@@ -1,4 +1,13 @@
 services:
+  rmi-ns:
+    container_name: oco_do_ogro_name_server
+    build: .
+    entrypoint: pyro5-ns --host 0.0.0.0
+    networks:
+      - my_network
+    ports:
+      - "9090:9090"
+
   client:
     build: ./frontend
     container_name: oco_do_ogro_client
@@ -20,6 +29,7 @@ services:
       - "8000:8000"
     depends_on: 
     - server
+    - rmi-ns
     networks:
       - my_network
 

@@ -2,6 +2,25 @@ import threading
 import socket
 import json
 
+from abc import ABC, abstractmethod
+import Pyro5.api
+
+
+class StubServer(ABC):
+    """
+    Esta classe não cumpre nenhum propósito no código, criei apenas pra funcionar o
+    autocomplete no editor de texto.
+    """
+
+    @abstractmethod
+    def get_hello(self):
+        pass
+
+
+stub: StubServer = Pyro5.api.Proxy("PYRONAME:stub")
+
+print(stub.get_hello())
+
 
 def sendMessage(host, port, mensagem):
     """

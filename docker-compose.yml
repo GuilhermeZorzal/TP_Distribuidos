@@ -1,7 +1,7 @@
 services:
   client:
     build: ./frontend
-    container_name: client-app
+    container_name: oco_do_ogro_client
     # adicionando tty, senão o print não funciona
     tty: true
     volumes:
@@ -25,7 +25,7 @@ services:
 
   server:
     build: ./server-app
-    container_name: server-app
+    container_name: oco_do_ogro_server
     # adicionando tty, senão o print não funciona
     tty: true
     volumes:

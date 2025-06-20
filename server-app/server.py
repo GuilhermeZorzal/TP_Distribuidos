@@ -36,7 +36,7 @@ broker = ServerObject()
 daemon = Pyro5.api.Daemon(host="oco_do_ogro_server")  # not 0.0.0.0
 uri = daemon.register(broker)
 ns = locate_ns()
-ns.register("stub", uri)
+ns.register("servidor", uri) # Registrando o objeto no Name Server com o nome "servidor"
 print("Ready. Object uri =", uri)
 daemon.requestLoop()
 

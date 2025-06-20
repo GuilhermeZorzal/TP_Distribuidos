@@ -5,54 +5,23 @@ import json
 from abc import ABC, abstractmethod
 import Pyro5.api
 
-
-class StubServer(ABC):
-    """
-    Esta classe não cumpre nenhum propósito no código, criei apenas pra funcionar o
-    autocomplete no editor de texto.
-    """
-
-    @abstractmethod
-    def get_hello(self):
-        pass
-
-
-stub: StubServer = Pyro5.api.Proxy("PYRONAME:stub")
-
-print(stub.get_hello())
-
-
-def sendMessage(host, port, mensagem):
+def sendMessage(mensagem):
     """
     Envia uma mensagem para o servidor e retorna a resposta.
 
-    :param host: Endereço do servidor
-    :param port: Porta do servidor
     :param mensagem: Mensagem a ser enviada
     :return: Resposta do servidor
     """
-    print(f"Conectando ao servidor {host}:{port}...")
+    try:
+        # conecta ao objeto remoto 'servidor' no Name Server
+            # with garante que a conexão com o obj remoto será fechada após a execução do bloco interno
+        with Pyro5.api.Proxy("PYRONAME:servidor") as servidor:
+            resposta = servidor.tratar_mensagem(mensagem)
+            return resposta
+    except Exception as e:
+        print(f"Erro ao enviar mensagem via Pyro5: {e}")
+        return {"status": 0, "mensagem": str(e), "dados": {}}
 
-    # Cria um socket para conexão TCP/IP
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # Conecta ao servidor no endereço e porta especificados
-    print(f"{mensagem}")
-    client.connect((host, port))
-
-    mensagem = json.dumps(mensagem)
-
-    # Envia os dados para o servidor
-    # O método encode() converte a string em bytes para envio
-    client.sendall(mensagem.encode())
-
-    response = client.recv(4096).decode()
-    client.close()
-
-    return json.loads(response)
-
-
-HOST = "server"
-PORT = 50051
 
 tokenCliente = None
 data_possui_loja = None
@@ -87,7 +56,7 @@ def cadastrar(nome, apelido, senha, ccm, contato):
         }
 
         # Aguarda e recebe a resposta do servidor
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         # if resposta["status"] == 200:
         #     tokenCliente = resposta["dados"].get("tokenCliente")
@@ -120,9 +89,10 @@ def autenticar(ccm, senha):
     global data_catalogo
 
     try:
-        mensagem = {"funcao": "autenticar", "dados": {"ccm": ccm, "senha": senha}}
+        mensagem = {"funcao": "autenticar",
+                    "dados": {"ccm": ccm, "senha": senha}}
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         if resposta["status"] == 200:
             tokenCliente = resposta["dados"].get("tokenCliente")
@@ -199,7 +169,7 @@ def criar_loja(nome_loja, contato, descricao):
             },
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
 
@@ -229,7 +199,7 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
             },
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -247,7 +217,7 @@ def get_categoria():
             },
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
         return [
             resposta["status"],
             resposta["mensagem"],
@@ -275,7 +245,7 @@ def get_catalogo(categorias=[], idLoja=None, page=0):
                 "idLoja": idLoja,
             },
         }
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["servicos"]]
     except Exception as e:
@@ -296,7 +266,7 @@ def get_servico(idServico):
             "dados": {"tokenCliente": tokenCliente, "idServico": idServico},
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["servico"]]
     except Exception as e:
@@ -320,7 +290,7 @@ def get_loja(idLoja):
             },
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
     except Exception as e:
@@ -344,7 +314,7 @@ def pagar_pedido(idPedido):
             },
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedido"]]
     except Exception as e:
@@ -368,7 +338,7 @@ def get_pedido(idPedido):
             },
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedido"]]
     except Exception as e:
@@ -383,9 +353,10 @@ def get_pedidos():
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "get_pedidos", "dados": {"tokenCliente": tokenCliente}}
+        mensagem = {"funcao": "get_pedidos",
+                    "dados": {"tokenCliente": tokenCliente}}
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedidos"]]
     except Exception as e:
@@ -405,7 +376,7 @@ def get_pedidos_minha_loja():
             "dados": {"tokenCliente": tokenCliente},
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedidos"]]
     except Exception as e:
@@ -429,7 +400,7 @@ def cancelar_pedido(idPedido):
             },
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -464,7 +435,7 @@ def editar_servico(idServico, nome, descricao, categoria, tipo, quantidade):
             },
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]]
     except Exception as e:
@@ -488,7 +459,7 @@ def ocultar_servico(idServico):
             },
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -513,7 +484,7 @@ def desocultar_servico(idServico):
             },
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -538,7 +509,7 @@ def apagar_servico(idServico):
             },
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -554,9 +525,10 @@ def get_minha_loja():
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "get_minha_loja", "dados": {"tokenCliente": tokenCliente}}
+        mensagem = {"funcao": "get_minha_loja",
+                    "dados": {"tokenCliente": tokenCliente}}
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
 
@@ -582,7 +554,7 @@ def criar_pedido(idServico, quantidade):
             },
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -603,7 +575,7 @@ def usuario_possui_loja():
             "dados": {"tokenCliente": tokenCliente},
         }
 
-        resposta = sendMessage(HOST, PORT, mensagem)
+        resposta = sendMessage(mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["resposta"]]
 

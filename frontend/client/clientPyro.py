@@ -12,6 +12,18 @@ class ServerObject:
         return "Hello!!"
 
     @Pyro5.api.expose
+    def cadastrar(self, msg):
+        pass
+
+    @Pyro5.api.expose
+    def autenticar(self, msg):
+        pass
+
+    @Pyro5.api.expose
+    def get_categoria(self, msg):
+        pass
+
+    @Pyro5.api.expose
     def criar_loja(self, msg):
         pass
 
@@ -108,6 +120,9 @@ data_meus_pedidos = None
 data_pedidos_minha_loja = None
 data_catalogo = None
 
+# definição do servidor
+servidor: ServerObject = Pyro5.api.Proxy("PYRONAME:servidor")
+
 
 def cadastrar(nome, apelido, senha, ccm, contato):
     """
@@ -124,7 +139,7 @@ def cadastrar(nome, apelido, senha, ccm, contato):
         global tokenCliente
 
         mensagem = {
-            "funcao": "cadastrar",
+            # "funcao": "cadastrar",
             "dados": {
                 "nome": nome,
                 "apelido": apelido,
@@ -135,7 +150,8 @@ def cadastrar(nome, apelido, senha, ccm, contato):
         }
 
         # Aguarda e recebe a resposta do servidor
-        resposta = sendMessage(mensagem)
+        # resposta = sendMessage(mensagem)
+        resposta = servidor.cadastrar(mensagem)
 
         # if resposta["status"] == 200:
         #     tokenCliente = resposta["dados"].get("tokenCliente")

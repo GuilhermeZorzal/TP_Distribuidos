@@ -6,85 +6,7 @@ from abc import ABC, abstractmethod
 import Pyro5.api
 
 
-class ServerObject:
-    @Pyro5.api.expose
-    def get_hello(self):
-        return "Hello!!"
-
-    @Pyro5.api.expose
-    def criar_loja(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def get_minha_loja(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def tem_loja(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def get_loja(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def criar_anuncio(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def get_catalogo(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def get_servico(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def ocultar_servico(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def desocultar_servico(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def deletar_servico(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def editar_servico(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def add_pedido(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def pagar_pedido(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def get_pedido(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def get_pedidos(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def get_pedidos_minha_loja(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def cancelar_pedido(self, msg):
-        pass
-
-    @Pyro5.api.expose
-    def reset(self, msg):
-        pass
-
-
-def sendMessage(mensagem):
+def sendMessage(nomeFunc, mensagem):
     """
     Envia uma mensagem para o servidor e retorna a resposta.
 
@@ -95,7 +17,9 @@ def sendMessage(mensagem):
         # conecta ao objeto remoto 'servidor' no Name Server
         # with garante que a conexão com o obj remoto será fechada após a execução do bloco interno
         with Pyro5.api.Proxy("PYRONAME:servidor") as servidor:
-            resposta = servidor.tratar_mensagem(mensagem)
+            # Obtem o nome da função a ser chamada e a chama passando a mensagem
+            func = getattr(servidor, nomeFunc)
+            resposta = func(mensagem)
             return resposta
     except Exception as e:
         print(f"Erro ao enviar mensagem via Pyro5: {e}")
@@ -124,7 +48,6 @@ def cadastrar(nome, apelido, senha, ccm, contato):
         global tokenCliente
 
         mensagem = {
-            "funcao": "cadastrar",
             "dados": {
                 "nome": nome,
                 "apelido": apelido,
@@ -135,7 +58,7 @@ def cadastrar(nome, apelido, senha, ccm, contato):
         }
 
         # Aguarda e recebe a resposta do servidor
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("cadastrar", mensagem)
 
         # if resposta["status"] == 200:
         #     tokenCliente = resposta["dados"].get("tokenCliente")
@@ -168,9 +91,9 @@ def autenticar(ccm, senha):
     global data_catalogo
 
     try:
-        mensagem = {"funcao": "autenticar", "dados": {"ccm": ccm, "senha": senha}}
+        mensagem = {"dados": {"ccm": ccm, "senha": senha}}
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("autenticar", mensagem)
 
         if resposta["status"] == 200:
             tokenCliente = resposta["dados"].get("tokenCliente")
@@ -238,7 +161,6 @@ def criar_loja(nome_loja, contato, descricao):
     """
     try:
         mensagem = {
-            "funcao": "criar_loja",
             "dados": {
                 "tokenCliente": tokenCliente,
                 "nome": nome_loja,
@@ -247,7 +169,7 @@ def criar_loja(nome_loja, contato, descricao):
             },
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("criar_loja", mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
 
@@ -266,7 +188,6 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
     """
     try:
         mensagem = {
-            "funcao": "criar_anuncio",
             "dados": {
                 "tokenCliente": tokenCliente,
                 "nome_servico": nome,
@@ -277,7 +198,7 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
             },
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("criar_anuncio", mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -289,13 +210,12 @@ def criar_anuncio(nome, descricao, categoria, tipo, quantidade):
 def get_categoria():
     try:
         mensagem = {
-            "funcao": "get_categoria",
             "dados": {
                 "tokenCliente": tokenCliente,
             },
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("get_categoria",mensagem)
         return [
             resposta["status"],
             resposta["mensagem"],
@@ -315,7 +235,6 @@ def get_catalogo(categorias=[], idLoja=None, page=0):
     """
     try:
         mensagem = {
-            "funcao": "get_catalogo",
             "dados": {
                 "tokenCliente": tokenCliente,
                 "pages": page,
@@ -323,7 +242,7 @@ def get_catalogo(categorias=[], idLoja=None, page=0):
                 "idLoja": idLoja,
             },
         }
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("get_catalogo",mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["servicos"]]
     except Exception as e:
@@ -340,11 +259,10 @@ def get_servico(idServico):
     """
     try:
         mensagem = {
-            "funcao": "get_servico",
             "dados": {"tokenCliente": tokenCliente, "idServico": idServico},
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("get_servico", mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["servico"]]
     except Exception as e:
@@ -361,14 +279,13 @@ def get_loja(idLoja):
     """
     try:
         mensagem = {
-            "funcao": "get_loja",
             "dados": {
                 "idLoja": idLoja,
                 "tokenCliente": tokenCliente,
             },
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("get_loja",mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
     except Exception as e:
@@ -385,14 +302,13 @@ def pagar_pedido(idPedido):
     """
     try:
         mensagem = {
-            "funcao": "pagar_pedido",
             "dados": {
                 "idPedido": idPedido,
                 "tokenCliente": tokenCliente,
             },
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("pagar_pedido", mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedido"]]
     except Exception as e:
@@ -409,14 +325,13 @@ def get_pedido(idPedido):
     """
     try:
         mensagem = {
-            "funcao": "get_pedido",
             "dados": {
                 "idPedido": idPedido,
                 "tokenCliente": tokenCliente,
             },
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("get_pedido", mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedido"]]
     except Exception as e:
@@ -431,9 +346,9 @@ def get_pedidos():
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "get_pedidos", "dados": {"tokenCliente": tokenCliente}}
+        mensagem = {"dados": {"tokenCliente": tokenCliente}}
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("get_pedidos", mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedidos"]]
     except Exception as e:
@@ -449,11 +364,10 @@ def get_pedidos_minha_loja():
     """
     try:
         mensagem = {
-            "funcao": "get_pedidos_minha_loja",
             "dados": {"tokenCliente": tokenCliente},
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("get_pedidos_minha_loja", mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["pedidos"]]
     except Exception as e:
@@ -470,14 +384,13 @@ def cancelar_pedido(idPedido):
     """
     try:
         mensagem = {
-            "funcao": "cancelar_pedido",
             "dados": {
                 "idPedido": idPedido,
                 "tokenCliente": tokenCliente,
             },
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("cancelar_pedido", mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -500,7 +413,6 @@ def editar_servico(idServico, nome, descricao, categoria, tipo, quantidade):
     """
     try:
         mensagem = {
-            "funcao": "editar_servico",
             "dados": {
                 "idServico": idServico,
                 "tokenCliente": tokenCliente,
@@ -512,7 +424,7 @@ def editar_servico(idServico, nome, descricao, categoria, tipo, quantidade):
             },
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("editar_servico", mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]]
     except Exception as e:
@@ -529,14 +441,13 @@ def ocultar_servico(idServico):
     """
     try:
         mensagem = {
-            "funcao": "ocultar_servico",
             "dados": {
                 "idServico": idServico,
                 "tokenCliente": tokenCliente,
             },
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("ocultar_servico", mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -554,14 +465,13 @@ def desocultar_servico(idServico):
     """
     try:
         mensagem = {
-            "funcao": "desocultar_servico",
             "dados": {
                 "idServico": idServico,
                 "tokenCliente": tokenCliente,
             },
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("desocultar_servico", mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -579,14 +489,13 @@ def apagar_servico(idServico):
     """
     try:
         mensagem = {
-            "funcao": "deletar_servico",
             "dados": {
                 "idServico": idServico,
                 "tokenCliente": tokenCliente,
             },
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("deletar_servico", mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -602,9 +511,10 @@ def get_minha_loja():
     :return: Resposta do servidor
     """
     try:
-        mensagem = {"funcao": "get_minha_loja", "dados": {"tokenCliente": tokenCliente}}
+        mensagem = {
+                    "dados": {"tokenCliente": tokenCliente}}
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("get_minha_loja", mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
 
@@ -622,7 +532,6 @@ def criar_pedido(idServico, quantidade):
     """
     try:
         mensagem = {
-            "funcao": "add_pedido",
             "dados": {
                 "idServico": idServico,
                 "quantidade": quantidade,
@@ -630,7 +539,7 @@ def criar_pedido(idServico, quantidade):
             },
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("add_pedido",mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 
@@ -647,11 +556,10 @@ def usuario_possui_loja():
     """
     try:
         mensagem = {
-            "funcao": "tem_loja",
             "dados": {"tokenCliente": tokenCliente},
         }
 
-        resposta = sendMessage(mensagem)
+        resposta = sendMessage("tem_loja", mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["resposta"]]
 

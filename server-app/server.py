@@ -1,7 +1,7 @@
 import Pyro5.api
 from time import sleep
 from Pyro5.errors import NamingError
-from serverClass import Server
+from serverPyro import Server
 
 
 # Localizar o Name Server

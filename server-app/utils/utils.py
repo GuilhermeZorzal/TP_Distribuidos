@@ -7,12 +7,15 @@ import db.database as db
 BR = ZoneInfo("America/Sao_Paulo")
 
 
-# não é mais necessário, pois o Pyro5 já lida com a serialização/deserialização
-def formatar_mensagem(status, mensagem, dados):
-    dados["pedido"] = formatar_pedido(dados)
+def formatar_mensagem_wrapper(fun):
+    def wrapper(self, *args, **kwargs):
+        status, mensagem, dados = fun(self, *args, **kwargs) # chama a função original e pega retorno
+        
+        dados["pedido"] = formatar_pedido(dados)
+        
+        return {"status": status, "mensagem": mensagem, "dados": dados}
 
-    return json.dumps({"status": status, "mensagem": mensagem, "dados": dados})
-
+    return wrapper
 
 def formatar_pedido(dados):
     if dados.get("pedido") is None and dados.get("pedidos") is None:

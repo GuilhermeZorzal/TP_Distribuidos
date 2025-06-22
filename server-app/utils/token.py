@@ -77,27 +77,44 @@ def authorization(idCliente, token):
 
 # autenticação de funções do servidor
 def autenticar_wrapper(func):
-    def wrapper(self, *args, **kwargs):
-        # Captura o token: pode vir nos kwargs ou como último argumento
-        token = kwargs.pop('token', None)
-
-        if not token and args:
-            ultimo_arg = args[-1]
-            if isinstance(ultimo_arg, str):
-                token = ultimo_arg
-    
+    def wrapper(self, msg):
+        dados = msg.get("dados", {})
+        token = dados.get("tokenCliente")
+        
         if not token:
-            return 401, "Token não fornecido", {}
+            return {
+                "status": 0,
+                "mensagem": "Token não fornecido",
+                "dados": {},
+            }
 
-        # Verifica o token
         try:
-            status, msg, idCliente = autorizarToken(token)
+            status, mensagem, idCliente = autorizarToken(token)
             if status != 200:
-                return status, msg, {}
+                return {
+                    "status": 0,
+                    "mensagem": mensagem,
+                    "dados": {},
+                }
+                
         except Exception as e:
-            return 500, f"Erro ao verificar Token: {e}", {}
+            return {
+                "status": 0,
+                "mensagem": f"Erro ao verificar Token: {e}",
+                "dados": {},
+            }
 
-        # Executa a função original com idCliente incluído
-        return func(self, idCliente, *args, **kwargs)
+        # Descobre quais argumentos tem na função
+        params = func.__code__.co_varnames
+        params = params[:func.__code__.co_argcount]
+        
+        args_to_pass = []
+
+        if "dados" in params:
+            args_to_pass.append(dados)
+        if "idCliente" in params:
+            args_to_pass.append(idCliente)
+
+        return func(self, *args_to_pass)
 
     return wrapper

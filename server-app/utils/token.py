@@ -74,3 +74,30 @@ def authorization(idCliente, token):
         return 0, "Usuário não autorizado", {}
 
     return 200, "Usuário autorizado", {"cliente": cliente}
+
+# autenticação de funções do servidor
+def autenticar_wrapper(func):
+    def wrapper(self, *args, **kwargs):
+        # Captura o token: pode vir nos kwargs ou como último argumento
+        token = kwargs.pop('token', None)
+
+        if not token and args:
+            ultimo_arg = args[-1]
+            if isinstance(ultimo_arg, str):
+                token = ultimo_arg
+    
+        if not token:
+            return 401, "Token não fornecido", {}
+
+        # Verifica o token
+        try:
+            status, msg, idCliente = autorizarToken(token)
+            if status != 200:
+                return status, msg, {}
+        except Exception as e:
+            return 500, f"Erro ao verificar Token: {e}", {}
+
+        # Executa a função original com idCliente incluído
+        return func(self, idCliente, *args, **kwargs)
+
+    return wrapper

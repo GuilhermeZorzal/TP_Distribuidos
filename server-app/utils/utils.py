@@ -7,6 +7,7 @@ import db.database as db
 BR = ZoneInfo("America/Sao_Paulo")
 
 
+# não é mais necessário, pois o Pyro5 já lida com a serialização/deserialização
 def formatar_mensagem(status, mensagem, dados):
     dados["pedido"] = formatar_pedido(dados)
 

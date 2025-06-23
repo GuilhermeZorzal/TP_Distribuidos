@@ -11,7 +11,7 @@ class Server:
     def __init__(self):
         print("[Servidor] Servidor iniciado.")
         copiar_banco_base()
-        mostrar_tabelas()
+        # mostrar_tabelas()
 
     # Funções que não precisam de autenticação
     

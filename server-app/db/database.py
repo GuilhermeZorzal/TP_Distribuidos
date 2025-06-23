@@ -579,5 +579,3 @@ def copiar_banco_base():
             criar_banco()
             copiar_banco_base()
 
-
-copiar_banco_base()

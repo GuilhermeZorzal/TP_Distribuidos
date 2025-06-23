@@ -8,7 +8,6 @@ def criar_loja(dados, idCliente):
         return 0, "Erro ao verificar loja", {}
     if aux[2]['resposta']:
         return 0, "Usuário já possui loja", {}
-
     try:
         loja = Loja(
             nome=dados['nome'],
@@ -16,7 +15,6 @@ def criar_loja(dados, idCliente):
             descricao=dados['descricao'],
             idCliente=idCliente
         )
-        
         id_loja = addLoja(loja)
         
         if id_loja is None:

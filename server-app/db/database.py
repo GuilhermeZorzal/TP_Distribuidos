@@ -575,6 +575,7 @@ def copiar_banco_base():
             with open(FILE, "wb") as f:
                 f.write(base)
         else:
+            print("Arquivo base não encontrado. Replicando banco de dados com base no padrão.")
             criar_banco()
             copiar_banco_base()
 

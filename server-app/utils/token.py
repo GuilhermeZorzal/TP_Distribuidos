@@ -110,11 +110,12 @@ def autenticar_wrapper(func):
         
         args_to_pass = []
 
-        if "dados" in params:
-            args_to_pass.append(dados)
         if "idCliente" in params:
             args_to_pass.append(idCliente)
+        if "dados" in params:
+            args_to_pass.append(dados)
 
+        print(f"[autenticar_wrapper] Chamada da função: {func.__name__} com args: {args_to_pass}")
         return func(self, *args_to_pass)
 
     return wrapper

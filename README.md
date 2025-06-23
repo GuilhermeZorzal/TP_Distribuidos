@@ -2,17 +2,14 @@
 
 Repositório destinado para a construção do trabalho prático de dsitribuidos. 
 
-Divido em duas partes: uma implementação com sockets e uma com middleware
+# Executando com o Docker
 
-## Requerimentos
+Basta executar o comando `docker compose up --build`
 
-Python3:
+Dependendo da distribuição que você estiver usando, pode ser que o comando seja `docker-compose up --build` (com um hífen)
 
-- Implementação com sockets
-- Implementação usando fluxo TCP
-- Interface com PyQt6
-- Banco de dados com SQLite 
+Note que é necessário executar o build apenas na primeira vez. Nas execuções subsequentes, basta executar `docker compose up` (ou `docker-compose up`)
 
-# Instruções de execução
+# Executando sem o Docker
 
-Basta executar o docker: `docker compose up` (ou `docker-compose up` dependendo do sistema operacional)
+Para executar 

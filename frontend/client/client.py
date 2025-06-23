@@ -1,6 +1,7 @@
 import threading
 import socket
 import json
+import sys
 
 import Pyro5.api
 
@@ -15,7 +16,8 @@ def sendMessage(nomeFunc, mensagem):
     try:
         # conecta ao objeto remoto 'servidor' no Name Server
         # with garante que a conexão com o obj remoto será fechada após a execução do bloco interno
-        with Pyro5.api.Proxy("PYRONAME:servidor") as servidor:
+        host = "PYRONAME:servidor" if "--local" in sys.argv else "PYRONAME:servidor"
+        with Pyro5.api.Proxy(host) as servidor:
             # Obtem o nome da função a ser chamada e a chama passando a mensagem
             func = getattr(servidor, nomeFunc)
             resposta = func(mensagem)
@@ -130,6 +132,7 @@ def autenticar(ccm, senha):
             data_pedidos_minha_loja = results.get("pedidos_minha_loja")
             data_catalogo = results.get("catalogo")
 
+        print("A função de autenticação rodou!!!!")
         return [resposta["status"], resposta["mensagem"], {}]
 
     except Exception as e:
@@ -214,7 +217,7 @@ def get_categoria():
             },
         }
 
-        resposta = sendMessage("get_categoria",mensagem)
+        resposta = sendMessage("get_categoria", mensagem)
         return [
             resposta["status"],
             resposta["mensagem"],
@@ -241,7 +244,7 @@ def get_catalogo(categorias=[], idLoja=None, page=0):
                 "idLoja": idLoja,
             },
         }
-        resposta = sendMessage("get_catalogo",mensagem)
+        resposta = sendMessage("get_catalogo", mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["servicos"]]
     except Exception as e:
@@ -284,7 +287,7 @@ def get_loja(idLoja):
             },
         }
 
-        resposta = sendMessage("get_loja",mensagem)
+        resposta = sendMessage("get_loja", mensagem)
 
         return [resposta["status"], resposta["mensagem"], resposta["dados"]["loja"]]
     except Exception as e:
@@ -510,8 +513,7 @@ def get_minha_loja():
     :return: Resposta do servidor
     """
     try:
-        mensagem = {
-                    "dados": {"tokenCliente": tokenCliente}}
+        mensagem = {"dados": {"tokenCliente": tokenCliente}}
 
         resposta = sendMessage("get_minha_loja", mensagem)
 
@@ -538,7 +540,7 @@ def criar_pedido(idServico, quantidade):
             },
         }
 
-        resposta = sendMessage("add_pedido",mensagem)
+        resposta = sendMessage("add_pedido", mensagem)
 
         return [resposta["status"], resposta["mensagem"], {}]
 

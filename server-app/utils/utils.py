@@ -7,7 +7,7 @@ import db.database as db
 BR = ZoneInfo("America/Sao_Paulo")
 
 
-def formatar_mensagem_wrapper(fun):
+def formatar_mensagem_decorator(fun):
     def wrapper(self, *args, **kwargs):
         status, mensagem, dados = fun(self, *args, **kwargs) # chama a função original e pega retorno
         

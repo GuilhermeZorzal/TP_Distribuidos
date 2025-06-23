@@ -76,7 +76,7 @@ def authorization(idCliente, token):
     return 200, "Usuário autorizado", {"cliente": cliente}
 
 # autenticação de funções do servidor
-def autenticar_wrapper(func):
+def autenticar_decorator(func):
     def wrapper(self, msg):
         dados = msg.get("dados", {})
         token = dados.get("tokenCliente")

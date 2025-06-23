@@ -111,7 +111,7 @@ def autenticar_wrapper(func):
         args_to_pass = []
 
         if "idCliente" in params:
-            args_to_pass.append(idCliente)
+            args_to_pass.append(int(idCliente))
         if "dados" in params:
             args_to_pass.append(dados)
 

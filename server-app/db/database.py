@@ -10,7 +10,7 @@ FILEBASE = "./db/sqliteBase.db"
 def conectar(file: str = FILE):
     if not os.path.exists("./db"):
         os.makedirs("./db")
-    return sqlite3.connect(file)
+    return sqlite3.connect(file, check_same_thread=False)
 
     
 def mostrar_tabelas():

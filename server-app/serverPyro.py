@@ -3,13 +3,15 @@ from handlers import cadastro, login, loja, servico, pedido
 from db.database import reset_database
 from utils.token import autenticar_wrapper
 from utils.utils import formatar_mensagem_wrapper
-
+from db.database import copiar_banco_base, mostrar_tabelas
 
 
 @Pyro5.api.expose
 class Server:
     def __init__(self):
         print("[Servidor] Servidor iniciado.")
+        copiar_banco_base()
+        mostrar_tabelas()
 
     # Funções que não precisam de autenticação
     

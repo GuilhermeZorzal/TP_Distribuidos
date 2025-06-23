@@ -115,7 +115,7 @@ def autenticar_decorator(func):
         if "dados" in params:
             args_to_pass.append(dados)
 
-        print(f"[autenticar_wrapper] Chamada da função: {func.__name__} com args: {args_to_pass}")
+        print(f"[autenticar_decorator] Chamada da função: {func.__name__} com args: {args_to_pass}")
         return func(self, *args_to_pass)
 
     return wrapper

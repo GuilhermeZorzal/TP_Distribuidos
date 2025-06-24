@@ -82,27 +82,16 @@ def autenticar_decorator(func):
         token = dados.get("tokenCliente")
         
         if not token:
-            return {
-                "status": 0,
-                "mensagem": "Token não fornecido",
-                "dados": {},
-            }
+            return 0, "Token não fornecido", {}
 
         try:
             status, mensagem, idCliente = autorizarToken(token)
             if status != 200:
-                return {
-                    "status": 0,
-                    "mensagem": mensagem,
-                    "dados": {},
-                }
+                return 0, mensagem, {}
                 
         except Exception as e:
-            return {
-                "status": 0,
-                "mensagem": f"Erro ao verificar Token: {e}",
-                "dados": {},
-            }
+            return 0, f"Erro ao verificar Token: {e}", {}
+
 
         # Descobre quais argumentos tem na função
         params = func.__code__.co_varnames

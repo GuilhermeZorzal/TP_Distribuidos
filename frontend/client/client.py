@@ -16,7 +16,7 @@ def sendMessage(nomeFunc, mensagem):
     try:
         # conecta ao objeto remoto 'servidor' no Name Server
         # with garante que a conexão com o obj remoto será fechada após a execução do bloco interno
-        host = "PYRONAME:servidor" if "--local" in sys.argv else "PYRONAME:servidor"
+        host = "PYRONAME:servidor"
         with Pyro5.api.Proxy(host) as servidor:
             # Obtem o nome da função a ser chamada e a chama passando a mensagem
             func = getattr(servidor, nomeFunc)

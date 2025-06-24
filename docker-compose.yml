@@ -16,15 +16,9 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./frontend:/app  
-      # - ./interface_socket:/app/interface_socket
-      # - type: bind
-      # # copia a biblioteca de comunicação pro container
-      #   source: ./interface_socket/
-      #   target: /app/interface_socket
     environment:
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
-    # network_mode: host  
     ports:
       - "8000:8000"
     depends_on: 
@@ -40,11 +34,6 @@ services:
     tty: true
     volumes:
       - ./server-app:/app
-      # copia a biblioteca de comunicação pro container
-      # - ./interface_socket:/app/interface_socket
-      # - type: bind
-      #   source: ./interface_socket/
-      #   target: /app/interface_socket
     ports:
       - "50051:50051"
     networks:
